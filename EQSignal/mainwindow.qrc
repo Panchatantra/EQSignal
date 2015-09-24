@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/MainWindow">
+        <file>icons/EQSignal.png</file>
+        <file>icons/Open.png</file>
+        <file>icons/Quit.png</file>
+        <file>icons/SaveData.png</file>
+        <file>icons/SaveFig.png</file>
+        <file>icons/SaveAcc.png</file>
+        <file>icons/ViewData.png</file>
+        <file>splash.png</file>
+        <file>icons/eqs.png</file>
+        <file>icons/eqs.ico</file>
+        <file>icons/Info.png</file>
+    </qresource>
+</RCC>
