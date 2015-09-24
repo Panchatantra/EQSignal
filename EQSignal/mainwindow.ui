@@ -462,8 +462,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>197</width>
+          <height>267</height>
          </rect>
         </property>
         <attribute name="label">
@@ -628,8 +628,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>207</width>
+          <height>222</height>
          </rect>
         </property>
         <attribute name="label">
@@ -771,8 +771,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>190</width>
+          <height>146</height>
          </rect>
         </property>
         <attribute name="label">
@@ -853,8 +853,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>123</width>
+          <height>248</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1079,8 +1079,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>205</width>
+          <height>167</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1224,8 +1224,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>143</width>
+          <height>208</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1366,8 +1366,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>220</width>
-          <height>287</height>
+          <width>98</width>
+          <height>89</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1781,12 +1781,13 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionBasicInfo"/>
+   <addaction name="actionGenWave"/>
    <addaction name="actionSaveAcc"/>
    <addaction name="actionSaveData"/>
    <addaction name="actionSaveFig"/>
    <addaction name="actionViewData"/>
    <addaction name="actionQuit"/>
-   <addaction name="actionBasicInfo"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -1864,6 +1865,10 @@
    </property>
   </action>
   <action name="actionGenWave">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Gen.png</normaloff>:/MainWindow/icons/Gen.png</iconset>
+   </property>
    <property name="text">
     <string>Gen Wave</string>
    </property>

@@ -18,8 +18,7 @@ SOURCES += main.cpp\
     EQSignal.cpp \
     Spectra.cpp \
     jsoncpp.cpp \
-    eqtablewidget.cpp \
-    genwavedialog.cpp
+    eqtablewidget.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
@@ -28,8 +27,7 @@ HEADERS  += mainwindow.h \
     Spectra.h \
     json/json-forwards.h \
     json/json.h \
-    eqtablewidget.h \
-    genwavedialog.h
+    eqtablewidget.h
 
 unix: QMAKE_CXXFLAGS += -std=c++11
 

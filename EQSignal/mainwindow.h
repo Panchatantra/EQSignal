@@ -41,15 +41,22 @@ public:
 		label_dt = new QLabel("dt", this);
 		label_A0 = new QLabel("A0", this);
 		label_A = new QLabel("A", this);
-		label_omega = new QLabel("omega", this);
+		label_T = new QLabel("T", this);
 		label_phi = new QLabel("phi", this);
 
 		wavetype = new QComboBox(this);
+        wavetype->addItem(tr("A0 + A*sin(2*pi/T*t + phi)"));
 		N = new QSpinBox(this);
+        N->setRange(128,65536);
+        N->setValue(2048);
 		dt = new QDoubleSpinBox(this);
+        dt->setRange(0.001,0.1);
+        dt->setValue(0.02);
 		A0 = new QDoubleSpinBox(this);
 		A = new QDoubleSpinBox(this);
-		omega = new QDoubleSpinBox(this);
+        A->setValue(1.0);
+		T = new QDoubleSpinBox(this);
+        T->setValue(1.0);
 		phi = new QDoubleSpinBox(this);
 
 		gridLayout->addWidget(label_wavetype, 0, 0, 1, 1);
@@ -57,14 +64,14 @@ public:
 		gridLayout->addWidget(label_dt, 2, 0, 1, 1);
 		gridLayout->addWidget(label_A0, 3, 0, 1, 1);
 		gridLayout->addWidget(label_A, 1, 2, 1, 1);
-		gridLayout->addWidget(label_omega, 2, 2, 1, 1);
+		gridLayout->addWidget(label_T, 2, 2, 1, 1);
 		gridLayout->addWidget(label_phi, 3, 2, 1, 1);
 		gridLayout->addWidget(wavetype, 0, 1, 1, 3);
 		gridLayout->addWidget(N, 1, 1, 1, 1);
 		gridLayout->addWidget(dt, 2, 1, 1, 1);
 		gridLayout->addWidget(A0, 3, 1, 1, 1);
 		gridLayout->addWidget(A, 1, 3, 1, 1);
-		gridLayout->addWidget(omega, 2, 3, 1, 1);
+		gridLayout->addWidget(T, 2, 3, 1, 1);
 		gridLayout->addWidget(phi, 3, 3, 1, 1);
 
 		buttonBox = new QDialogButtonBox(this);
@@ -82,13 +89,13 @@ public:
 	QLabel *label_dt;
 	QLabel *label_A0;
 	QLabel *label_A;
-	QLabel *label_omega;
+	QLabel *label_T;
 	QLabel *label_phi;
 	QComboBox *wavetype;
 	QDoubleSpinBox *dt;
 	QDoubleSpinBox *A0;
 	QDoubleSpinBox *A;
-	QDoubleSpinBox *omega;
+    QDoubleSpinBox *T;
 	QDoubleSpinBox *phi;
 	QSpinBox *N;
 
@@ -188,6 +195,7 @@ public slots:
     void sptw_applyButton_clicked();
 
     void fillRESTable();
+	void genWave();
 
 private slots:
 

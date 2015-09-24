@@ -85,6 +85,8 @@ void MainWindow::setupConnections()
 {
     connect(ui->actionGenWave, &QAction::triggered,
             gwd, &GenWaveDialog::show);
+    connect(gwd, &GenWaveDialog::accepted,
+            this, &MainWindow::genWave);
 
     connect(ui->Open, &QToolButton::clicked,
             this, &MainWindow::on_actionOpen_triggered);
@@ -1909,6 +1911,41 @@ void MainWindow::fillRESTable()
         dataTableRES->setItem(i,2,new QTableWidgetItem(QString::number(rv[i])));
         dataTableRES->setItem(i,3,new QTableWidgetItem(QString::number(rd[i])));
     }
+
+}
+
+void MainWindow::genWave()
+{
+	
+	int N = gwd->N->value();
+    double dt = gwd->dt->value();
+    double A0 = gwd->A0->value();
+    double A = gwd->A->value();
+    double T = gwd->T->value();
+    double phi = gwd->phi->value();
+
+    double *t = linspace(0.0,dt*N-dt,N);
+    double *a = zeros(N);
+	
+	switch (gwd->wavetype->currentIndex())
+	{
+	case(0) :
+		for (int i = 0; i < N; i++)
+		{
+			a[i] = A0 + A*sin(PI2 / T*t[i] + phi);
+		}
+		break;
+	default:
+		break;
+	}
+
+	eqs = new EQSignal(a,N,dt);
+	eqs->a2vd();
+
+	eqs0 = new EQSignal(a, N, dt);
+	eqs0->a2vd();
+
+	plotTH();
 
 }
 

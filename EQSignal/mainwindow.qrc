@@ -11,5 +11,6 @@
         <file>icons/eqs.png</file>
         <file>icons/eqs.ico</file>
         <file>icons/Info.png</file>
+        <file>icons/Gen.png</file>
     </qresource>
 </RCC>
