@@ -2126,12 +2126,13 @@ void MainWindow::on_SPFit_clicked()
     {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
+        eqs->fitSP(i, tol, 3, 0, peak0);
 
         while (Emax > tol && iter<mit)
         {
             iter ++;
             eqs->fitSP(i, tol, 1, 1, peak0);
-            if (iter%5==0) eqs->fitSP(i, tol, 5, 0, peak0);
+            if (iter%5==0) eqs->fitSP(i, tol, 3, 0, peak0);
             eqs->calcSP(i);
             spi->fitError(Emax, Emean);
 
@@ -2290,6 +2291,8 @@ void MainWindow::on_Resample_clicked()
 {
     eqs->resample(ui->RSR->value());
     eqs0->resample(ui->RSR->value());
+
+    ui->TS->setValue(eqs->getDt()*2.5);
 
     plotTH();
 }
