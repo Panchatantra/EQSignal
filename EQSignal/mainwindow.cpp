@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QJsonDocument>
+#include <QJsonObject>
 
 using namespace std;
 
@@ -62,11 +63,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->progressBar->hide();
     ui->toolBar->hide();
 
-    ui->dockWidget->setFloating(true);
-    ui->dockWidget_2->setFloating(true);
-
-    ui->dockWidget->move(0, 0);
-	ui->dockWidget_2->move(0, 625);
+    #ifndef Q_OS_MAC
+    ui->dockToolBox->setFloating(true);
+    ui->dockXScale->setFloating(true);
+    ui->dockToolBox->move(0, 0);
+    ui->dockXScale->move(0, 625);
+    #endif
 
     #ifdef Q_OS_MAC
     ui->menuBar->setParent(0);
@@ -404,20 +406,21 @@ void MainWindow::readConfig()
 
 void MainWindow::writeConfig()
 {
-//    QString f = QCoreApplication::applicationDirPath() + "/conf.json";
+    QString f = QDir::home().filePath(".eqsignal");
+    if (!QFile::exists(f)) return;
 
-//    ofstream conf(f.toUtf8().data());
+    QFile file(f);
+    file.open(QIODevice::WriteOnly);
 
-//    Json::FastWriter writer;
-//    Json::Value root;
+    QJsonObject json;
+    json.insert("work_dir",QJsonValue(workDir.path()));
+    json.insert("save_acc_with_time",QJsonValue(saveAccWithTime));
+    json.insert("norm_on_read",QJsonValue(normOnRead));
 
-//    root["work_dir"] = workDir.path().toUtf8().data();
+    QJsonDocument jdoc(json);
 
-//    string w = writer.write(root);
-
-//    conf << w;
-
-//    conf.close();
+    file.write(jdoc.toJson());
+    file.close();
 
 }
 
@@ -2093,9 +2096,9 @@ void MainWindow::on_SPFit_clicked()
 		while (Emax > tol && iter<mit)
 		{
             iter ++;
-			eqs->fitSP(i, tol, 1, fm, peak0);
-			eqs->calcSP(i);
-			eqs->getSP(i)->fitError(Emax, Emean);
+            eqs->fitSP(i, tol, 1, fm, peak0);
+            eqs->calcSP(i);
+            eqs->getSP(i)->fitError(Emax, Emean);
 
             ui->progressBar->setValue(iter);
 		}
@@ -2104,30 +2107,29 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
-		if (Emax <= tol) {
-			msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter);
-			QMessageBox::information(0, tr("EQSignal"), msg);
-		}
-		else {
-			msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter);
-			QMessageBox::warning(0, tr("EQSignal"), msg);
-		}
 	}
     
-    
+    if (Emax <= tol) {
+        msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter);
+        QMessageBox::information(0, tr("EQSignal"), msg);
+    }
+    else {
+        msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter);
+        QMessageBox::warning(0, tr("EQSignal"), msg);
+    }
 
-	this->plotSPAi();
-	ErrInfo = tr("Before Fitting")
-			+ tr("Max Error: %1%, Mean Error: %2%")
-			.arg(Emaxp*100.0).arg(Emeanp*100.0) + QString("\t")
-			+ tr("After Fitting")
+    this->plotSPAi();
+    ErrInfo = tr("Before Fitting")
+            + tr("Max Error: %1%, Mean Error: %2%")
+            .arg(Emaxp*100.0).arg(Emeanp*100.0) + QString("\t")
+            + tr("After Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
             .arg(Emax*100.0).arg(Emean*100.0);
     ui->statusBar->showMessage(ErrInfo);
 
     eqs->a2vd();
-	eqs0->copyAccFrom(eqs);
-	eqs0->a2vd();
+    eqs0->copyAccFrom(eqs);
+    eqs0->a2vd();
     this->plotTH(false);
 
 }

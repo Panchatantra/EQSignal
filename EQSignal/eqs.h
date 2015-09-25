@@ -233,7 +233,7 @@ QVector<T> static inline A2QV(T *a, int n)
 }
 
 template <typename T = double>
-void static inline *peakScale(T *a, int n, T peak0)
+void static inline peakScale(T *a, int n, T peak0)
 {
     T p = fabs(peak(a,n));
 

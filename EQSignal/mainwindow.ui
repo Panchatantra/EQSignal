@@ -111,7 +111,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -136,7 +136,7 @@
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="dockToolBox">
    <property name="minimumSize">
     <size>
      <width>240</width>
@@ -188,8 +188,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>203</width>
-          <height>472</height>
+          <width>208</width>
+          <height>584</height>
          </rect>
         </property>
         <attribute name="label">
@@ -462,8 +462,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>197</width>
-          <height>267</height>
+          <width>215</width>
+          <height>313</height>
          </rect>
         </property>
         <attribute name="label">
@@ -628,8 +628,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>207</width>
-          <height>222</height>
+          <width>240</width>
+          <height>271</height>
          </rect>
         </property>
         <attribute name="label">
@@ -771,8 +771,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>190</width>
-          <height>146</height>
+          <width>220</width>
+          <height>201</height>
          </rect>
         </property>
         <attribute name="label">
@@ -853,8 +853,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>123</width>
-          <height>248</height>
+          <width>205</width>
+          <height>298</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1079,8 +1079,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>205</width>
-          <height>167</height>
+          <width>254</width>
+          <height>203</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1224,8 +1224,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>143</width>
-          <height>208</height>
+          <width>205</width>
+          <height>253</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1366,8 +1366,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>98</width>
-          <height>89</height>
+          <width>220</width>
+          <height>201</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1497,8 +1497,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>243</width>
-          <height>296</height>
+          <width>301</width>
+          <height>349</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1723,7 +1723,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="dockXScale">
    <property name="minimumSize">
     <size>
      <width>240</width>

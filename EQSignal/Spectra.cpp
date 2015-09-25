@@ -203,12 +203,10 @@ void Spectra::calc(bool all)
 double *Spectra::fitSP(double tol, int mit, int fm, double peak0)
 {
     double *a = new double[n];
-	peakScale(acc, n, peak0);
+    peakScale(acc, n, peak0);
     fitspectrum(acc,&n,&dt,&zeta,P,&NP,SPT,a,&tol,&mit,&fm);
     return a;
 }
-
-
 
 void Spectra::fitError(double &Emax, double &Emean)
 {
