@@ -5,9 +5,9 @@
 #include <algorithm>
 #include <fstream>
 #include <QtCore/QVector>
-#include "json/json.h"
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QJsonDocument>
 
 using namespace std;
 
@@ -383,39 +383,41 @@ void MainWindow::clearView(QCustomPlot *qplot)
 
 void MainWindow::readConfig()
 {
-    QString f = QCoreApplication::applicationDirPath() + "/conf.json";
-    ifstream conf(f.toUtf8().data());
+    QString f = QDir::home().filePath(".eqsignal");
+    if (!QFile::exists(f)) return;
 
-    Json::Reader reader;
-    Json::Value root;
+    QFile file(f);
+    file.open(QIODevice::ReadOnly);
+    QTextStream ts(&file);
 
-    reader.parse(conf,root);
+    QString conf = ts.readAll();
+    QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
 
-	workDir = QDir(QString::fromStdString(root["work_dir"].asString()));
+    workDir = QDir(json["work_dir"].toString());
 
-    saveAccWithTime = root["save_acc_with_time"].asBool();
-    normOnRead = root["norm_on_read"].asBool();
+    saveAccWithTime = json["save_acc_with_time"].toBool();
+    normOnRead = json["norm_on_read"].toBool();
 
-    conf.close();
+    file.close();
 
 }
 
 void MainWindow::writeConfig()
 {
-    QString f = QCoreApplication::applicationDirPath() + "/conf.json";
+//    QString f = QCoreApplication::applicationDirPath() + "/conf.json";
 
-    ofstream conf(f.toUtf8().data());
+//    ofstream conf(f.toUtf8().data());
 
-    Json::FastWriter writer;
-    Json::Value root;
+//    Json::FastWriter writer;
+//    Json::Value root;
 
-    root["work_dir"] = workDir.path().toUtf8().data();
+//    root["work_dir"] = workDir.path().toUtf8().data();
 
-    string w = writer.write(root);
+//    string w = writer.write(root);
 
-    conf << w;
+//    conf << w;
 
-    conf.close();
+//    conf.close();
 
 }
 

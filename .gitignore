@@ -195,3 +195,11 @@ libeqs/x64/
 libeqs/*.mod
 libeqs/*.u2d
 EQSignal/EQSignal.pro.user*
+*.mod
+*.o
+*.dylib
+*.dll
+*.so
+*.lib
+build*/
+*.DS_Store
