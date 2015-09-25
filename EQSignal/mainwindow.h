@@ -259,6 +259,10 @@ private slots:
 
     void on_actionCalcSPA_triggered();
 
+    void on_actionFFT_triggered();
+
+    void on_actionFitSPA_triggered();
+
 private:
     void setupConnections();
 	void initViewTH();

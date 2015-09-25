@@ -61,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     this->readConfig();
     ui->progressBar->hide();
-    ui->toolBar->hide();
 
     #ifndef Q_OS_MAC
     ui->dockToolBox->setFloating(true);
@@ -1029,8 +1028,6 @@ void MainWindow::plotSPA()
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     }
 
-//	bool rs = false;
-
     for (int i = 0; i < eqs->getNsp(); i++)
     {
         QCPGraph *gr = qplot->addGraph();
@@ -1039,8 +1036,6 @@ void MainWindow::plotSPA()
         Spectra *spi = eqs->getSP(i);
 
         gr->setData(spi->qGetP(),spi->qGetSPA());
-//        gr->rescaleAxes(rs);
-//        rs = rs + true;
 
         gr->setName(tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)));
     }
@@ -1211,7 +1206,7 @@ void MainWindow::plotSP()
     legendSPE->setBrush(brush);
 
     if (ui->XS_LOG_SP->isChecked()) {
-        axisSPA->insetLayout()->addElement(legendSPA, Qt::AlignTop|Qt::AlignLeft);
+        axisSPA->insetLayout()->addElement(legendSPA, Qt::AlignBottom|Qt::AlignHCenter);
         axisSPV->insetLayout()->addElement(legendSPV, Qt::AlignTop|Qt::AlignLeft);
         axisSPD->insetLayout()->addElement(legendSPD, Qt::AlignTop|Qt::AlignLeft);
         axisSPE->insetLayout()->addElement(legendSPE, Qt::AlignTop|Qt::AlignLeft);
@@ -1425,23 +1420,6 @@ void MainWindow::SPXScaleChanged()
         break;
     case 3:
         this->plotSP();
-        if (ui->XS_LOG_SP->isChecked())
-        {
-            foreach(QCPAxisRect *rect, ui->ViewSP->axisRects())
-            {
-                rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
-                rect->insetLayout()->setInsetAlignment(0,Qt::AlignBottom|Qt::AlignHCenter);
-            }
-        }
-        else if (ui->XS_LIN_SP->isChecked())
-        {
-            foreach(QCPAxisRect *rect, ui->ViewSP->axisRects())
-            {
-                rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
-                rect->insetLayout()->setInsetAlignment(0,Qt::AlignTop|Qt::AlignRight);
-            }
-        }
-        ui->ViewSP->replot();
     default:
         break;
     }
@@ -2310,4 +2288,50 @@ void MainWindow::on_actionCalcSPA_triggered()
     eqs->calcSP(true);
     plotSP();
     plotSPA();
+    ui->Paras->setCurrentWidget(ui->SPA);
+}
+
+void MainWindow::on_actionFFT_triggered()
+{
+    on_CalcFFT_clicked();
+    ui->Paras->setCurrentWidget(ui->FFT);
+}
+
+void MainWindow::on_actionFitSPA_triggered()
+{
+    ui->Paras->setCurrentWidget(ui->SPF);
+    double Tg = QInputDialog::getDouble(this, tr("Characteristic Period"), "Tg = ",
+                                        0.9, 0.0, 1.1, 1);
+    double zeta = QInputDialog::getDouble(this, tr("Damping Ratio"), "Zeta = ",
+                                        0.05, 0.0, 1.0, 2);
+    ui->Tg->setValue(Tg);
+    setupSP();
+
+    int zi = ui->CDR->findText(QString::number(zeta));
+    int zc = ui->CDR->count();
+    if (zi>-1)
+        ui->CDR->setCurrentIndex(zi);
+    else {
+        ui->CDR->addItem(QString::number(zeta));
+        ui->CDR->setCurrentIndex(zc);
+    }
+
+
+    double PAF = 2.25;
+    double SF = 1.0;
+
+    eqs->setSPT(Tg,PAF,SF);
+    eqs->calcSP();
+
+    QStringList fms;
+    fms << ui->FitMethod->itemText(0) << ui->FitMethod->itemText(1);
+
+    QString fm = QInputDialog::getItem(this,"EQSignal",tr("FM"),fms,1,false);
+
+    ui->FitMethod->setCurrentText(fm);
+
+    QMessageBox::information(this,"EQSignal",tr("Press OK to Perform Spectrum Fitting."));
+
+    on_SPFit_clicked();
+
 }
