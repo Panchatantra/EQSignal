@@ -1,5 +1,5 @@
 CXX=g++
-CXX_FLAGS=-I. -fPIC -shared -dynamiclib -O3
+CXX_FLAGS=-I. -fPIC -shared -O3
 
 SOURCE=$(wildcard *.cpp)
 OBJECT=$(patsubst %.cpp, %.o, $(SOURCE))

@@ -63,6 +63,8 @@ install: $(DYLIB)
 	cp $(DYLIB) $(PREFIX)
 ifeq ($(OS),Windows_NT)
 	cp $(DEP_LIB) ../lib
+else
+	cp $(DYLIB) ../lib
 endif
 
 uninstall:

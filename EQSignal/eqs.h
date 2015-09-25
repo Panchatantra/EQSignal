@@ -213,7 +213,7 @@ T static inline *arraySlice(T *a, int ind1, int ind2)
 }
 
 template <typename T = double>
-void static inline *arrayCopy(T *a, T *b, int n)
+void static inline arrayCopy(T *a, T *b, int n)
 {
 #pragma omp parallel for
 	for (int i = 0; i <= n; ++i)

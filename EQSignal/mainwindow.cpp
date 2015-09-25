@@ -67,7 +67,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->dockToolBox->setFloating(true);
     ui->dockXScale->setFloating(true);
     ui->dockToolBox->move(0, 0);
-    ui->dockXScale->move(0, 625);
+    ui->dockToolBox->resize(300,720);
+    ui->dockXScale->move(0, 730);
     #endif
 
     #ifdef Q_OS_MAC
@@ -752,17 +753,6 @@ void MainWindow::plotTH(bool changeTab)
 	qplot->replot();
     if (changeTab) {
         ui->tabWidget->setCurrentIndex(0);
-
-        int IPA = peakLoc(Acc.data(),Acc.count());
-        int IPV = peakLoc(Vel.data(),Vel.count());
-        int IPD = peakLoc(Dsp.data(),Dsp.count());
-        double dt = eqs->getDt();
-
-        QString msg;
-		msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6").arg(Acc[IPA]).arg(Vel[IPV]).arg(Dsp[IPD])
-                .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
-        
-        ui->statusBar->showMessage(msg);
     }
 
 
@@ -1001,6 +991,8 @@ void MainWindow::setupSP()
 {
     QString DR = ui->DR->text().trimmed();
     QStringList DRL = DR.split(",",QString::SkipEmptyParts);
+    ui->CDR->clear();
+    ui->CDR->addItems(DRL);
     int NSP = DRL.count();
     double *Zeta = new double[NSP];
     for (int i = 0; i < NSP; i++) Zeta[i] = DRL[i].toDouble();
@@ -1079,8 +1071,11 @@ void MainWindow::plotSPAi(bool preFit)
 
     int i = ui->CDR->currentIndex();
     QCPGraph *gr = qplot->addGraph();
-    QPen pen = autoPen(i);
-    if (preFit) pen.setColor(reverseColor(pen.color()));
+//    QPen pen = autoPen(i);
+//    if (preFit) pen.setColor(reverseColor(pen.color()));
+    QPen pen = QPen(Qt::blue);
+    pen.setWidthF(1.5);
+    if (preFit) pen.setColor(Qt::green);
     gr->setPen(pen);
     Spectra *spi = eqs->getSP(i);
 
@@ -1096,7 +1091,7 @@ void MainWindow::plotSPAi(bool preFit)
     if (ui->SPTON->isChecked() && preFit) {
         QCPGraph *gra = qplot->addGraph();
         pen.setStyle(Qt::DashLine);
-        if (preFit) pen.setColor(reverseColor(pen.color()));
+        pen.setColor(Qt::red);
         gra->setPen(pen);
         gra->setData(spi->qGetP(),spi->qGetSPT());
         gra->rescaleAxes(true);
@@ -1428,10 +1423,12 @@ void MainWindow::SPXScaleChanged()
         if (ui->XS_LOG_SP->isChecked())
         {
             ui->ViewSPA->xAxis->setScaleType(QCPAxis::stLogarithmic);
+            ui->ViewSPA->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignHCenter);
         }
         else if (ui->XS_LIN_SP->isChecked())
         {
             ui->ViewSPA->xAxis->setScaleType(QCPAxis::stLinear);
+            ui->ViewSPA->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
         }
         ui->ViewSPA->replot();
         break;
@@ -1442,6 +1439,7 @@ void MainWindow::SPXScaleChanged()
             foreach(QCPAxisRect *rect, ui->ViewSP->axisRects())
             {
                 rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
+                rect->insetLayout()->setInsetAlignment(0,Qt::AlignBottom|Qt::AlignHCenter);
             }
         }
         else if (ui->XS_LIN_SP->isChecked())
@@ -1449,6 +1447,7 @@ void MainWindow::SPXScaleChanged()
             foreach(QCPAxisRect *rect, ui->ViewSP->axisRects())
             {
                 rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
+                rect->insetLayout()->setInsetAlignment(0,Qt::AlignTop|Qt::AlignRight);
             }
         }
         ui->ViewSP->replot();
@@ -2075,7 +2074,7 @@ void MainWindow::on_SPFit_clicked()
 	Emeanp = Emean;
 
 	if (Emax <= tol) {
-        msg = tr("Maximum Error is less than Tolerance. Need no Fitting!").arg(iter);
+        msg = tr("Maximum Error is less than Tolerance. Need no Fitting!");
 		QMessageBox::information(0, tr("EQSignal"), msg);
 		return;
 	}
@@ -2087,6 +2086,14 @@ void MainWindow::on_SPFit_clicked()
 		eqs->fitSP(i, tol, mit, fm, peak0);
 		eqs->calcSP(i);
 		eqs->getSP(i)->fitError(Emax, Emean);
+        if (Emax <= tol) {
+            msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit);
+            QMessageBox::information(0, tr("EQSignal"), msg);
+        }
+        else {
+            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit);
+            QMessageBox::warning(0, tr("EQSignal"), msg);
+        }
 	}
 	else
 	{
@@ -2107,16 +2114,18 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
+        if (Emax <= tol) {
+            msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter);
+            QMessageBox::information(0, tr("EQSignal"), msg);
+        }
+        else {
+            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter);
+            QMessageBox::warning(0, tr("EQSignal"), msg);
+        }
+
 	}
     
-    if (Emax <= tol) {
-        msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter);
-        QMessageBox::information(0, tr("EQSignal"), msg);
-    }
-    else {
-        msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter);
-        QMessageBox::warning(0, tr("EQSignal"), msg);
-    }
+
 
     this->plotSPAi();
     ErrInfo = tr("Before Fitting")
@@ -2259,4 +2268,36 @@ void MainWindow::on_actionBasicInfo_triggered()
             .arg(eqsName).arg(eqs->getDt()).arg(eqs->getN());
 
     QMessageBox::information(0,"EQSignal",msg);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    QString msg;
+    double dt;
+    int IPA, IPV, IPD;
+    switch (index) {
+    case 0:
+        IPA = peakLoc(eqs->getAcc(),eqs->getN());
+        IPV = peakLoc(eqs->getVel(),eqs->getN());
+        IPD = peakLoc(eqs->getDisp(),eqs->getN());
+        dt = eqs->getDt();
+
+        msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6")
+                .arg(eqs->getAcc()[IPA])
+                .arg(eqs->getVel()[IPV])
+                .arg(eqs->getDisp()[IPD])
+                .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
+        ui->statusBar->showMessage(msg);
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::on_actionCalcSPA_triggered()
+{
+    setupSP();
+    eqs->calcSP(true);
+    plotSP();
+    plotSPA();
 }

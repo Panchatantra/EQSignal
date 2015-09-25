@@ -2003,7 +2003,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     call error(abs(SPA),SPAT,nP,aerror,merror)
     R = SPAT/abs(SPA)
     call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
-    write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
+    ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
 
     iter = 1
     do while ( (aerror>tol .or. merror>1.d0*tol) .and. iter<=mit )
@@ -2038,7 +2038,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         call error(abs(SPA),SPAT,nP,aerror,merror)
         R = SPAT/abs(SPA)
         call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
-        write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
+        ! write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
         iter = iter + 1
     end do
 
@@ -2159,7 +2159,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
                 call ramixed(W(:,j),n,dt,zeta,P(i),ra(:,i,j))
                 M(i,j) = ra(SPI(i),i,j)/SPAT(i)
                 if ( i /= j ) then
-                    M(i,j) = M(i,j)*0.618
+                    M(i,j) = M(i,j)*0.618D0
                 end if
             end do
         end do

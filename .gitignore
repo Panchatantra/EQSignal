@@ -203,3 +203,4 @@ EQSignal/EQSignal.pro.user*
 *.lib
 build*/
 *.DS_Store
+*.cpp.*

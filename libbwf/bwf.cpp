@@ -1,6 +1,10 @@
 #include "DspFilters/Dsp.h"
-
-extern "C" __declspec(dllexport) void bwfilt(double *acc, int n, double dt, int ftype, int order, double f1, double f2)
+#ifdef _WIN32
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+extern "C" DLLEXPORT void bwfilt(double *acc, int n, double dt, int ftype, int order, double f1, double f2)
 {
 
 	double *Data[1];

@@ -255,6 +255,10 @@ private slots:
 
     void on_actionBasicInfo_triggered();
 
+    void on_tabWidget_currentChanged(int index);
+
+    void on_actionCalcSPA_triggered();
+
 private:
     void setupConnections();
 	void initViewTH();
