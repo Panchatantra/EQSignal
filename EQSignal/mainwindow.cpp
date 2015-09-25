@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "qcustomplot.h"
 #include "eqs.h"
+#include <time.h>
 #include <algorithm>
 #include <fstream>
 #include <QtCore/QVector>
@@ -9,6 +10,7 @@
 #include <QProgressDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
+
 
 using namespace std;
 
@@ -2058,6 +2060,7 @@ void MainWindow::on_SPFit_clicked()
     gr_post->setPen(pen);
     gr_post->setName(tr("After Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
 
+    clock_t ct = clock();
 	if (fm == 0)
 	{
 		eqs->fitSP(i, tol, mit, fm, peak0);
@@ -2071,17 +2074,19 @@ void MainWindow::on_SPFit_clicked()
         qplot->replot();
 
         if (Emax <= tol) {
-            msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit);
+            msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit)
+                + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::information(0, tr("EQSignal"), msg);
         }
         else {
-            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit);
+            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit)
+                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
 
 	}
-	else
-	{
+    else if (fm == 1)
+    {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
 		
@@ -2106,15 +2111,55 @@ void MainWindow::on_SPFit_clicked()
         ui->progressBar->hide();
 
         if (Emax <= tol) {
-            msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter);
+            msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
+                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::information(0, tr("EQSignal"), msg);
         }
         else {
-            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter);
+            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
+                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
 
 	}
+    else
+    {
+        ui->progressBar->setMaximum(mit);
+        ui->progressBar->show();
+
+        while (Emax > tol && iter<mit)
+        {
+            iter ++;
+            eqs->fitSP(i, tol, 1, 1, peak0);
+            if (iter%5==0) eqs->fitSP(i, tol, 5, 0, peak0);
+            eqs->calcSP(i);
+            spi->fitError(Emax, Emean);
+
+            gr_post->setData(spi->qGetP(), spi->qGetSPA());
+            qplot->rescaleAxes();
+            qplot->xAxis->setRangeLower(0.01);
+            qplot->yAxis->setRangeLower(0.0);
+            qplot->replot();
+
+            ui->progressBar->setValue(iter);
+        }
+
+        if (ui->progressBar->value()<mit)
+            ui->progressBar->setValue(mit);
+        ui->progressBar->hide();
+
+        if (Emax <= tol) {
+            msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
+                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+            QMessageBox::information(0, tr("EQSignal"), msg);
+        }
+        else {
+            msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
+                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+            QMessageBox::warning(0, tr("EQSignal"), msg);
+        }
+
+    }
 
     ErrInfo = tr("Before Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
@@ -2324,9 +2369,9 @@ void MainWindow::on_actionFitSPA_triggered()
     eqs->calcSP();
 
     QStringList fms;
-    fms << ui->FitMethod->itemText(0) << ui->FitMethod->itemText(1);
+    fms << ui->FitMethod->itemText(0) << ui->FitMethod->itemText(1) << ui->FitMethod->itemText(2);
 
-    QString fm = QInputDialog::getItem(this,"EQSignal",tr("FM"),fms,1,false);
+    QString fm = QInputDialog::getItem(this,"EQSignal",tr("FM"),fms,2,false);
 
     ui->FitMethod->setCurrentText(fm);
 
