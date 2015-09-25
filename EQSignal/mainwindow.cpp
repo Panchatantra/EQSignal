@@ -1054,7 +1054,7 @@ void MainWindow::plotSPA()
 
 }
 
-void MainWindow::plotSPAi(bool preFit)
+void MainWindow::plotSPAi()
 {
     QCustomPlot *qplot = ui->ViewSPA;
 
@@ -1070,35 +1070,26 @@ void MainWindow::plotSPAi(bool preFit)
     }
 
     int i = ui->CDR->currentIndex();
-    QCPGraph *gr = qplot->addGraph();
-//    QPen pen = autoPen(i);
-//    if (preFit) pen.setColor(reverseColor(pen.color()));
-    QPen pen = QPen(Qt::blue);
+    QCPGraph *gr_pre = qplot->addGraph();
+    QCPGraph *gr_target = qplot->addGraph();
+
+    QPen pen = QPen(Qt::green);
     pen.setWidthF(1.5);
-    if (preFit) pen.setColor(Qt::green);
-    gr->setPen(pen);
+    gr_pre->setPen(pen);
+
     Spectra *spi = eqs->getSP(i);
 
-    gr->setData(spi->qGetP(),spi->qGetSPA());
-    gr->rescaleAxes(!preFit);
+    gr_pre->setData(spi->qGetP(),spi->qGetSPA());
 
-    if (preFit)
-        gr->setName(tr("Before Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
-    else
-        gr->setName(tr("After Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
+    gr_pre->setName(tr("Before Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
 
+    pen.setStyle(Qt::DashLine);
+    pen.setColor(Qt::red);
+    gr_target->setPen(pen);
+    gr_target->setData(spi->qGetP(),spi->qGetSPT());
+    gr_target->setName(tr("Target SPA") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
 
-    if (ui->SPTON->isChecked() && preFit) {
-        QCPGraph *gra = qplot->addGraph();
-        pen.setStyle(Qt::DashLine);
-        pen.setColor(Qt::red);
-        gra->setPen(pen);
-        gra->setData(spi->qGetP(),spi->qGetSPT());
-        gra->rescaleAxes(true);
-
-        gra->setName(tr("Target SPA") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
-    }
-
+    qplot->rescaleAxes();
     qplot->xAxis->setRangeLower(0.01);
     qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
@@ -2058,13 +2049,14 @@ void MainWindow::on_SPFit_clicked()
     if (ui->tabWidget->currentIndex() != 2)
         ui->tabWidget->setCurrentIndex(2);
 
-    this->plotSPAi(true);
+    this->plotSPAi();
 
+    Spectra *spi = eqs->getSP(i);
     double Emax, Emean;
 	double Emaxp, Emeanp;
     QString ErrInfo;
 	QString msg;
-    eqs->getSP(i)->fitError(Emax, Emean);
+    spi->fitError(Emax, Emean);
     ErrInfo = tr("Before Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
             .arg(Emax*100.0).arg(Emean*100.0);
@@ -2081,11 +2073,25 @@ void MainWindow::on_SPFit_clicked()
     msg = tr("Fitting, please waiting ...");
     ui->statusBar->showMessage(msg);
 
+    QCustomPlot *qplot = ui->ViewSPA;
+    QCPGraph *gr_post = qplot->addGraph();
+    QPen pen(Qt::blue);
+    pen.setWidthF(1.5);
+    gr_post->setPen(pen);
+    gr_post->setName(tr("After Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
+
 	if (fm == 0)
 	{
 		eqs->fitSP(i, tol, mit, fm, peak0);
 		eqs->calcSP(i);
-		eqs->getSP(i)->fitError(Emax, Emean);
+        spi->fitError(Emax, Emean);
+
+        gr_post->setData(spi->qGetP(), spi->qGetSPA());
+        qplot->rescaleAxes();
+        qplot->xAxis->setRangeLower(0.01);
+        qplot->yAxis->setRangeLower(0.0);
+        qplot->replot();
+
         if (Emax <= tol) {
             msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit);
             QMessageBox::information(0, tr("EQSignal"), msg);
@@ -2094,6 +2100,7 @@ void MainWindow::on_SPFit_clicked()
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
+
 	}
 	else
 	{
@@ -2105,7 +2112,13 @@ void MainWindow::on_SPFit_clicked()
             iter ++;
             eqs->fitSP(i, tol, 1, fm, peak0);
             eqs->calcSP(i);
-            eqs->getSP(i)->fitError(Emax, Emean);
+            spi->fitError(Emax, Emean);
+
+            gr_post->setData(spi->qGetP(), spi->qGetSPA());            
+            qplot->rescaleAxes();
+            qplot->xAxis->setRangeLower(0.01);
+            qplot->yAxis->setRangeLower(0.0);
+            qplot->replot();
 
             ui->progressBar->setValue(iter);
 		}
@@ -2124,10 +2137,7 @@ void MainWindow::on_SPFit_clicked()
         }
 
 	}
-    
 
-
-    this->plotSPAi();
     ErrInfo = tr("Before Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
             .arg(Emaxp*100.0).arg(Emeanp*100.0) + QString("\t")
@@ -2201,7 +2211,7 @@ void MainWindow::on_SPComPare_clicked()
 
     ui->ViewSPA->clearGraphs();
     ui->tabWidget->setCurrentIndex(2);
-    this->plotSPAi(true);
+    this->plotSPAi();
 
     double Emax, Emean;
     eqs->getSP(i)->fitError(Emax, Emean);

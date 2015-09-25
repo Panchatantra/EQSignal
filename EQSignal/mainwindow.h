@@ -184,7 +184,7 @@ public slots:
     void plotFFT();
     void plotPSD();
     void plotSPT();
-    void plotSPAi(bool preFit=false);
+    void plotSPAi();
 
     void SPXScaleChanged();
 
