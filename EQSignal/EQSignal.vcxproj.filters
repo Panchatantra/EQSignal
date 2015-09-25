@@ -65,9 +65,6 @@
     <ClCompile Include="Spectra.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jsoncpp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_eqtablewidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -103,12 +100,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spectra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json-forwards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="eqs.h">

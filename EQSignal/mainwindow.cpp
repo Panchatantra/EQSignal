@@ -66,8 +66,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->dockToolBox->setFloating(true);
     ui->dockXScale->setFloating(true);
     ui->dockToolBox->move(0, 0);
-    ui->dockToolBox->resize(300,720);
-    ui->dockXScale->move(0, 730);
+    ui->dockToolBox->resize(300,640);
+    ui->dockXScale->move(0, 650);
     #endif
 
     #ifdef Q_OS_MAC
