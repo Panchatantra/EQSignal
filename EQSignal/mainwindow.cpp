@@ -62,6 +62,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     normOnRead = false;
 
     this->readConfig();
+    ui->Paras->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(0);
+
     ui->progressBar->hide();
 
     #ifndef Q_OS_MAC
@@ -220,36 +223,6 @@ QColor MainWindow::reverseColor(QColor c)
     return QColor(r,g,b);
 }
 
-void MainWindow::dropEvent(QDropEvent *event)
-{
-    QList<QUrl> urls = event->mimeData()->urls();
-    if (urls.isEmpty()) return;
-    QString fileName = urls.first().toLocalFile();
-    if (fileName.isEmpty()) return;
-
-    bool isTxt = fileName.endsWith(".txt") || (fileName.endsWith(".TXT"));
-    bool isAt2 = fileName.endsWith(".at2") || (fileName.endsWith(".AT2"));
-    if (!isTxt && !isAt2) return;
-
-    ui->URL->setText(fileName);
-    QFileInfo fi(fileName);
-    eqsName = fi.baseName();
-    this->setWindowTitle("EQSignal -- " + eqsName);
-
-    if (isTxt)
-    {
-        double DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-        this->readtxt(fileName, DT);
-
-    }
-    else if (isAt2)
-    {
-        this->readnga(fileName);
-    }
-
-    ui->Paras->setCurrentIndex(0);
-}
-
 void MainWindow::initViewSP()
 {
     QCustomPlot *qplot = ui->ViewSP;
@@ -398,9 +371,12 @@ void MainWindow::readConfig()
     QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
 
     workDir = QDir(json["work_dir"].toString());
+    lastFile = json["last_file"].toString();
 
     saveAccWithTime = json["save_acc_with_time"].toBool();
     normOnRead = json["norm_on_read"].toBool();
+
+    ui->URL->setText(lastFile);
 
     file.close();
 
@@ -418,6 +394,7 @@ void MainWindow::writeConfig()
     json.insert("work_dir",QJsonValue(workDir.path()));
     json.insert("save_acc_with_time",QJsonValue(saveAccWithTime));
     json.insert("norm_on_read",QJsonValue(normOnRead));
+    json.insert("last_file",QJsonValue(lastFile));
 
     QJsonDocument jdoc(json);
 
@@ -1704,7 +1681,7 @@ void MainWindow::on_actionOpen_triggered()
     if (isTxt)
     {
         ui->URL->setText(fileName);
-        double DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+        double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
         this->readtxt(fileName, DT);
 
     }
@@ -1714,7 +1691,8 @@ void MainWindow::on_actionOpen_triggered()
         this->readnga(fileName);
     }
 
-//    ui->Paras->setCurrentIndex(0);
+    lastFile = fileName;
+
 }
 
 void MainWindow::on_actionSaveData_triggered()
@@ -2382,4 +2360,38 @@ void MainWindow::on_actionFitSPA_triggered()
 
     on_SPFit_clicked();
 
+}
+
+void MainWindow::on_actionOpenLast_triggered()
+{
+    QString fileName = lastFile;
+
+    if (fileName.isEmpty()) return;
+
+    bool isTxt = fileName.endsWith(".txt") || (fileName.endsWith(".TXT"));
+    bool isAt2 = fileName.endsWith(".at2") || (fileName.endsWith(".AT2"));
+
+    QFileInfo fi(fileName);
+    eqsName = fi.baseName();
+    this->setWindowTitle("EQSignal -- " + eqsName);
+
+    if (isTxt)
+    {
+        ui->URL->setText(fileName);
+        double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+        this->readtxt(fileName, DT);
+
+    }
+    else if (isAt2)
+    {
+        ui->URL->setText(fileName);
+        this->readnga(fileName);
+    }
+}
+
+void MainWindow::on_actionEndtoZero_triggered()
+{
+    int ntp = ui->NTP->value();
+    eqs->endAlign(ntp);
+    plotTH();
 }

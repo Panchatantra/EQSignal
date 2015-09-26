@@ -56,6 +56,7 @@ public:
     void savecsvsp(QString filename,int indsp);
 
 	void setAcc(double *a);
+    void modifyAcc(double *a, int ind1, int ind2);
 
     void a2vd(bool raw=false, bool rat=false);
     void detrend(int method, int oh=2, int ol=0, bool raw=true);
@@ -149,6 +150,7 @@ public:
 
     Response getRes() {return res;}
 
+    void endAlign(int ntp=8, bool raw=true);
 private:
     int n, nsp, nfft, npsd;
     double dt, v0, d0;

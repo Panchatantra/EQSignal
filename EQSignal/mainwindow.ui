@@ -122,6 +122,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpenLast"/>
     <addaction name="separator"/>
     <addaction name="actionSaveAcc"/>
     <addaction name="separator"/>
@@ -145,6 +146,7 @@
     <addaction name="actionFFT"/>
     <addaction name="actionCalcSPA"/>
     <addaction name="actionFitSPA"/>
+    <addaction name="actionEndtoZero"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuRun"/>
@@ -196,7 +198,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -521,7 +523,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of &lt;span style=&quot; font-weight:600;&quot;&gt;Controlled Times&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="value">
-            <number>4</number>
+            <number>8</number>
            </property>
           </widget>
          </item>
@@ -539,6 +541,9 @@
           <widget class="QComboBox" name="AlignMethod">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Method for &lt;span style=&quot; font-weight:600;&quot;&gt;Alignment&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="currentIndex">
+            <number>2</number>
            </property>
            <item>
             <property name="text">
@@ -574,6 +579,16 @@
            </property>
            <property name="text">
             <string>Draw Target</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="RawONAlign">
+           <property name="text">
+            <string>Draw Raw</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -623,16 +638,6 @@
           <widget class="QPushButton" name="Confirm">
            <property name="text">
             <string>Confirm</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QCheckBox" name="RawONAlign">
-           <property name="text">
-            <string>Draw Raw</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -867,7 +872,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-76</y>
+          <y>0</y>
           <width>209</width>
           <height>304</height>
          </rect>
@@ -1241,7 +1246,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-22</y>
+          <y>0</y>
           <width>209</width>
           <height>250</height>
          </rect>
@@ -1810,7 +1815,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionBasicInfo"/>
@@ -1927,6 +1932,16 @@
   <action name="actionFitSPA">
    <property name="text">
     <string>Fit SPA</string>
+   </property>
+  </action>
+  <action name="actionOpenLast">
+   <property name="text">
+    <string>Open Last</string>
+   </property>
+  </action>
+  <action name="actionEndtoZero">
+   <property name="text">
+    <string>End to Zero</string>
    </property>
   </action>
  </widget>

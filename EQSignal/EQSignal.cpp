@@ -427,6 +427,56 @@ void EQSignal::align(int method,int ntp,int oh, int ol, bool raw, bool EWZ)
     this->a2vd();
 }
 
+void EQSignal::endAlign(int ntp, bool raw)
+{
+    if (raw)
+    {
+        recover();
+        a2vd();
+    }
+
+    int I0 = n;
+    for (int i=n-1; i>=0; i--)
+    {
+        if (disp[i]*disp[i-1]<0.0)
+        {
+            I0 = i;
+            break;
+        }
+    }
+
+    double ts = t[n-1]-t[I0];
+    double aslp = acc[n-1]/ts;
+    double vslp = vel[n-1]/ts;
+    double dslp = disp[n-1]/ts;
+
+    for (int i = 0; i < n; i++)
+    {
+        td[i] = disp[i];
+        tv[i] = vel[i];
+        ta[i] = acc[i];
+    }
+
+    for (int i = I0; i < n; i++)
+    {
+        td[i] -= dslp*ts;
+        tv[i] -= vslp*ts;
+        ta[i] -= aslp*ts;
+    }
+
+    int *tp = new int[ntp];
+    int pl = 2;
+    int ph = pl + ntp - 1;
+
+    if (ntp == 1) tp[0] = n;
+    else for (int i = 0; i < ntp; i++) tp[i] = int((i+1)*1.0/ntp*n);
+
+    targetdvac(acc,td,tv,ta,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
+
+    delete [] tp;
+    a2vd();
+}
+
 void EQSignal::filt(int ftype, int order, double f1, double f2, bool raw)
 {
 
@@ -762,7 +812,19 @@ void EQSignal::setAcc(double *a)
 	{
 		acc[i] = a[i];
 	}
-	a2vd();
+    confirm();
+    a2vd();
+}
+
+void EQSignal::modifyAcc(double *a, int ind1, int ind2)
+{
+    int N = ind2<(n-1) ? ind2 : (n-1);
+    for (int i = ind1; i <= N; i++)
+    {
+        acc[i] = a[i-ind1];
+    }
+    confirm();
+    a2vd();
 }
 
 

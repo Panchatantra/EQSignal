@@ -27,11 +27,11 @@ else
 	ifeq ($(shell uname),Darwin)
 		DLL_EXT=dylib
 		DLLFLAG=-dynamiclib
-		F90FLAG = -fPIC -shared -Ofast $(OPENMP)
+		F90FLAG= -fPIC -shared -Ofast $(OPENMP)
 	else
 		DLL_EXT=so
 		DLLFLAG=
-		F90FLAG = -fPIC -shared -Ofast $(OPENMP)
+		F90FLAG= -fPIC -shared -g#-Ofast $(OPENMP)
 	endif
 endif
 

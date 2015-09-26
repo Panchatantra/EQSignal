@@ -160,12 +160,12 @@ public:
     static QColor reverseColor(QColor c);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent *event) {
-        if (event->mimeData()->hasFormat("text/uri-list"))
-            event->acceptProposedAction();
-    }
 
-    void dropEvent(QDropEvent *event);
+    void closeEvent(QCloseEvent *event)
+    {
+        writeConfig();
+        event->accept();
+    }
 
 public slots:
 
@@ -263,6 +263,10 @@ private slots:
 
     void on_actionFitSPA_triggered();
 
+    void on_actionOpenLast_triggered();
+
+    void on_actionEndtoZero_triggered();
+
 private:
     void setupConnections();
 	void initViewTH();
@@ -287,6 +291,7 @@ private:
     EQSignal *eqs0;
 
     QDir workDir;
+    QString lastFile;
     QString eqsName;
 
     bool saveAccWithTime;
