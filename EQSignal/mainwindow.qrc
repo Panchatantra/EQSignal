@@ -12,5 +12,10 @@
         <file>icons/eqs.ico</file>
         <file>icons/Info.png</file>
         <file>icons/Gen.png</file>
+        <file>icons/FFT.png</file>
+        <file>icons/Fit.png</file>
+        <file>icons/Load.png</file>
+        <file>icons/SPA.png</file>
+        <file>icons/End.png</file>
     </qresource>
 </RCC>

@@ -111,7 +111,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -198,15 +198,15 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>571</height>
+          <width>205</width>
+          <height>472</height>
          </rect>
         </property>
         <attribute name="label">
@@ -479,8 +479,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>237</width>
-          <height>324</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -648,8 +648,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>233</width>
-          <height>271</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -791,8 +791,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>228</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -873,8 +873,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>304</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1102,8 +1102,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>228</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1247,8 +1247,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>250</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1377,7 +1377,7 @@
            </item>
            <item>
             <property name="text">
-             <string>smart</string>
+             <string>alternate</string>
             </property>
            </item>
           </widget>
@@ -1404,7 +1404,7 @@
           <x>0</x>
           <y>0</y>
           <width>274</width>
-          <height>228</height>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1534,8 +1534,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>365</height>
+          <width>243</width>
+          <height>296</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1818,8 +1818,13 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpenLast"/>
    <addaction name="actionBasicInfo"/>
    <addaction name="actionGenWave"/>
+   <addaction name="actionEndtoZero"/>
+   <addaction name="actionFFT"/>
+   <addaction name="actionCalcSPA"/>
+   <addaction name="actionFitSPA"/>
    <addaction name="actionSaveAcc"/>
    <addaction name="actionSaveData"/>
    <addaction name="actionSaveFig"/>
@@ -1920,26 +1925,46 @@
    </property>
   </action>
   <action name="actionCalcSPA">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/SPA.png</normaloff>:/MainWindow/icons/SPA.png</iconset>
+   </property>
    <property name="text">
     <string>Calc SPA</string>
    </property>
   </action>
   <action name="actionFFT">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/FFT.png</normaloff>:/MainWindow/icons/FFT.png</iconset>
+   </property>
    <property name="text">
     <string>FFT</string>
    </property>
   </action>
   <action name="actionFitSPA">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Fit.png</normaloff>:/MainWindow/icons/Fit.png</iconset>
+   </property>
    <property name="text">
     <string>Fit SPA</string>
    </property>
   </action>
   <action name="actionOpenLast">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Load.png</normaloff>:/MainWindow/icons/Load.png</iconset>
+   </property>
    <property name="text">
     <string>Open Last</string>
    </property>
   </action>
   <action name="actionEndtoZero">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/End.png</normaloff>:/MainWindow/icons/End.png</iconset>
+   </property>
    <property name="text">
     <string>End to Zero</string>
    </property>

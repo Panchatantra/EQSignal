@@ -474,6 +474,7 @@ void EQSignal::endAlign(int ntp, bool raw)
     targetdvac(acc,td,tv,ta,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
 
     delete [] tp;
+    confirm();
     a2vd();
 }
 
