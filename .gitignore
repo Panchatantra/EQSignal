@@ -204,3 +204,4 @@ EQSignal/EQSignal.pro.user*
 build*/
 *.DS_Store
 *.cpp.*
+EQSignal/data/*.png

@@ -208,10 +208,11 @@ double *Spectra::fitSP(double tol, int mit, int fm, double peak0)
     return a;
 }
 
-void Spectra::fitError(double &Emax, double &Emean)
+void Spectra::fitError(double &Emax, double &Emean, double &CV)
 {
     Emax = 0.0;
     Emean = 0.0;
+    CV = 0.0;
 
     double re;
     for (int i = 0; i < NP; i++) {
@@ -221,4 +222,13 @@ void Spectra::fitError(double &Emax, double &Emean)
     }
 
     Emean = sqrt(Emean/NP);
+
+    for (int i = 0; i < NP; i++) {
+        re = fabs(SPA[i]-SPT[i])/SPT[i];
+        CV += (re-Emean)*(re-Emean);
+    }
+
+    CV = sqrt(CV/NP)/Emean;
+
+
 }

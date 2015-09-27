@@ -5,34 +5,13 @@
 #include <time.h>
 #include <algorithm>
 #include <fstream>
-#include <QtCore/QVector>
+#include <QVector>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
 
-
 using namespace std;
-
-PeriodsDefineWidget::PeriodsDefineWidget(QWidget *parent) :
-    SpectraDefineWidget(parent)
-{
-    dataTable->setColumnCount(1);
-
-    QStringList h;
-    h << "Period";
-    dataTable->setHorizontalHeaderLabels(h);
-}
-
-SPTDefineWidget::SPTDefineWidget(QWidget *parent) :
-    SpectraDefineWidget(parent)
-{
-    dataTable->setColumnCount(2);
-    
-    QStringList h;
-    h << "Period" << "SPT";
-    dataTable->setHorizontalHeaderLabels(h);
-}
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -60,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     workDir = QDir::current();
     saveAccWithTime = true;
     normOnRead = false;
+    FIT_SPA = false;
 
     this->readConfig();
     ui->Paras->setCurrentIndex(0);
@@ -70,9 +50,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     #ifndef Q_OS_MAC
     ui->dockToolBox->setFloating(true);
     ui->dockXScale->setFloating(true);
-    ui->dockToolBox->move(0, 0);
+    ui->dockToolBox->move(10, 0);
     ui->dockToolBox->resize(300,640);
-    ui->dockXScale->move(0, 650);
+    ui->dockXScale->move(10, 660);
+    ui->dockXScale->resize(300,90);
     #endif
 
     #ifdef Q_OS_MAC
@@ -109,6 +90,8 @@ void MainWindow::setupConnections()
     connect(ui->Amp, &QRadioButton::clicked,
             this, &MainWindow::plotFFT);
     connect(ui->Ang, &QRadioButton::clicked,
+            this, &MainWindow::plotFFT);
+    connect(ui->DAng, &QRadioButton::clicked,
             this, &MainWindow::plotFFT);
     connect(ui->IAON, &QCheckBox::clicked,
             this, &MainWindow::plotTH);
@@ -731,6 +714,20 @@ void MainWindow::plotTH(bool changeTab)
 	qplot->replot();
     if (changeTab) {
         ui->tabWidget->setCurrentIndex(0);
+        QString msg;
+        double dt;
+        int IPA, IPV, IPD;
+        IPA = peakLoc(eqs->getAcc(),eqs->getN());
+        IPV = peakLoc(eqs->getVel(),eqs->getN());
+        IPD = peakLoc(eqs->getDisp(),eqs->getN());
+        dt = eqs->getDt();
+
+        msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6")
+                .arg(eqs->getAcc()[IPA])
+                .arg(eqs->getVel()[IPV])
+                .arg(eqs->getDisp()[IPD])
+                .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
+        ui->statusBar->showMessage(msg);
     }
 
 
@@ -1047,7 +1044,7 @@ void MainWindow::plotSPAi()
     QCPGraph *gr_pre = qplot->addGraph();
     QCPGraph *gr_target = qplot->addGraph();
 
-    QPen pen = QPen(Qt::green);
+    QPen pen = QPen(Qt::gray);
     pen.setWidthF(1.5);
     gr_pre->setPen(pen);
 
@@ -1058,7 +1055,8 @@ void MainWindow::plotSPAi()
     gr_pre->setName(tr("Before Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
 
     pen.setStyle(Qt::DashLine);
-    pen.setColor(Qt::red);
+    pen.setColor(Qt::blue);
+    pen.setWidth(2);
     gr_target->setPen(pen);
     gr_target->setData(spi->qGetP(),spi->qGetSPT());
     gr_target->setName(tr("Target SPA") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
@@ -1296,32 +1294,116 @@ void MainWindow::plotFFT()
 {
     QCustomPlot *qplot = ui->ViewFFT;
     qplot->clearGraphs();
+    qplot->clearPlottables();
 
     ui->Amp->setEnabled(true);
     ui->Ang->setEnabled(true);
+    ui->DAng->setEnabled(true);
 
-    QCPGraph *gr = qplot->addGraph();
+    QCPGraph *gr;
     if (ui->Amp->isChecked()) {
+        gr = qplot->addGraph();
         gr->setData(eqs->qGetFreqs(),eqs->qGetAmpf());
+        gr->setLineStyle(QCPGraph::lsImpulse);
+        qplot->xAxis->setRangeReversed(false);
+        qplot->xAxis->setAutoTicks(true);
+        qplot->xAxis->setAutoTickLabels(true);
+        qplot->xAxis->setAutoTickStep(true);
+        qplot->yAxis->setAutoTickStep(true);
+        qplot->xAxis->setAutoSubTicks(true);
+        qplot->yAxis->setAutoSubTicks(true);
+        qplot->xAxis->setLabel(tr("Frequency (Hz)"));
         qplot->yAxis->setLabel(tr("Fourier Amplitude"));
     }
-    else {
-        gr->setData(eqs->qGetFreqs(),eqs->qGetAngf());
-        qplot->yAxis->setLabel(tr("Fourier Phase Angle"));
+    else if (ui->Ang->isChecked()) {
+
+        QVector<double> dAng = eqs->qGetAngf();
+        QCPBars *bars = new QCPBars(qplot->xAxis,qplot->yAxis);
+
+        int N = 100;
+        QVector<double> x(N), y(N);
+
+        hist(dAng,0.0,2.0*PI,N,x,y);
+        bars->setData(x,y);
+        bars->setWidth(2.0*PI/N);
+        qplot->addPlottable(bars);
+
+        qplot->xAxis->setRangeReversed(false);
+        qplot->xAxis->setAutoTicks(false);
+        qplot->xAxis->setAutoTickLabels(false);
+
+        QVector<double> phi;
+        phi << 0.0 << PI << PI*2;
+        QVector<QString> label;
+        label << "0" << QString::fromUtf8("π")
+                     << QString::fromUtf8("2π");
+        qplot->xAxis->setTickVector(phi);
+        qplot->xAxis->setTickVectorLabels(label);
+        qplot->xAxis->setAutoSubTicks(false);
+        qplot->xAxis->setSubTickCount(0);
+        qplot->xAxis->setLabel(tr("Phase Angle"));
+
+        qplot->yAxis->setAutoTickStep(false);
+        int tstp = 10*(int)(max(y.data(),N)/50);
+        tstp = tstp<10? 10:tstp;
+        qplot->yAxis->setTickStep(tstp);
+        qplot->yAxis->setAutoSubTicks(false);
+        qplot->yAxis->setSubTickCount(1);
+        qplot->yAxis->setLabel(tr("Count"));
+    }
+    else if (ui->DAng->isChecked()) {
+        QVector<double> dAng = eqs->qGetDAngf();
+        QCPBars *bars = new QCPBars(qplot->xAxis,qplot->yAxis);
+
+        int N = 100;
+        QVector<double> x(N), y(N);
+
+        hist(dAng,-2.0*PI,0.0,N,x,y);
+        bars->setData(x,y);
+        bars->setWidth(2.0*PI/N);
+        qplot->addPlottable(bars);
+        qplot->xAxis->setRangeReversed(true);
+        qplot->xAxis->setAutoTicks(false);
+        qplot->xAxis->setAutoTickLabels(false);
+
+        QVector<double> phi;
+        phi << 0.0 << -PI << -PI*2;
+        QVector<QString> label;
+        label << "0" << QString::fromUtf8("-π")
+                     << QString::fromUtf8("-2π");
+        qplot->xAxis->setTickVector(phi);
+        qplot->xAxis->setTickVectorLabels(label);
+        qplot->xAxis->setAutoSubTicks(false);
+        qplot->xAxis->setSubTickCount(1);
+        qplot->xAxis->setLabel(tr("Phase Difference"));
+
+        qplot->yAxis->setAutoTickStep(false);
+        int tstp = 10*(int)(max(y.data(),N)/50);
+        tstp = tstp<10? 10:tstp;
+        qplot->yAxis->setTickStep(tstp);
+        qplot->yAxis->setAutoSubTicks(false);
+        qplot->yAxis->setSubTickCount(1);
+        qplot->yAxis->setLabel(tr("Count"));
+
     }
 
-//    gr->setLineStyle(QCPGraph::lsImpulse);
 
-    if (ui->XS_LOG_SP->isChecked())
-    {
-        qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    }
-    else if (ui->XS_LIN_SP->isChecked())
-    {
-        qplot->xAxis->setScaleType(QCPAxis::stLinear);
-    }
 
-    gr->rescaleAxes();
+    qplot->xAxis->setScaleType(QCPAxis::stLinear);
+
+    ui->XS_LOG_SP->setChecked(false);
+    ui->XS_LIN_SP->setChecked(true);
+
+//    if (ui->XS_LOG_SP->isChecked())
+//    {
+//        qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
+//    }
+//    else if (ui->XS_LIN_SP->isChecked())
+//    {
+//        qplot->xAxis->setScaleType(QCPAxis::stLinear);
+//    }
+
+    qplot->rescaleAxes();
 
     qplot->replot();
 
@@ -1363,14 +1445,6 @@ void MainWindow::plotPSD()
 
 void MainWindow::SPXScaleChanged()
 {
-    if (ui->XS_LOG_SP->isChecked())
-    {
-        ui->DM->setCurrentIndex(0);
-    }
-    else if (ui->XS_LIN_SP->isChecked())
-    {
-        ui->DM->setCurrentIndex(1);
-    }
 
     switch (ui->tabWidget->currentIndex()) {
     case 1:
@@ -1531,12 +1605,17 @@ void MainWindow::on_Align_clicked()
     {
         QCustomPlot *qplot = ui->ViewTH;
         QVector<double> T = eqs->qGetT();
+        QVector<double> TA = eqs0->qGetTa();
+        QVector<double> TV = eqs0->qGetTv();
+        QVector<double> TD = eqs0->qGetTd();
+
         qplot->graph(6)->setData(T, eqs->qGetTa());
         qplot->graph(6)->rescaleValueAxis(true);
         qplot->graph(7)->setData(T, eqs->qGetTv());
         qplot->graph(7)->rescaleValueAxis(true);
         qplot->graph(8)->setData(T, eqs->qGetTd());
         qplot->graph(8)->rescaleValueAxis(true);
+        
         qplot->replot();
     }
 }
@@ -1610,30 +1689,32 @@ void MainWindow::on_CalcPSD_clicked()
 
 void MainWindow::on_CalcSPA_clicked()
 {
-    this->setupSP();
+    setupSP();
     eqs->calcSP(false);
-    this->plotSPA();
+    plotSPA();
+    FIT_SPA = false;
 }
 
 void MainWindow::on_CalcSP_clicked()
 {
-    this->setupSP();
+    setupSP();
     eqs->calcSP(true);
-    this->plotSP();
+    plotSP();
+    FIT_SPA = false;
 }
 
-void MainWindow::on_DR_textChanged(const QString &arg1)
-{
+//void MainWindow::on_DR_textChanged(const QString &arg1)
+//{
 
-    QString DR;
-    DR.append(arg1.trimmed());
-    QStringList DRL = DR.split(",");
-    ui->CDR->clear();
-    ui->CDR->addItems(DRL);
+//    QString DR;
+//    DR.append(arg1.trimmed());
+//    QStringList DRL = DR.split(",");
+//    ui->CDR->clear();
+//    ui->CDR->addItems(DRL);
 
-    dr->clear();
-    dr->addItems(DRL);
-}
+//    dr->clear();
+//    dr->addItems(DRL);
+//}
 
 //void MainWindow::on_tabWidget_tabBarClicked(int index)
 //{
@@ -1902,6 +1983,19 @@ void MainWindow::genWave()
 
 }
 
+void MainWindow::showSPAErrorMsg()
+{
+    int i = ui->CDR->currentIndex();
+    double Emax, Emean, CV;
+    eqs->getSP(i)->fitError(Emax, Emean, CV);
+
+    QString ErrInfo = tr("Before Fitting")
+            + tr("Max Error: %1%, Mean Error: %2%")
+            .arg(Emax*100.0).arg(Emean*100.0)
+            + ", " + tr("CV: %1").arg(CV);
+    ui->statusBar->showMessage(ErrInfo);
+}
+
 void MainWindow::on_GenSPT_clicked()
 {
     if (ui->TSPT->currentIndex() == 0) {
@@ -1914,6 +2008,7 @@ void MainWindow::on_GenSPT_clicked()
         eqs->setSPT(Tg,PAF,SF);
     }
     this->plotSPT();
+    FIT_SPA = false;
 }
 
 void MainWindow::on_actionViewData_triggered()
@@ -2002,6 +2097,8 @@ void MainWindow::on_SPFit_clicked()
     int fm = ui->FitMethod->currentIndex();
     int iter = 0;
 
+    FIT_SPA = true;
+
     ui->ViewSPA->clearGraphs();
 
     if (ui->tabWidget->currentIndex() != 2)
@@ -2010,21 +2107,23 @@ void MainWindow::on_SPFit_clicked()
     this->plotSPAi();
 
     Spectra *spi = eqs->getSP(i);
-    double Emax, Emean;
-	double Emaxp, Emeanp;
+    double Emax, Emean, CV;
+    double Emaxp, Emeanp, CVp;
     QString ErrInfo;
 	QString msg;
-    spi->fitError(Emax, Emean);
+    spi->fitError(Emax, Emean, CV);
     ErrInfo = tr("Before Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
-            .arg(Emax*100.0).arg(Emean*100.0);
+            .arg(Emax*100.0).arg(Emean*100.0)
+            + ", " + tr("CV: %1").arg(CV);
     ui->statusBar->showMessage(ErrInfo);
 
 	Emaxp = Emax;
 	Emeanp = Emean;
+    CVp = CV;
 
-	if (Emax <= tol) {
-        msg = tr("Maximum Error is less than Tolerance. Need no Fitting!");
+    if (Emax <= 1.2*tol) {
+        msg = tr("Error is less than Tolerance. Need no Fitting!");
 		QMessageBox::information(0, tr("EQSignal"), msg);
 		return;
 	}
@@ -2043,7 +2142,7 @@ void MainWindow::on_SPFit_clicked()
 	{
 		eqs->fitSP(i, tol, mit, fm, peak0);
 		eqs->calcSP(i);
-        spi->fitError(Emax, Emean);
+        spi->fitError(Emax, Emean, CV);
 
         gr_post->setData(spi->qGetP(), spi->qGetSPA());
         qplot->rescaleAxes();
@@ -2051,7 +2150,7 @@ void MainWindow::on_SPFit_clicked()
         qplot->yAxis->setRangeLower(0.0);
         qplot->replot();
 
-        if (Emax <= tol) {
+        if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit)
                 + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::information(0, tr("EQSignal"), msg);
@@ -2068,12 +2167,12 @@ void MainWindow::on_SPFit_clicked()
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
 		
-		while (Emax > tol && iter<mit)
+        while (Emax > 1.2*tol && iter<mit)
 		{
             iter ++;
             eqs->fitSP(i, tol, 1, fm, peak0);
             eqs->calcSP(i);
-            spi->fitError(Emax, Emean);
+            spi->fitError(Emax, Emean, CV);
 
             gr_post->setData(spi->qGetP(), spi->qGetSPA());            
             qplot->rescaleAxes();
@@ -2088,7 +2187,7 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
-        if (Emax <= tol) {
+        if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
                     + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::information(0, tr("EQSignal"), msg);
@@ -2104,15 +2203,15 @@ void MainWindow::on_SPFit_clicked()
     {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
-        eqs->fitSP(i, tol, 3, 0, peak0);
+        eqs->fitSP(i, tol, 5, 0, peak0);
 
-        while (Emax > tol && iter<mit)
+        while (Emax > 1.2*tol && iter<mit)
         {
             iter ++;
             eqs->fitSP(i, tol, 1, 1, peak0);
-            if (iter%5==0) eqs->fitSP(i, tol, 3, 0, peak0);
+            if (iter%5==0) eqs->fitSP(i, tol, 5, 0, peak0);
             eqs->calcSP(i);
-            spi->fitError(Emax, Emean);
+            spi->fitError(Emax, Emean, CV);
 
             gr_post->setData(spi->qGetP(), spi->qGetSPA());
             qplot->rescaleAxes();
@@ -2127,7 +2226,7 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
-        if (Emax <= tol) {
+        if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
                     + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
             QMessageBox::information(0, tr("EQSignal"), msg);
@@ -2142,10 +2241,13 @@ void MainWindow::on_SPFit_clicked()
 
     ErrInfo = tr("Before Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
-            .arg(Emaxp*100.0).arg(Emeanp*100.0) + QString("\t")
+            .arg(Emaxp*100.0).arg(Emeanp*100.0)
+            + ", " + tr("CV: %1").arg(CVp)
+            + QString(";  ")
             + tr("After Fitting")
             + tr("Max Error: %1%, Mean Error: %2%")
-            .arg(Emax*100.0).arg(Emean*100.0);
+            .arg(Emax*100.0).arg(Emean*100.0)
+            + ", " + tr("CV: %1").arg(CV);
     ui->statusBar->showMessage(ErrInfo);
 
     eqs->a2vd();
@@ -2171,41 +2273,6 @@ void MainWindow::on_Paras_currentChanged(int index)
     }
 }
 
-
-SpectraDefineWidget::SpectraDefineWidget(QWidget *parent) : QWidget(parent)
-{
-    wl = new QVBoxLayout(this);
-    bl = new QHBoxLayout;
-
-    this->setLayout(wl);
-
-    readButton  = new QPushButton("Read",this);
-    applyButton = new QPushButton("Apply",this);
-
-    label_np = new QLabel("NP:",this);
-
-    int NP = 30;
-    spinBox_np = new QSpinBox(this);
-    spinBox_np->setValue(NP);
-
-    bl->addWidget(readButton);
-    bl->addWidget(applyButton);
-    bl->addWidget(label_np);
-    bl->addWidget(spinBox_np);
-
-    dataTable = new EQTableWidget(this);
-
-    dataTable->setColumnCount(2);
-    dataTable->setRowCount(NP);
-
-    wl->addLayout(bl);
-    wl->addWidget(dataTable);
-
-    connect(spinBox_np,SIGNAL(valueChanged(int)),dataTable,SLOT(setRowNumber(int)));
-    connect(dataTable,SIGNAL(rowNumberChanged(int)),spinBox_np,SLOT(setValue(int)));
-
-}
-
 void MainWindow::on_SPComPare_clicked()
 {
     int i = ui->CDR->currentIndex();
@@ -2215,10 +2282,15 @@ void MainWindow::on_SPComPare_clicked()
     ui->tabWidget->setCurrentIndex(2);
     this->plotSPAi();
 
-    double Emax, Emean;
-    eqs->getSP(i)->fitError(Emax, Emean);
+    double Emax, Emean, CV;
+    eqs->getSP(i)->fitError(Emax, Emean, CV);
 
-    QString ErrInfo = tr("Before Fitting") + tr("Max Error: %1%, Mean Error: %2%").arg(Emax*100.0).arg(Emean*100.0);
+    FIT_SPA = true;
+
+    QString ErrInfo = tr("Before Fitting")
+            + tr("Max Error: %1%, Mean Error: %2%")
+            .arg(Emax*100.0).arg(Emean*100.0)
+            + ", " + tr("CV: %1").arg(CV);
     ui->statusBar->showMessage(ErrInfo);
 }
 
@@ -2303,7 +2375,15 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                 .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
         ui->statusBar->showMessage(msg);
         break;
+    case 2:
+        if (FIT_SPA) {
+            showSPAErrorMsg();
+        }
+        else
+            ui->statusBar->clearMessage();
+        break;
     default:
+        ui->statusBar->clearMessage();
         break;
     }
 }
@@ -2315,6 +2395,7 @@ void MainWindow::on_actionCalcSPA_triggered()
     plotSP();
     plotSPA();
     ui->Paras->setCurrentWidget(ui->SPA);
+    FIT_SPA = false;
 }
 
 void MainWindow::on_actionFFT_triggered()
@@ -2391,7 +2472,16 @@ void MainWindow::on_actionOpenLast_triggered()
 
 void MainWindow::on_actionEndtoZero_triggered()
 {
+    int N = eqs->getN();
+    double pka = peak(eqs->getAcc(),N);
+    double pkv = peak(eqs->getVel(),N);
+    double pkd = peak(eqs->getDisp(),N);
+    double aend = fabs(eqs->getAcc()[N-1]/pka);
+    double vend = fabs(eqs->getVel()[N-1]/pkv);
+    double dend = fabs(eqs->getDisp()[N-1]/pkd);
+    if ( aend < 1.0e-3 && vend < 1.0e-3 && dend < 1.0e-3) return;
+
     int ntp = ui->NTP->value();
-    eqs->endAlign(ntp);
+    eqs->endAlign(ntp,true,2);
     plotTH();
 }

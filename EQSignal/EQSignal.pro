@@ -17,16 +17,20 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     EQSignal.cpp \
     Spectra.cpp \
-    eqtablewidget.cpp
+    eqtablewidget.cpp \
+    genwavedialog.cpp \
+    spectradefinewidget.cpp
 
 HEADERS  += mainwindow.h \
     qcustomplot.h \
     EQSignal.h \
     eqs.h \
     Spectra.h \
-    eqtablewidget.h
+    eqtablewidget.h \
+    genwavedialog.h \
+    spectradefinewidget.h
 
-unix: QMAKE_CXXFLAGS += -std=c++11
+unix: QMAKE_CXXFLAGS += -std=c++11 -fopenmp
 
 FORMS    += mainwindow.ui
 
@@ -34,7 +38,7 @@ RESOURCES += mainwindow.qrc
 
 TRANSLATIONS += trans.ts
 
-unix:!macx: LIBS += -leqs -lbwf
+unix:!macx: LIBS += -leqs -lbwf -lgomp -lpthread
 
 macx|win32: LIBS += -L$$PWD/lib/ -leqs -lbwf
 

@@ -152,6 +152,7 @@ function trapz(y,n,dx,y0) bind(c)
 
 end function trapz
 
+
 subroutine cumtrapz(y,z,n,dx,z0) bind(c)
 
     real*8, intent(in) :: dx, z0
@@ -1221,7 +1222,7 @@ module eqs
     use, intrinsic :: iso_c_binding
     use basic
     implicit none
-    integer, parameter :: MPR = 30
+    integer, parameter :: MPR = 20
     integer, parameter :: NPARA = 33
     real(8) :: para(NPARA) = 0.D0
 
@@ -2006,7 +2007,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
 
     iter = 1
-    do while ( (aerror>tol .or. merror>1.d0*tol) .and. iter<=mit )
+    do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
 
         j = IPf2
         do i = 2, nP-1, 1
@@ -2031,8 +2032,8 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         a = a0(1:n)*iNfft
 
         call adjustpeak(a,n,peak0)
-        call adjustbaseline(a,n,dt)
-        call adjustpeak(a,n,peak0)
+        ! call adjustbaseline(a,n,dt)
+        ! call adjustpeak(a,n,peak0)
 
         call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)
         call error(abs(SPA),SPAT,nP,aerror,merror)
@@ -2140,10 +2141,10 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     SPIp = SPI
     call errora(abs(SPA),SPAT,nP,aerror,merror)
     
-    if (aerror <= tol .and. merror<=1.d0*tol) return
+    if (aerror <= tol .and. merror<=1.2d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
     
-    do while ( (aerror>tol .or. merror>1.d0*tol) .and. iter<=mit )
+    do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
 
         dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
         
@@ -2172,8 +2173,8 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         end do
 
         call adjustpeak(a,n,peak0)
-        call adjustbaseline(a,n,dt)
-        call adjustpeak(a,n,peak0)
+        ! call adjustbaseline(a,n,dt)
+        ! call adjustpeak(a,n,peak0)
 
         SPIp = SPI
         call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)

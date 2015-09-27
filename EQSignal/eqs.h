@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <math.h>
 #include <complex>
-#include <QtCore/QVector>
+#include <QVector>
+#include <QList>
 
 #define PI  3.141592653589793
 #define PI2 9.869604401089358
@@ -212,6 +213,20 @@ T static inline *arraySlice(T *a, int ind1, int ind2)
     return res;
 }
 
+template <typename T=double>
+QVector<T> static inline arraySlice(QVector<T> a, int ind1, int ind2)
+{
+    int n = ind2-ind1+1;
+    QVector<T> res = QVector<T>(n);
+
+#pragma omp parallel for
+    for (int i = ind1; i <= ind2; ++i)
+    {
+        res[i - ind1] = a[i];
+    }
+    return res;
+}
+
 template <typename T = double>
 void static inline arrayCopy(T *a, T *b, int n)
 {
@@ -242,6 +257,88 @@ void static inline peakScale(T *a, int n, T peak0)
 	{
 		a[i] = a[i]*peak0/p;
 	}
+
+}
+
+template <typename T = double>
+void static inline hist(QVector<T> a, T rl, T ru,
+                        int N, QVector<T> &x, QVector<T> &y)
+{
+    T dx = (ru - rl)/(double)N;
+
+    for (int I=0; I<N; I++) x[I] = rl + dx*0.5 + dx*I;
+
+    int indx;
+
+    for (int i=0; i<a.count(); i++)
+    {
+        indx = (int)floor((a[i]-rl)/dx);
+        y[indx] += 1;
+    }
+}
+
+template<typename T>
+void static inline bilinearDetrend(T *a, int n)
+{
+    T slope1, slope2, errMin;
+    int I;
+    T base;
+    T *err = new T[n];
+
+    err[0] = 0.0;
+    slope2 = (a[n-1] - a[0])/(n-1);
+
+    for (int j=0; j<n; j++)
+    {
+        base = a[0] + slope2*j;
+        err[0] += (base-a[j])*(base-a[j]);
+    }
+
+    err[0] = sqrt(err[0]/n);
+
+#pragma omp parallel for private(slope1,slope2,base) shared(a,n,err)
+    for (int i=1; i<n; i++)
+    {
+
+        slope1 = (a[i] - a[0])/(i);
+        slope2 = (a[n-1] - a[i])/(n-1-i);
+
+        err[i] = 0.0;
+        for (int j=0; j<i; j++)
+        {
+            base = a[0] + slope1*(j);
+            err[i] += (base-a[j])*(base-a[j]);
+        }
+        for (int j=i; j<n; j++)
+        {
+            base = a[i] + slope2*(j-i);
+            err[i] += (base-a[j])*(base-a[j]);
+        }
+
+        err[i] = sqrt(err[i]/n);
+    }
+
+    errMin = err[0];
+    I = 0;
+    for (int i=1; i<n; i++)
+    {
+        if (err[i]<errMin)
+        {
+            errMin = err[i];
+            I = i;
+        }
+    }
+
+    slope1 = (a[I] - a[0])/(I);
+    slope2 = (a[n-1] - a[I])/(n-1-I);
+    for (int j=0; j<I; j++)
+    {
+        a[j] -= a[0] + slope1*(j);
+    }
+    for (int j=I; j<n; j++)
+    {
+        a[j] -= a[I] + slope2*(j-I);
+    }
 
 }
 

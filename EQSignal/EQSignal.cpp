@@ -61,6 +61,7 @@ EQSignal::EQSignal()
     freqs = linspace(0.0,fn,nfft/2+1);
     ampf = zeros(nfft/2+1);
     angf = zeros(nfft/2+1);
+    dangf = zeros(nfft/2+1);
     fpsd = linspace(0.0,fn,npsd/2+1);
     psd = zeros(npsd/2+1);
 
@@ -103,6 +104,7 @@ EQSignal::EQSignal(int N, double DT, double V0, double D0)
     freqs = linspace(0.0,fn,nfft/2+1);
     ampf = zeros(nfft/2+1);
     angf = zeros(nfft/2+1);
+    dangf = zeros(nfft/2+1);
     fpsd = linspace(0.0,fn,npsd/2+1);
     psd = zeros(npsd/2+1);
 
@@ -154,6 +156,7 @@ EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
     freqs = linspace(0.0,fn,nfft/2+1);
     ampf = zeros(nfft/2+1);
     angf = zeros(nfft/2+1);
+    dangf = zeros(nfft/2+1);
     fpsd = linspace(0.0,fn,npsd/2+1);
     psd = zeros(npsd/2+1);
 
@@ -378,7 +381,8 @@ void EQSignal::detrend(int method, int oh, int ol, bool raw)
     this->a2vd();
 }
 
-void EQSignal::align(int method,int ntp,int oh, int ol, bool raw, bool EWZ)
+void EQSignal::align(int method, int ntp, int oh, int ol,
+                     bool raw, bool EWZ)
 {
     if (raw)
     {
@@ -393,29 +397,35 @@ void EQSignal::align(int method,int ntp,int oh, int ol, bool raw, bool EWZ)
         ta[i] = acc[i];
     }
 
+    if (oh==0) {
+        bilinearDetrend(td,n);
+        bilinearDetrend(tv,n);
+        bilinearDetrend(ta,n);
+    }
+    else
+    {
+        polydetrend(td,&n,&oh,&ol);
+        polydetrend(tv,&n,&oh,&ol);
+        polydetrend(ta,&n,&oh,&ol);
+    }
+
     int *tp = new int[ntp];
     int pl = 2;
     int ph = pl + ntp - 1;
 
     if (ntp == 1) tp[0] = int(0.618*n);
-    else for (int i = 0; i < ntp; i++) tp[i] = int((i+1)*1.0/ntp*n);
+    else for (int i = 0; i < ntp; i++) tp[i] = int((i+1)*1.0/ntp*(n));
 
     switch (method) {
     case 0:
-        polydetrend(td,&n,&oh,&ol);
 		if (EWZ) { td[n - 1] = 0.0; }
         targetdc(acc,td,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
         break;
     case 1:
-        polydetrend(td,&n,&oh,&ol);
-        polydetrend(tv,&n,&oh,&ol);
 		if (EWZ) { td[n - 1] = 0.0; tv[n - 1] = 0.0; }
         targetdvc(acc,td,tv,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
         break;
     case 2:
-        polydetrend(td,&n,&oh,&ol);
-        polydetrend(tv,&n,&oh,&ol);
-        polydetrend(ta,&n,&oh,&ol);
 		if (EWZ) { td[n - 1] = 0.0; tv[n - 1] = 0.0; ta[n - 1] = 0.0; }
         targetdvac(acc,td,tv,ta,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
         break;
@@ -427,7 +437,7 @@ void EQSignal::align(int method,int ntp,int oh, int ol, bool raw, bool EWZ)
     this->a2vd();
 }
 
-void EQSignal::endAlign(int ntp, bool raw)
+void EQSignal::endAlign(int ntp, bool raw, int IZC)
 {
     if (raw)
     {
@@ -436,13 +446,16 @@ void EQSignal::endAlign(int ntp, bool raw)
     }
 
     int I0 = n;
+    int ZC = IZC;
     for (int i=n-1; i>=0; i--)
     {
         if (disp[i]*disp[i-1]<0.0)
         {
             I0 = i;
-            break;
+            ZC--;
+
         }
+        if ( ZC==0 ) break;
     }
 
     double ts = t[n-1]-t[I0];
@@ -474,7 +487,7 @@ void EQSignal::endAlign(int ntp, bool raw)
     targetdvac(acc,td,tv,ta,&n,tp,&ntp,&ph,&pl,&dt,&v0,&d0);
 
     delete [] tp;
-    confirm();
+//    confirm();
     a2vd();
 }
 
@@ -543,7 +556,12 @@ void EQSignal::calcFFT()
     for (int i=0; i<nfft/2+1; ++i) {
         ampf[i] = 2.0*abs(af[i])/((double)nfft);
         angf[i] = arg(af[i]);
-        if (angf[i]<0.0) angf[i] = angf[i]+6.2831853071796;
+        if (angf[i]<0.0) angf[i] = angf[i]+PI*2.0;
+        if (i>0) {
+            dangf[i] = angf[i] - angf[i-1];
+            if (dangf[i]>0.0) dangf[i] = dangf[i]-PI*2.0;
+            else if (dangf[i]<-PI*2.0) dangf[i] = dangf[i]+PI*2.0;
+        }
     }
     delete [] a;
 }
@@ -916,6 +934,7 @@ void EQSignal::reallocateTH()
     if (0 != freqs)   delete [] freqs;
     if (0 != ampf)   delete [] ampf;
     if (0 != angf)   delete [] angf;
+    if (0 != dangf)   delete [] dangf;
     if (0 != fpsd)   delete [] fpsd;
     if (0 != psd)   delete [] psd;
 
@@ -946,6 +965,7 @@ void EQSignal::reallocateTH()
     freqs = linspace(0.0,fn,nfft/2+1);
     ampf = zeros(nfft/2+1);
     angf = zeros(nfft/2+1);
+    dangf = zeros(nfft/2+1);
     fpsd = linspace(0.0,fn,npsd/2+1);
     psd = zeros(npsd/2+1);
 }

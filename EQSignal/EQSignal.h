@@ -111,6 +111,7 @@ public:
     double *getFreqs()   {return freqs;}
     double *getAmpf()   {return ampf;}
     double *getAngf()   {return angf;}
+    double *getDAngf()   {return dangf;}
     double *getPsd()   {return psd;}
     double *getFpsd()   {return fpsd;}
     double *getRF();
@@ -143,6 +144,7 @@ public:
     QVector<double> qGetFreqs()  { return A2QV(freqs, nfft / 2 + 1); }
 	QVector<double> qGetAmpf()   { return A2QV(ampf, nfft / 2 + 1); }
     QVector<double> qGetAngf()   { return A2QV(angf, nfft / 2 + 1); }
+    QVector<double> qGetDAngf()   { return A2QV(dangf, nfft / 2 + 1); }
     QVector<double> qGetPsd()   { return A2QV(psd, npsd/2 + 1); }
     QVector<double> qGetFpsd()   { return A2QV(fpsd, npsd/2 + 1); }
 
@@ -150,7 +152,7 @@ public:
 
     Response getRes() {return res;}
 
-    void endAlign(int ntp=8, bool raw=true);
+    void endAlign(int ntp=8, bool raw=true, int IZC=1);
 private:
     int n, nsp, nfft, npsd;
     double dt, v0, d0;
@@ -161,7 +163,7 @@ private:
 	Spectra *sp;
     double *zeta;
     std::complex<double> *af;
-    double *freqs, *ampf, *angf, *psd, *fpsd;
+    double *freqs, *ampf, *angf, *dangf, *psd, *fpsd;
     Response res;
     void reallocateTH();
 

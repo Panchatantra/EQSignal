@@ -31,7 +31,7 @@ else
 	else
 		DLL_EXT=so
 		DLLFLAG=
-		F90FLAG= -fPIC -shared -g#-Ofast $(OPENMP)
+		F90FLAG= -fPIC -shared -Ofast $(OPENMP)
 	endif
 endif
 

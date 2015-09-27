@@ -37,7 +37,7 @@ public:
 
 	double *fitSP(double tol, int mit, int fm, double peak0);
 
-    void fitError(double &Emax, double &Emean);
+    void fitError(double &Emax, double &Emean, double &CV);
 
     QVector<double> qGetP()    {return A2QV(P,NP);}
     QVector<double> qGetSPA()  {return A2QV(SPA,NP);}
