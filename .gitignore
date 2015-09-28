@@ -194,6 +194,9 @@ libbwf/x64/
 libeqs/x64/
 libeqs/*.mod
 libeqs/*.u2d
+EQSignal/eqs/*.lib
+EQSignal/lib/*.lib
+EQSignal/eqs/*.def
 EQSignal/EQSignal.pro.user*
 *.mod
 *.o
