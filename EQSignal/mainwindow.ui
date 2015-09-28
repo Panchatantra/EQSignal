@@ -147,6 +147,7 @@
     <addaction name="actionCalcSPA"/>
     <addaction name="actionFitSPA"/>
     <addaction name="actionEndtoZero"/>
+    <addaction name="actionChangSpecialPoint"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuRun"/>
@@ -198,15 +199,15 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-343</y>
           <width>209</width>
-          <height>571</height>
+          <height>604</height>
          </rect>
         </property>
         <attribute name="label">
@@ -434,7 +435,7 @@
            </property>
           </widget>
          </item>
-         <item row="17" column="0" colspan="2">
+         <item row="18" column="0" colspan="2">
           <widget class="QPushButton" name="Confirm_Pre">
            <property name="text">
             <string>Confirm</string>
@@ -475,13 +476,20 @@
            </property>
           </widget>
          </item>
+         <item row="17" column="0" colspan="2">
+          <widget class="QPushButton" name="AccEndsToZero">
+           <property name="text">
+            <string>Acc Ends to Zero</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="BLA">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-109</y>
           <width>237</width>
           <height>324</height>
          </rect>
@@ -650,7 +658,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-56</y>
           <width>233</width>
           <height>271</height>
          </rect>
@@ -1259,7 +1267,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-22</y>
+          <y>0</y>
           <width>209</width>
           <height>250</height>
          </rect>
@@ -1980,6 +1988,11 @@
    </property>
    <property name="text">
     <string>End to Zero</string>
+   </property>
+  </action>
+  <action name="actionChangSpecialPoint">
+   <property name="text">
+    <string>Chang Special Point</string>
    </property>
   </action>
  </widget>

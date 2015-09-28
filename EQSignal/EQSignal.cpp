@@ -437,7 +437,7 @@ void EQSignal::align(int method, int ntp, int oh, int ol,
     this->a2vd();
 }
 
-void EQSignal::endAlign(int ntp, bool raw, int IZC)
+void EQSignal::endAlign(int ntp, bool raw, int IZC, bool AccOnly)
 {
     if (raw)
     {
@@ -445,23 +445,11 @@ void EQSignal::endAlign(int ntp, bool raw, int IZC)
         a2vd();
     }
 
-    int I0 = n;
-    int ZC = IZC;
-    for (int i=n-1; i>=0; i--)
-    {
-        if (disp[i]*disp[i-1]<0.0)
-        {
-            I0 = i;
-            ZC--;
+    beginLinearDetrend(acc,n,IZC);
+    endLinearDetrend(acc,n,IZC);
+    a2vd();
 
-        }
-        if ( ZC==0 ) break;
-    }
-
-    double ts = t[n-1]-t[I0];
-    double aslp = acc[n-1]/ts;
-    double vslp = vel[n-1]/ts;
-    double dslp = disp[n-1]/ts;
+    if (AccOnly) return;
 
     for (int i = 0; i < n; i++)
     {
@@ -470,12 +458,9 @@ void EQSignal::endAlign(int ntp, bool raw, int IZC)
         ta[i] = acc[i];
     }
 
-    for (int i = I0; i < n; i++)
-    {
-        td[i] -= dslp*ts;
-        tv[i] -= vslp*ts;
-        ta[i] -= aslp*ts;
-    }
+    endLinearDetrend(td,n,IZC);
+    endLinearDetrend(tv,n,IZC);
+//    endLinearDetrend(ta,n,IZC);
 
     int *tp = new int[ntp];
     int pl = 2;

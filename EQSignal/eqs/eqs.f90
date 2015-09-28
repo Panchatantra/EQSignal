@@ -1969,7 +1969,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     type(C_PTR) :: plan, iplan
 
     peak0 = maxval(abs(acc), dim=1)
-    Nfft = nextpow2(n)*2
+    Nfft = nextpow2(n)*4
     iNfft = 1.d0/dble(Nfft)
 
     allocate(a0(Nfft))

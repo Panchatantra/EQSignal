@@ -152,7 +152,7 @@ public:
 
     Response getRes() {return res;}
 
-    void endAlign(int ntp=8, bool raw=true, int IZC=1);
+    void endAlign(int ntp=8, bool raw=true, int IZC=1, bool AccOnly=false);
 private:
     int n, nsp, nfft, npsd;
     double dt, v0, d0;

@@ -154,6 +154,10 @@ private slots:
 
     void on_actionEndtoZero_triggered();
 
+    void on_actionChangSpecialPoint_triggered();
+
+    void on_AccEndsToZero_clicked();
+
 private:
     void setupConnections();
 	void initViewTH();

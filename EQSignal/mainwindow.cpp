@@ -1093,6 +1093,7 @@ void MainWindow::plotSPT()
         gr = qplot->addGraph();
         pen = autoPen(i);
         pen.setStyle(Qt::DashLine);
+
         gr->setPen(pen);
         Spectra *spi = eqs->getSP(i);
 
@@ -1106,6 +1107,9 @@ void MainWindow::plotSPT()
         if (ui->SPAON->isChecked()) {
             QCPGraph *gra = qplot->addGraph();
             pen.setStyle(Qt::SolidLine);
+            QColor cl = pen.color();
+            cl.setAlpha(150);
+            pen.setColor(cl);
             gra->setPen(pen);
             gra->setData(spi->qGetP(),spi->qGetSPA());
             gra->rescaleAxes(rs);
@@ -2210,13 +2214,13 @@ void MainWindow::on_SPFit_clicked()
     {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
-        eqs->fitSP(i, tol, 5, 0, peak0);
+//        eqs->fitSP(i, tol, 5, 0, peak0);
 
         while (Emax > 1.2*tol && iter<mit)
         {
             iter ++;
             eqs->fitSP(i, tol, 1, 1, peak0);
-            if (iter%5==0) eqs->fitSP(i, tol, 5, 0, peak0);
+            if (iter%5==0 && Emean<tol) eqs->fitSP(i, tol, 10, 0, peak0);
             eqs->calcSP(i);
             spi->fitError(Emax, Emean, CV);
 
@@ -2495,5 +2499,47 @@ void MainWindow::on_actionEndtoZero_triggered()
 
     int ntp = ui->NTP->value();
     eqs->endAlign(ntp,true,2);
+    plotTH();
+
+    if (ui->TargetON->isChecked())
+    {
+        QCustomPlot *qplot = ui->ViewTH;
+        QVector<double> T = eqs->qGetT();
+        QVector<double> TA = eqs0->qGetTa();
+        QVector<double> TV = eqs0->qGetTv();
+        QVector<double> TD = eqs0->qGetTd();
+
+        qplot->graph(6)->setData(T, eqs->qGetTa());
+        qplot->graph(6)->rescaleValueAxis(true);
+        qplot->graph(7)->setData(T, eqs->qGetTv());
+        qplot->graph(7)->rescaleValueAxis(true);
+        qplot->graph(8)->setData(T, eqs->qGetTd());
+        qplot->graph(8)->rescaleValueAxis(true);
+
+        qplot->replot();
+    }
+}
+
+void MainWindow::on_actionChangSpecialPoint_triggered()
+{
+    int N = eqs->getN();
+    int loc = QInputDialog::getInt(this,tr("Index"),"i = ",0,-N,N-1);
+    if (loc<0) loc = N + loc;
+
+    double val = QInputDialog::getDouble(this,tr("Value"),"acc[i] = ",0.0,-1e10,1e10,3);
+
+    eqs->getAcc()[loc] = val;
+    eqs->getAcc0()[loc] = val;
+    eqs->a2vd();
+    eqs0->getAcc()[loc] = val;
+    eqs0->a2vd();
+
+    plotTH();
+}
+
+void MainWindow::on_AccEndsToZero_clicked()
+{
+    int ntp = ui->NTP->value();
+    eqs->endAlign(ntp,true,2,true);
     plotTH();
 }

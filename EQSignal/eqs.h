@@ -329,17 +329,78 @@ void static inline bilinearDetrend(T *a, int n)
         }
     }
 
-    slope1 = (a[I] - a[0])/(I);
-    slope2 = (a[n-1] - a[I])/(n-1-I);
+    double a0 = a[0];
+    double ai = a[I];
+    slope1 = (ai - a0)/(I);
+    slope2 = (a[n-1] - ai)/(n-1-I);
+
     for (int j=0; j<I; j++)
     {
-        a[j] -= a[0] + slope1*(j);
+        a[j] -= a0 + slope1*(j);
     }
     for (int j=I; j<n; j++)
     {
-        a[j] -= a[I] + slope2*(j-I);
+        a[j] -= ai + slope2*(j-I);
     }
 
+}
+
+template<typename T>
+void static inline endLinearDetrend(T *a, int n, int IZC=1)
+{
+    int I0 = n-1;
+    int ZC = IZC;
+    for (int i=n-1; i>=0; i--)
+    {
+        if (a[i]*a[i-1]<0.0)
+        {
+            I0 = i;
+            ZC--;
+        }
+        if ( ZC==0 ) break;
+    }
+
+    if (I0 == n-1) {
+        a[I0] = 0.0;
+        return;
+    }
+
+    double ts = n-1-I0;
+    double slp = (a[n-1])/ts;
+
+    for (int i = I0; i < n; i++)
+    {
+        a[i] -= slp*(i-I0);
+    }
+}
+
+template<typename T>
+void static inline beginLinearDetrend(T *a, int n, int IZC=1)
+{
+    int I0 = 0;
+    int ZC = IZC;
+    for (int i=0; i<n; i++)
+    {
+        if (a[i]*a[i+1]<0.0)
+        {
+            I0 = i;
+            ZC--;
+        }
+        if ( ZC==0 ) break;
+    }
+
+    if (I0 == 0) {
+        a[0] = 0.0;
+        return;
+    }
+
+    double ts = I0;
+    double slp = (a[0])/ts;
+
+    for (int i = 0; i <= I0; i++)
+    {
+        a[i] -= slp*(I0);
+    }
 }
 
 #endif // NUMEXT_H
