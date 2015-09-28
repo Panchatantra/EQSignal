@@ -2407,37 +2407,37 @@ void MainWindow::on_actionFFT_triggered()
 void MainWindow::on_actionFitSPA_triggered()
 {
     ui->Paras->setCurrentWidget(ui->SPF);
-    double Tg = QInputDialog::getDouble(this, tr("Characteristic Period"), "Tg = ",
-                                        0.9, 0.0, 1.1, 1);
-    double zeta = QInputDialog::getDouble(this, tr("Damping Ratio"), "Zeta = ",
-                                        0.05, 0.0, 1.0, 2);
-    ui->Tg->setValue(Tg);
+//    double Tg = QInputDialog::getDouble(this, tr("Characteristic Period"), "Tg = ",
+//                                        0.9, 0.0, 1.1, 1);
+//    double zeta = QInputDialog::getDouble(this, tr("Damping Ratio"), "Zeta = ",
+//                                        0.05, 0.0, 1.0, 2);
+//    ui->Tg->setValue(Tg);
     setupSP();
 
-    int zi = ui->CDR->findText(QString::number(zeta));
-    int zc = ui->CDR->count();
-    if (zi>-1)
-        ui->CDR->setCurrentIndex(zi);
-    else {
-        ui->CDR->addItem(QString::number(zeta));
-        ui->CDR->setCurrentIndex(zc);
-    }
+//    int zi = ui->CDR->findText(QString::number(zeta));
+//    int zc = ui->CDR->count();
+//    if (zi>-1)
+//        ui->CDR->setCurrentIndex(zi);
+//    else {
+//        ui->CDR->addItem(QString::number(zeta));
+//        ui->CDR->setCurrentIndex(zc);
+//    }
 
-
-    double PAF = 2.25;
-    double SF = 1.0;
+    double Tg = ui->Tg->value();
+    double PAF = ui->PAF->value();
+    double SF = ui->SF->value();
 
     eqs->setSPT(Tg,PAF,SF);
     eqs->calcSP();
 
-    QStringList fms;
-    fms << ui->FitMethod->itemText(0) << ui->FitMethod->itemText(1) << ui->FitMethod->itemText(2);
+//    QStringList fms;
+//    fms << ui->FitMethod->itemText(0) << ui->FitMethod->itemText(1) << ui->FitMethod->itemText(2);
 
-    QString fm = QInputDialog::getItem(this,"EQSignal",tr("FM"),fms,2,false);
+//    QString fm = QInputDialog::getItem(this,"EQSignal",tr("FM"),fms,2,false);
 
-    ui->FitMethod->setCurrentText(fm);
+//    ui->FitMethod->setCurrentText(fm);
 
-    QMessageBox::information(this,"EQSignal",tr("Press OK to Perform Spectrum Fitting."));
+//    QMessageBox::information(this,"EQSignal",tr("Press OK to Perform Spectrum Fitting."));
 
     on_SPFit_clicked();
 
