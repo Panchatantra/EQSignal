@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     saveAccWithTime = true;
     normOnRead = false;
     FIT_SPA = false;
+    XS_LOG = true;
 
     this->readConfig();
     ui->Paras->setCurrentIndex(0);
@@ -49,11 +50,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     #ifndef Q_OS_MAC
     ui->dockToolBox->setFloating(true);
-    ui->dockXScale->setFloating(true);
     ui->dockToolBox->move(10, 0);
     ui->dockToolBox->resize(300,640);
-    ui->dockXScale->move(10, 660);
-    ui->dockXScale->resize(300,90);
     #endif
 
     #ifdef Q_OS_MAC
@@ -78,15 +76,15 @@ void MainWindow::setupConnections()
 
     connect(ui->Open, &QToolButton::clicked,
             this, &MainWindow::on_actionOpen_triggered);
+
     connect(ui->Confirm, &QPushButton::clicked,
             this, &MainWindow::confirm);
     connect(ui->Confirm_Pre, &QPushButton::clicked,
             this, &MainWindow::confirm);
 
-    connect(ui->XS_LIN_SP, &QRadioButton::clicked,
-            this, &MainWindow::SPXScaleChanged);
-    connect(ui->XS_LOG_SP, &QRadioButton::clicked,
-            this, &MainWindow::SPXScaleChanged);
+    connect(this, &MainWindow::xsChanged,
+            this, &MainWindow::setXScale);
+
     connect(ui->Amp, &QRadioButton::clicked,
             this, &MainWindow::plotFFT);
     connect(ui->Ang, &QRadioButton::clicked,
@@ -97,6 +95,7 @@ void MainWindow::setupConnections()
             this, &MainWindow::plotTH);
     connect(ui->INPUTON, &QCheckBox::clicked,
             this, &MainWindow::plotRES);
+
     connect(dr,static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this,&MainWindow::fillSPTable);
     connect(pdw->applyButton, &QPushButton::clicked,
@@ -231,11 +230,11 @@ void MainWindow::initViewSP()
 	foreach(QCPAxisRect *rect, qplot->axisRects())
 	{
         rect->axis(QCPAxis::atBottom)->setRange(0.01, 10.0);
-        if (ui->XS_LOG_SP->isChecked())
+        if (XS_LOG)
         {
             rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
         }
-        else if (ui->XS_LIN_SP->isChecked())
+        else
         {
             rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
         }
@@ -521,11 +520,11 @@ void MainWindow::initViewSPA()
     qplot->axisRect()->setRangeZoom(Qt::Horizontal);
     qplot->axisRect()->setRangeDrag(Qt::Horizontal);
 
-    if (ui->XS_LOG_SP->isChecked())
+    if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
     }
-    else if (ui->XS_LIN_SP->isChecked())
+    else
     {
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
     }
@@ -993,12 +992,12 @@ void MainWindow::plotSPA()
 
     qplot->legend->setVisible(true);
 
-    if (ui->XS_LOG_SP->isChecked())
+    if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignHCenter);
     }
-    else if (ui->XS_LIN_SP->isChecked())
+    else
     {
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
@@ -1029,12 +1028,12 @@ void MainWindow::plotSPAi()
 {
     QCustomPlot *qplot = ui->ViewSPA;
 
-    if (ui->XS_LOG_SP->isChecked())
+    if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignHCenter);
     }
-    else if (ui->XS_LIN_SP->isChecked())
+    else
     {
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
@@ -1075,11 +1074,11 @@ void MainWindow::plotSPT()
     QCustomPlot *qplot = ui->ViewSPA;
     qplot->clearGraphs();
 
-    if (ui->XS_LOG_SP->isChecked())
+    if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
     }
-    else if (ui->XS_LIN_SP->isChecked())
+    else
     {
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
     }
@@ -1186,7 +1185,7 @@ void MainWindow::plotSP()
     legendSPD->setBrush(brush);
     legendSPE->setBrush(brush);
 
-    if (ui->XS_LOG_SP->isChecked()) {
+    if (XS_LOG) {
         axisSPA->insetLayout()->addElement(legendSPA, Qt::AlignBottom|Qt::AlignHCenter);
         axisSPV->insetLayout()->addElement(legendSPV, Qt::AlignTop|Qt::AlignLeft);
         axisSPD->insetLayout()->addElement(legendSPD, Qt::AlignTop|Qt::AlignLeft);
@@ -1214,11 +1213,11 @@ void MainWindow::plotSP()
     foreach(QCPAxisRect *rect, qplot->axisRects())
     {
         rect->axis(QCPAxis::atBottom)->setRange(0.01, 10.0);
-        if (ui->XS_LOG_SP->isChecked())
+        if (XS_LOG)
         {
             rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
         }
-        else if (ui->XS_LIN_SP->isChecked())
+        else
         {
             rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
         }
@@ -1305,6 +1304,7 @@ void MainWindow::plotFFT()
     ui->DAng->setEnabled(true);
 
     QCPGraph *gr;
+
     if (ui->Amp->isChecked()) {
         gr = qplot->addGraph();
         gr->setData(eqs->qGetFreqs(),eqs->qGetAmpf());
@@ -1391,27 +1391,15 @@ void MainWindow::plotFFT()
 
     }
 
-
-
     qplot->xAxis->setScaleType(QCPAxis::stLinear);
 
-    ui->XS_LOG_SP->setChecked(false);
-    ui->XS_LIN_SP->setChecked(true);
-
-//    if (ui->XS_LOG_SP->isChecked())
-//    {
-//        qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
-//    }
-//    else if (ui->XS_LIN_SP->isChecked())
-//    {
-//        qplot->xAxis->setScaleType(QCPAxis::stLinear);
-//    }
-
     qplot->rescaleAxes();
-
     qplot->replot();
 
     ui->tabWidget->setCurrentIndex(1);
+
+    XS_LOG = false;
+    emit xsChanged();
 
 }
 
@@ -1419,56 +1407,67 @@ void MainWindow::plotPSD()
 {
     QCustomPlot *qplot = ui->ViewFFT;
     qplot->clearGraphs();
+	qplot->clearPlottables();
 
+	qplot->xAxis->setLabel(tr("Frequency (Hz)"));
     qplot->yAxis->setLabel(tr("PSD"));
+
+	qplot->xAxis->setRangeReversed(false);
+	qplot->xAxis->setAutoTicks(true);
+	qplot->xAxis->setAutoTickLabels(true);
+	qplot->xAxis->setAutoTickStep(true);
+	qplot->yAxis->setAutoTickStep(true);
+	qplot->xAxis->setAutoSubTicks(true);
+	qplot->yAxis->setAutoSubTicks(true);
 
     QCPGraph *gr = qplot->addGraph();
     gr->setData(eqs->qGetFpsd(),eqs->qGetPsd());
 
-//    gr->setLineStyle(QCPGraph::lsImpulse);
+    gr->setLineStyle(QCPGraph::lsImpulse);
 //    gr->setPen(QPen(Qt::blue,1.0));
 
-    if (ui->XS_LOG_SP->isChecked())
+
+    if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
     }
-    else if (ui->XS_LIN_SP->isChecked())
+    else
     {
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
     }
 
-    gr->rescaleAxes();
-
+    qplot->rescaleAxes();
     qplot->replot();
 
     ui->Amp->setDisabled(true);
     ui->Ang->setDisabled(true);
+    ui->DAng->setDisabled(true);
 
     ui->tabWidget->setCurrentIndex(1);
 }
 
-void MainWindow::SPXScaleChanged()
+void MainWindow::setXScale()
 {
 
     switch (ui->tabWidget->currentIndex()) {
     case 1:
-        if (ui->XS_LOG_SP->isChecked())
+        if (XS_LOG)
         {
             ui->ViewFFT->xAxis->setScaleType(QCPAxis::stLogarithmic);
         }
-        else if (ui->XS_LIN_SP->isChecked())
+        else
         {
             ui->ViewFFT->xAxis->setScaleType(QCPAxis::stLinear);
         }
         ui->ViewFFT->replot();
         break;
     case 2:
-        if (ui->XS_LOG_SP->isChecked())
+        if (XS_LOG)
         {
             ui->ViewSPA->xAxis->setScaleType(QCPAxis::stLogarithmic);
             ui->ViewSPA->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignHCenter);
         }
-        else if (ui->XS_LIN_SP->isChecked())
+        else
         {
             ui->ViewSPA->xAxis->setScaleType(QCPAxis::stLinear);
             ui->ViewSPA->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
@@ -1476,7 +1475,7 @@ void MainWindow::SPXScaleChanged()
         ui->ViewSPA->replot();
         break;
     case 3:
-        this->plotSP();
+        plotSP();
     default:
         break;
     }
@@ -1688,7 +1687,7 @@ void MainWindow::on_CalcFFT_clicked()
 void MainWindow::on_CalcPSD_clicked()
 {
     eqs->calcPSD(ui->OLR->value(),ui->WW->isChecked());
-    this->plotPSD();
+    plotPSD();
 }
 
 void MainWindow::on_CalcSPA_clicked()
@@ -2542,4 +2541,10 @@ void MainWindow::on_AccEndsToZero_clicked()
     int ntp = ui->NTP->value();
     eqs->endAlign(ntp,true,2,true);
     plotTH();
+}
+
+void MainWindow::on_actionToggleXScale_triggered()
+{
+    XS_LOG = !XS_LOG;
+    emit xsChanged();
 }

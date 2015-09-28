@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>840</width>
-    <height>706</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,7 +111,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -146,11 +146,17 @@
     <addaction name="actionFFT"/>
     <addaction name="actionCalcSPA"/>
     <addaction name="actionFitSPA"/>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
     <addaction name="actionEndtoZero"/>
     <addaction name="actionChangSpecialPoint"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuRun"/>
+   <addaction name="menuTool"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -158,7 +164,7 @@
    <property name="minimumSize">
     <size>
      <width>240</width>
-     <height>550</height>
+     <height>400</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -199,15 +205,15 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-343</y>
-          <width>209</width>
-          <height>604</height>
+          <y>-214</y>
+          <width>205</width>
+          <height>501</height>
          </rect>
         </property>
         <attribute name="label">
@@ -489,9 +495,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-109</y>
-          <width>237</width>
-          <height>324</height>
+          <y>0</y>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -658,9 +664,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-56</y>
-          <width>233</width>
-          <height>271</height>
+          <y>0</y>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -802,35 +808,59 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>228</height>
+          <width>317</width>
+          <height>270</height>
          </rect>
         </property>
         <attribute name="label">
          <string>FFT &amp;&amp; PSD</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout_4">
-         <item row="2" column="0">
-          <widget class="QRadioButton" name="Amp">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Amplitude</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
+         <item row="0" column="0" colspan="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QRadioButton" name="Amp">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Amplitude</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="Ang">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Phase Angle</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="DAng">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Phase Difference</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
-         <item row="4" column="0" colspan="2">
+         <item row="1" column="0">
           <widget class="QPushButton" name="CalcFFT">
            <property name="text">
             <string>Execute FFT</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_18">
            <property name="text">
             <string>OLR</string>
@@ -840,7 +870,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="OLR">
            <property name="maximum">
             <double>1.000000000000000</double>
@@ -853,37 +883,17 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
+         <item row="3" column="0" colspan="2">
           <widget class="QCheckBox" name="WW">
            <property name="text">
             <string>with Window</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="2">
+         <item row="4" column="0" colspan="2">
           <widget class="QPushButton" name="CalcPSD">
            <property name="text">
             <string>Calculate PSD</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QRadioButton" name="Ang">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Phase Angle</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QRadioButton" name="DAng">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Phase Difference</string>
            </property>
           </widget>
          </item>
@@ -894,8 +904,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>304</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1123,8 +1133,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>228</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1268,8 +1278,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>250</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1425,7 +1435,7 @@
           <x>0</x>
           <y>0</y>
           <width>274</width>
-          <height>228</height>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1555,8 +1565,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>365</height>
+          <width>243</width>
+          <height>296</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1781,53 +1791,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockXScale">
-   <property name="minimumSize">
-    <size>
-     <width>240</width>
-     <height>65</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>524287</width>
-     <height>90</height>
-    </size>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
-   <property name="windowTitle">
-    <string>X-Axis Scale</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QRadioButton" name="XS_LIN_SP">
-       <property name="text">
-        <string>Linear</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="XS_LOG_SP">
-       <property name="text">
-        <string>Log</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -1840,16 +1803,17 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpenLast"/>
+   <addaction name="actionSaveAcc"/>
+   <addaction name="actionSaveData"/>
+   <addaction name="actionSaveFig"/>
+   <addaction name="actionViewData"/>
    <addaction name="actionBasicInfo"/>
    <addaction name="actionGenWave"/>
    <addaction name="actionEndtoZero"/>
    <addaction name="actionFFT"/>
    <addaction name="actionCalcSPA"/>
    <addaction name="actionFitSPA"/>
-   <addaction name="actionSaveAcc"/>
-   <addaction name="actionSaveData"/>
-   <addaction name="actionSaveFig"/>
-   <addaction name="actionViewData"/>
+   <addaction name="actionToggleXScale"/>
    <addaction name="actionQuit"/>
   </widget>
   <action name="actionQuit">
@@ -1991,8 +1955,21 @@
    </property>
   </action>
   <action name="actionChangSpecialPoint">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Point.png</normaloff>:/MainWindow/icons/Point.png</iconset>
+   </property>
    <property name="text">
     <string>Chang Special Point</string>
+   </property>
+  </action>
+  <action name="actionToggleXScale">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/XScale.png</normaloff>:/MainWindow/icons/XScale.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle X-Scale</string>
    </property>
   </action>
  </widget>
@@ -2070,8 +2047,6 @@
   <tabstop>FitMethod</tabstop>
   <tabstop>SPFit</tabstop>
   <tabstop>ParaTable</tabstop>
-  <tabstop>XS_LIN_SP</tabstop>
-  <tabstop>XS_LOG_SP</tabstop>
  </tabstops>
  <resources>
   <include location="mainwindow.qrc"/>

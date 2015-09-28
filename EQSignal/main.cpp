@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     a.setFont(font);
     MainWindow w;
 
-    w.move(310, 0);
+    w.move(320, 0);
 
 //    w.readtxt("../EQSignal/data/AWX0.9-1.txt",0.02);
 

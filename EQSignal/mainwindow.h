@@ -53,6 +53,9 @@ protected:
         event->accept();
     }
 
+signals:
+    void xsChanged();
+
 public slots:
 
     void showDriftMsg();
@@ -72,7 +75,7 @@ public slots:
     void plotSPT();
     void plotSPAi();
 
-    void SPXScaleChanged();
+    void setXScale();
 
     void fillSPTable(int k=0);
     void fillTHTable();
@@ -158,6 +161,8 @@ private slots:
 
     void on_AccEndsToZero_clicked();
 
+    void on_actionToggleXScale_triggered();
+
 private:
     void setupConnections();
 	void initViewTH();
@@ -187,6 +192,7 @@ private:
 
     bool saveAccWithTime;
     bool normOnRead;
+    bool XS_LOG;
 
     EQTableWidget *dataTableTH;
     EQTableWidget *dataTableRES;

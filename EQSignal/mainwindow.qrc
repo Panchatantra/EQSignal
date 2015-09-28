@@ -17,5 +17,7 @@
         <file>icons/Load.png</file>
         <file>icons/SPA.png</file>
         <file>icons/End.png</file>
+        <file>icons/XScale.png</file>
+        <file>icons/Point.png</file>
     </qresource>
 </RCC>
