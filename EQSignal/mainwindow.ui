@@ -198,7 +198,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -481,7 +481,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-109</y>
+          <y>0</y>
           <width>237</width>
           <height>324</height>
          </rect>
@@ -885,7 +885,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-76</y>
+          <y>0</y>
           <width>209</width>
           <height>304</height>
          </rect>
@@ -1259,7 +1259,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-22</y>
           <width>209</width>
           <height>250</height>
          </rect>
@@ -1330,7 +1330,7 @@
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.050000000000000</double>
+            <double>0.040000000000000</double>
            </property>
           </widget>
          </item>
@@ -1350,13 +1350,13 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max iterations of spectral fitting&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>100</number>
            </property>
            <property name="singleStep">
             <number>10</number>
            </property>
            <property name="value">
-            <number>50</number>
+            <number>30</number>
            </property>
           </widget>
          </item>
@@ -1376,7 +1376,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectral fitting method&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
            <item>
             <property name="text">

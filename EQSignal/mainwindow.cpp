@@ -1742,7 +1742,9 @@ void MainWindow::on_actionOpen_triggered()
     QStringList filters;
     QFileDialog fdialog(this);
 
-    filters << "Text file (*.txt *.TXT)" << "NGA record file (*.at2 *.AT2)";
+    filters << "Supported file (*.txt *.TXT *.at2 *.AT2)"
+            << "Text file (*.txt *.TXT)"
+            << "NGA record file (*.at2 *.AT2)";
 
     fdialog.setNameFilters(filters);
     fdialog.setWindowTitle(tr("Open"));
@@ -2096,6 +2098,7 @@ void MainWindow::on_SPFit_clicked()
     int mit = ui->MIT->value();
     int fm = ui->FitMethod->currentIndex();
     int iter = 0;
+    double sec = 0.0;
 
     FIT_SPA = true;
 
@@ -2150,14 +2153,16 @@ void MainWindow::on_SPFit_clicked()
         qplot->yAxis->setRangeLower(0.0);
         qplot->replot();
 
+        sec = (double)(clock()-ct)/CLOCKS_PER_SEC;
+
         if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged not more than %1 iterations!").arg(mit)
-                + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::information(0, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit)
-                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                    + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
 
@@ -2187,14 +2192,16 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
+        sec = (double)(clock()-ct)/CLOCKS_PER_SEC;
+
         if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
-                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                    + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::information(0, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
-                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                    + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
 
@@ -2226,14 +2233,16 @@ void MainWindow::on_SPFit_clicked()
             ui->progressBar->setValue(mit);
         ui->progressBar->hide();
 
+        sec = (double)(clock()-ct)/CLOCKS_PER_SEC;
+
         if (Emax <= 1.2*tol) {
             msg = tr("Spectrum Fitting Converged After %1 iterations!").arg(iter)
-                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                    + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::information(0, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
-                    + tr("\nTotal Consumed Time: %1 s").arg((double)(clock()-ct)/CLOCKS_PER_SEC);
+                    + tr("\nTotal Consumed Time: %1 s").arg(sec);
             QMessageBox::warning(0, tr("EQSignal"), msg);
         }
 
@@ -2250,10 +2259,13 @@ void MainWindow::on_SPFit_clicked()
             + ", " + tr("CV: %1").arg(CV);
     ui->statusBar->showMessage(ErrInfo);
 
+    qDebug() << eqsName << "," << iter << "," << sec << "," << Emaxp << "," << Emax
+             << "," << Emeanp << "," << Emean << "," << CVp << "," << CV;
+
     eqs->a2vd();
     eqs0->copyAccFrom(eqs);
     eqs0->a2vd();
-    this->plotTH(false);
+    plotTH(false);
 
 }
 
