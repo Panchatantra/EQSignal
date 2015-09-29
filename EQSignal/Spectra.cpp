@@ -200,11 +200,11 @@ void Spectra::calc(bool all)
     else spectrumavd(acc,&n,&dt,&zeta,P,&NP,SPA,SPI,SPV,SPD,SPE,&SM);
 }
 
-double *Spectra::fitSP(double tol, int mit, int fm, double peak0)
+double *Spectra::fitSP(double tol, int mit, int fm, double peak0, int kpb)
 {
     double *a = new double[n];
     peakScale(acc, n, peak0);
-    fitspectrum(acc,&n,&dt,&zeta,P,&NP,SPT,a,&tol,&mit,&fm);
+    fitspectrum(acc,&n,&dt,&zeta,P,&NP,SPT,a,&tol,&mit,&fm,&kpb);
     return a;
 }
 

@@ -205,7 +205,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -1286,23 +1286,13 @@
           <x>0</x>
           <y>0</y>
           <width>209</width>
-          <height>250</height>
+          <height>290</height>
          </rect>
         </property>
         <attribute name="label">
          <string>Spectrum Fit</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout_6">
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="SPTON">
-           <property name="text">
-            <string>Target Spectra on</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_29">
            <property name="text">
@@ -1355,7 +1345,7 @@
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.040000000000000</double>
+            <double>0.020000000000000</double>
            </property>
           </widget>
          </item>
@@ -1420,17 +1410,37 @@
            </item>
           </widget>
          </item>
-         <item row="8" column="0" colspan="2">
+         <item row="11" column="0" colspan="2">
           <widget class="QPushButton" name="SPFit">
            <property name="text">
             <string>Fit</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="2">
+         <item row="10" column="0" colspan="2">
           <widget class="QPushButton" name="SPComPare">
            <property name="text">
             <string>Compare</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="2">
+          <widget class="QCheckBox" name="SPTON">
+           <property name="text">
+            <string>Target Spectra on</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="2">
+          <widget class="QCheckBox" name="KeepBestFit">
+           <property name="text">
+            <string>Keep best fit</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -2047,7 +2057,6 @@
   <tabstop>SF</tabstop>
   <tabstop>SPAON</tabstop>
   <tabstop>GenSPT</tabstop>
-  <tabstop>SPTON</tabstop>
   <tabstop>CDR</tabstop>
   <tabstop>Tol</tabstop>
   <tabstop>MIT</tabstop>

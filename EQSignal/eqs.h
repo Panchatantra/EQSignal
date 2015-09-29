@@ -20,7 +20,7 @@ extern "C"
     extern void fft(double *in, std::complex<double> *out, int *n);
     extern void fftfreqs(int *Nfft,double *fs,double *freqs);
     extern void fftresample(double *a,int *n,int *r,double *ar,int *nr);
-    extern void fitspectrum(double *acc,int *n,double *dt,double *zeta,double *P,int *nP,double *SPT,double *a,double *tol,int *mit,int *fm);
+    extern void fitspectrum(double *acc,int *n,double *dt,double *zeta,double *P,int *nP,double *SPT,double *a,double *tol,int *mit,int *fm, int *kpb);
     extern void ifft(std::complex<double> *in, double *out, int *n);
     extern void polyblc(double *a, int *n, int *oh, int *ol, double *dt, double *v0, double *d0);
     extern void polydetrend(double *a, int *n, int *oh, int *ol);

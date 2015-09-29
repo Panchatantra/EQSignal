@@ -1950,9 +1950,9 @@ subroutine ramixed(acc,n,dt,zeta,P,ra) bind(c)
     end if
 end subroutine ramixed
 
-subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
+subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
 
-    integer, intent(in) :: n, nP, mit
+    integer, intent(in) :: n, nP, mit, kpb
     real(C_DOUBLE), intent(in) :: dt, zeta, tol
     real(C_DOUBLE), intent(in) :: acc(n), P(nP), SPAT(nP)
     real(C_DOUBLE), intent(out) :: a(n)
@@ -2003,13 +2003,14 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
 
     call spamixed(acc,n,dt,zeta,P,nP,SPA,SPI)
     call error(abs(SPA),SPAT,nP,aerror,merror)
+    if ( aerror<=tol .and. merror<=3.0d0*tol ) return
     R = SPAT/abs(SPA)
     call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
     ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
     minerr = merror
     best = a
     iter = 1
-    do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
+    do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
         j = IPf2
         do i = 2, nP-1, 1
@@ -2049,7 +2050,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         end if
     end do
 
-    a = best
+    if (kpb>0) a = best
 
     call fftw_destroy_plan(plan)
     call fftw_destroy_plan(iplan)
@@ -2120,9 +2121,9 @@ subroutine adjustbaseline(a,n,dt) bind(c)
     return
 end subroutine adjustbaseline
 
-subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
+subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
 
-    integer, intent(in) :: n, nP, mit
+    integer, intent(in) :: n, nP, mit, kpb
     real(C_DOUBLE), intent(in) :: dt, zeta, tol
     real(C_DOUBLE), intent(in) :: acc(n), P(nP), SPAT(nP)
     real(C_DOUBLE), intent(out) :: a(n)
@@ -2151,11 +2152,11 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     SPIp = SPI
     call errora(abs(SPA),SPAT,nP,aerror,merror)
 
-    if (aerror <= tol .and. merror<=1.2d0*tol) return
+    if (aerror <= tol .and. merror<=3.0d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
     minerr = merror
     best = a
-    do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
+    do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
         dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
 
@@ -2198,7 +2199,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         iter = iter + 1
 
     end do
-    a = best
+    if (kpb>0) a = best
 
     deallocate(best)
     deallocate(SPA)
@@ -3038,9 +3039,9 @@ subroutine spectrumavd(acc,n,dt,zeta,P,np,SPA,SPI,SPV,SPD,SPE,SM) bind(c)
     SPD = abs(SPD)
 end subroutine spectrumavd
 
-subroutine fitspectrum(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,fm) bind(c)
+subroutine fitspectrum(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,fm,kpb) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: fitspectrum
-    integer, intent(in) :: n, nP, mit, fm
+    integer, intent(in) :: n, nP, mit, fm, kpb
     real(8), intent(in) :: dt, zeta, tol
     real(8), intent(in) :: acc(n), P(nP), SPAT(nP)
     real(8), intent(out) :: a(n)
@@ -3058,12 +3059,12 @@ subroutine fitspectrum(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,fm) bind(c)
         ESPAT(1) = SPAT(1)-(SPAT(2)-SPAT(1))/(P(2)-P(1))*P(1)*0.5d0
         ESPAT(nP+2) = SPAT(nP)+(SPAT(nP)-SPAT(nP-1))/(P(nP)-P(nP-1))*P(nP)*0.5d0
 
-        call fitspectra(acc,n,dt,zeta,EP,nP+2,ESPAT,a,tol,mit)
+        call fitspectra(acc,n,dt,zeta,EP,nP+2,ESPAT,a,tol,mit,kpb)
 
         deallocate(EP)
         deallocate(ESPAT)
     else if ( fm == 1 ) then
-        call adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit)
+        call adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb)
     end if
 end subroutine fitspectrum
 

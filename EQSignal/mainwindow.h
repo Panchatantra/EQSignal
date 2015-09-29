@@ -73,7 +73,8 @@ public slots:
     void plotFFT();
     void plotPSD();
     void plotSPT();
-    void plotSPAi();
+    void plotSPABeforeFit();
+    void plotSPAAfterFit();
 
     void setXScale();
 

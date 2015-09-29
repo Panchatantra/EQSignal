@@ -35,7 +35,7 @@ public:
     void setAcc(double *Acc, int N, double DT);
     void calc(bool all=false);
 
-	double *fitSP(double tol, int mit, int fm, double peak0);
+    double *fitSP(double tol, int mit, int fm, double peak0, int kpb=1);
 
     void fitError(double &Emax, double &Emean, double &CV);
 

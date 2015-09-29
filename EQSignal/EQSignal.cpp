@@ -570,9 +570,9 @@ void EQSignal::setSPT(double Tg, double amax, double scale)
     for (int i = 0; i < nsp; i++) (sp+i)->setSPT(Tg,amax,scale);
 }
 
-void EQSignal::fitSP(int i, double tol, int mit, int fm, double peak0)
+void EQSignal::fitSP(int i, double tol, int mit, int fm, double peak0, int kpb)
 {
-    acc = sp[i].fitSP(tol,mit,fm,peak0);
+    acc = sp[i].fitSP(tol,mit,fm,peak0,kpb);
     this->confirm();
 }
 

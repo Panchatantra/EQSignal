@@ -74,7 +74,7 @@ public:
     void calcPSD(double olr=0.5, bool win=true);
     void setSPT(double Tg, double amax, double scale);
 
-    void fitSP(int i, double tol, int mit, int fm, double peak0);
+    void fitSP(int i, double tol, int mit, int fm, double peak0, int kpb=1);
 
     double getDR();
     double getAR();
