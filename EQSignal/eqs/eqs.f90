@@ -1957,10 +1957,10 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     real(C_DOUBLE), intent(in) :: acc(n), P(nP), SPAT(nP)
     real(C_DOUBLE), intent(out) :: a(n)
 
-    real(C_DOUBLE), allocatable :: SPA(:), R(:), Rf(:), Pf(:)
+    real(C_DOUBLE), allocatable :: SPA(:), R(:), Rf(:), Pf(:), best(:)
     integer(C_INT), allocatable :: SPI(:)
 
-    real(C_DOUBLE) :: aerror, merror, peak0, peak
+    real(C_DOUBLE) :: aerror, merror, peak0, peak, minerr
     complex(C_DOUBLE_COMPLEX), allocatable :: af(:), afs(:)
     real(C_DOUBLE), allocatable :: a0(:), f(:)
     integer :: i, j, Nfft, NPf, IPf1, IPf2, iter, pk
@@ -1972,6 +1972,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     Nfft = nextpow2(n)*4
     iNfft = 1.d0/dble(Nfft)
 
+    allocate(best(n))
     allocate(a0(Nfft))
     allocate(af(Nfft))
     allocate(afs(Nfft))
@@ -2005,7 +2006,8 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     R = SPAT/abs(SPA)
     call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
     ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
-
+    minerr = merror
+    best = a
     iter = 1
     do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
 
@@ -2041,11 +2043,18 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
         ! write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
         iter = iter + 1
+        if (merror < minerr) then
+            minerr = merror
+            best = a
+        end if
     end do
+
+    a = best
 
     call fftw_destroy_plan(plan)
     call fftw_destroy_plan(iplan)
 
+    deallocate(best)
     deallocate(SPA)
     deallocate(R)
     deallocate(Pf)
@@ -2118,13 +2127,14 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     real(C_DOUBLE), intent(in) :: acc(n), P(nP), SPAT(nP)
     real(C_DOUBLE), intent(out) :: a(n)
 
-    real(C_DOUBLE), allocatable :: SPA(:), dR(:), ra(:,:,:)
+    real(C_DOUBLE), allocatable :: SPA(:), dR(:), ra(:,:,:), best(:)
     real(C_DOUBLE), allocatable :: M(:,:), W(:,:)
     integer(C_INT), allocatable :: SPI(:), SPIp(:)
 
-    real(C_DOUBLE) :: aerror, merror, peak0
+    real(C_DOUBLE) :: aerror, merror, peak0, minerr
     integer :: i,j,iter
 
+    allocate(best(n))
     allocate(SPA(nP))
     allocate(dR(nP))
     allocate(SPI(nP))
@@ -2140,20 +2150,21 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
     call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)
     SPIp = SPI
     call errora(abs(SPA),SPAT,nP,aerror,merror)
-    
+
     if (aerror <= tol .and. merror<=1.2d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
-    
+    minerr = merror
+    best = a
     do while ( (aerror>tol .or. merror>1.2d0*tol) .and. iter<=mit )
 
         dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
-        
+
         !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
         do i = 1, nP, 1
             call wfunc( n,dt,SPI(i),P(i),zeta,W(:,i) )
         end do
         !!$OMP END PARALLEL DO
-        
+
         !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
         do i = 1, nP, 1
             do j = 1, nP, 1
@@ -2179,12 +2190,17 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit) bind(c)
         SPIp = SPI
         call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)
         call errora(abs(SPA),SPAT,nP,aerror,merror)
-        
+        if (merror<minerr) then
+            minerr = merror
+            best = a
+        end if
         !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
         iter = iter + 1
 
     end do
+    a = best
 
+    deallocate(best)
     deallocate(SPA)
     deallocate(dR)
     deallocate(SPI)

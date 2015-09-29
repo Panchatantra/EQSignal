@@ -163,6 +163,8 @@ private slots:
 
     void on_actionToggleXScale_triggered();
 
+    void on_Recover_clicked();
+
 private:
     void setupConnections();
 	void initViewTH();

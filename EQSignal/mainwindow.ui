@@ -111,7 +111,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>23</height>
+     <height>28</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -205,15 +205,15 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-214</y>
-          <width>205</width>
-          <height>501</height>
+          <y>-376</y>
+          <width>209</width>
+          <height>637</height>
          </rect>
         </property>
         <attribute name="label">
@@ -441,13 +441,6 @@
            </property>
           </widget>
          </item>
-         <item row="18" column="0" colspan="2">
-          <widget class="QPushButton" name="Confirm_Pre">
-           <property name="text">
-            <string>Confirm</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0" colspan="2">
           <widget class="QCheckBox" name="IAON">
            <property name="text">
@@ -489,6 +482,20 @@
            </property>
           </widget>
          </item>
+         <item row="19" column="0" colspan="2">
+          <widget class="QPushButton" name="Confirm_Pre">
+           <property name="text">
+            <string>Confirm</string>
+           </property>
+          </widget>
+         </item>
+         <item row="18" column="0" colspan="2">
+          <widget class="QPushButton" name="Recover">
+           <property name="text">
+            <string>Recover</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="BLA">
@@ -496,8 +503,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
-          <height>287</height>
+          <width>237</width>
+          <height>324</height>
          </rect>
         </property>
         <attribute name="label">
@@ -665,8 +672,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
-          <height>287</height>
+          <width>233</width>
+          <height>271</height>
          </rect>
         </property>
         <attribute name="label">
@@ -808,8 +815,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>317</width>
-          <height>270</height>
+          <width>395</width>
+          <height>215</height>
          </rect>
         </property>
         <attribute name="label">
@@ -853,13 +860,6 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="CalcFFT">
-           <property name="text">
-            <string>Execute FFT</string>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_18">
            <property name="text">
@@ -897,6 +897,13 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QPushButton" name="CalcFFT">
+           <property name="text">
+            <string>Execute FFT</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="SPA">
@@ -904,8 +911,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
-          <height>287</height>
+          <width>209</width>
+          <height>304</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1133,8 +1140,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
-          <height>287</height>
+          <width>240</width>
+          <height>228</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1278,8 +1285,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
-          <height>287</height>
+          <width>209</width>
+          <height>250</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1435,7 +1442,7 @@
           <x>0</x>
           <y>0</y>
           <width>274</width>
-          <height>287</height>
+          <height>228</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1565,8 +1572,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>243</width>
-          <height>296</height>
+          <width>302</width>
+          <height>365</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1951,7 +1958,7 @@
      <normaloff>:/MainWindow/icons/End.png</normaloff>:/MainWindow/icons/End.png</iconset>
    </property>
    <property name="text">
-    <string>End to Zero</string>
+    <string>End With Zeros</string>
    </property>
   </action>
   <action name="actionChangSpecialPoint">

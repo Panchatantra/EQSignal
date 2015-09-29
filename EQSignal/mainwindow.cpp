@@ -647,6 +647,11 @@ void MainWindow::plotTH(bool changeTab)
     qplot->graph(1)->setPen(penRaw);
     qplot->graph(2)->setPen(penRaw);
 
+    QPen pen = QPen(Qt::black);
+    qplot->graph(3)->setPen(pen);
+    qplot->graph(4)->setPen(pen);
+    qplot->graph(5)->setPen(pen);
+
     QPen penTar = QPen(QColor(46, 139, 87));
     qplot->graph(6)->setPen(penTar);
     qplot->graph(7)->setPen(penTar);
@@ -2547,4 +2552,11 @@ void MainWindow::on_actionToggleXScale_triggered()
 {
     XS_LOG = !XS_LOG;
     emit xsChanged();
+}
+
+void MainWindow::on_Recover_clicked()
+{
+    eqs->recover();
+    eqs->a2vd();
+    plotTH();
 }

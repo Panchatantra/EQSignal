@@ -445,11 +445,13 @@ void EQSignal::endAlign(int ntp, bool raw, int IZC, bool AccOnly)
         a2vd();
     }
 
-    beginLinearDetrend(acc,n,IZC);
-    endLinearDetrend(acc,n,IZC);
-    a2vd();
-
-    if (AccOnly) return;
+    if (AccOnly)
+    {
+        beginLinearDetrend(acc,n,IZC);
+        endLinearDetrend(acc,n,IZC);
+        a2vd();
+        return;
+    }
 
     for (int i = 0; i < n; i++)
     {
@@ -460,7 +462,7 @@ void EQSignal::endAlign(int ntp, bool raw, int IZC, bool AccOnly)
 
     endLinearDetrend(td,n,IZC);
     endLinearDetrend(tv,n,IZC);
-//    endLinearDetrend(ta,n,IZC);
+    endLinearDetrend(ta,n,IZC);
 
     int *tp = new int[ntp];
     int pl = 2;
