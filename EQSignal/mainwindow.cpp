@@ -367,7 +367,7 @@ void MainWindow::readConfig()
 void MainWindow::writeConfig()
 {
     QString f = QDir::home().filePath(".eqsignal");
-    if (!QFile::exists(f)) return;
+    //if (!QFile::exists(f)) return;
 
     QFile file(f);
     file.open(QIODevice::WriteOnly);
