@@ -40,6 +40,10 @@ extern "C"
     extern void welch(double *a,int *n,int *m,double *olr,double *psd,int *win);
 
 	extern void bwfilt(double *acc, int n, double dt, int ftype, int order, double f1, double f2);
+
+	extern void spectrum_dur(double *acc, int *n, double *dt, double *zeta, double *P, int *np, int *DI, int *nd, double *SPA, int *SPI, int *SM);
+	extern void initartwave(double *a, int *n, double *dt, double *zeta, double *P, int *nP, double *SPT);
+	extern void adjustspectra_dur(double *acc, int *n, double *dt, double *zeta, double *P, int *nP, int *DI, int *nD, double *SPAT1, double *a, double *tol, int *mit, int *kpb);
 }
 
 int static inline nextpow2(int n)

@@ -18,13 +18,13 @@
     <name>MainWindow</name>
     <message>
         <location filename="mainwindow.ui" line="14"/>
-        <location filename="mainwindow.cpp" line="2194"/>
-        <location filename="mainwindow.cpp" line="2227"/>
-        <location filename="mainwindow.cpp" line="2234"/>
-        <location filename="mainwindow.cpp" line="2289"/>
-        <location filename="mainwindow.cpp" line="2296"/>
-        <location filename="mainwindow.cpp" line="2355"/>
-        <location filename="mainwindow.cpp" line="2362"/>
+        <location filename="mainwindow.cpp" line="2195"/>
+        <location filename="mainwindow.cpp" line="2228"/>
+        <location filename="mainwindow.cpp" line="2235"/>
+        <location filename="mainwindow.cpp" line="2290"/>
+        <location filename="mainwindow.cpp" line="2297"/>
+        <location filename="mainwindow.cpp" line="2356"/>
+        <location filename="mainwindow.cpp" line="2363"/>
         <source>EQSignal</source>
         <translation></translation>
     </message>
@@ -171,9 +171,9 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="780"/>
-        <location filename="mainwindow.cpp" line="695"/>
-        <location filename="mainwindow.cpp" line="703"/>
-        <location filename="mainwindow.cpp" line="711"/>
+        <location filename="mainwindow.cpp" line="696"/>
+        <location filename="mainwindow.cpp" line="704"/>
+        <location filename="mainwindow.cpp" line="712"/>
         <source>Arias Intensity</source>
         <translation>Arias 强度</translation>
     </message>
@@ -184,7 +184,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="76"/>
-        <location filename="mainwindow.ui" line="1590"/>
+        <location filename="mainwindow.ui" line="1633"/>
         <source>Response</source>
         <translation>响应</translation>
     </message>
@@ -276,7 +276,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="595"/>
-        <location filename="mainwindow.ui" line="1971"/>
+        <location filename="mainwindow.ui" line="2015"/>
         <source>End With Zeros</source>
         <translation>末时刻归零</translation>
     </message>
@@ -363,6 +363,16 @@
         <translation>傅里叶变换</translation>
     </message>
     <message>
+        <location filename="mainwindow.ui" line="2042"/>
+        <source>EnduranceTH</source>
+        <translation>耐震时程</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="2045"/>
+        <source>Generate Endurance Signal</source>
+        <translation>生成耐震时程</translation>
+    </message>
+    <message>
         <location filename="mainwindow.ui" line="866"/>
         <source>OLR</source>
         <translation>重叠比</translation>
@@ -379,17 +389,17 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="847"/>
-        <location filename="mainwindow.cpp" line="1459"/>
+        <location filename="mainwindow.cpp" line="1460"/>
         <source>Phase Angle</source>
         <translation>相位角</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1980"/>
+        <location filename="mainwindow.ui" line="2024"/>
         <source>Chang Special Point</source>
         <translation>改变特定点</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1989"/>
+        <location filename="mainwindow.ui" line="2033"/>
         <source>Toggle X-Scale</source>
         <translation>切换X轴刻度</translation>
     </message>
@@ -430,7 +440,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="1009"/>
-        <location filename="mainwindow.ui" line="1645"/>
+        <location filename="mainwindow.ui" line="1688"/>
         <source>SM</source>
         <translation>求解方法</translation>
     </message>
@@ -441,38 +451,38 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="1026"/>
-        <location filename="mainwindow.ui" line="1656"/>
+        <location filename="mainwindow.ui" line="1699"/>
         <source>freq</source>
         <translation>频域传递函数法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1031"/>
-        <location filename="mainwindow.ui" line="1661"/>
+        <location filename="mainwindow.ui" line="1704"/>
         <source>newmark</source>
         <translation>Newmark-β法</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1944"/>
+        <location filename="mainwindow.ui" line="1988"/>
         <source>FFT</source>
         <translation>傅里叶变换</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1953"/>
+        <location filename="mainwindow.ui" line="1997"/>
         <source>Fit SPA</source>
         <translation>反应谱拟合</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1962"/>
+        <location filename="mainwindow.ui" line="2006"/>
         <source>Open Last</source>
         <translation>上次查看的数据</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1666"/>
+        <location filename="mainwindow.ui" line="1709"/>
         <source>mixed</source>
         <translation>自动选择</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1935"/>
+        <location filename="mainwindow.ui" line="1979"/>
         <source>Calc SPA</source>
         <translation>计算加速度反应谱</translation>
     </message>
@@ -534,7 +544,7 @@
     <message>
         <location filename="mainwindow.ui" line="1089"/>
         <location filename="mainwindow.ui" line="1299"/>
-        <location filename="mainwindow.ui" line="1596"/>
+        <location filename="mainwindow.ui" line="1639"/>
         <source>DR</source>
         <translation>阻尼比</translation>
     </message>
@@ -630,7 +640,7 @@
         <translation>反应谱拟合</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1430"/>
+        <location filename="mainwindow.ui" line="1416"/>
         <source>Target Spectra on</source>
         <translation>显示目标谱</translation>
     </message>
@@ -695,232 +705,247 @@
         <translation>时频交替</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1416"/>
+        <location filename="mainwindow.ui" line="1443"/>
         <source>Fit</source>
         <translation>拟合</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1423"/>
+        <location filename="mainwindow.ui" line="1436"/>
         <source>Compare</source>
         <translation>比较</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1440"/>
+        <location filename="mainwindow.ui" line="1426"/>
         <source>Keep best fit</source>
         <translation>保留最优迭代结果</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1459"/>
+        <location filename="mainwindow.ui" line="1453"/>
+        <source>DSPA</source>
+        <translation>耐震加速度反应谱</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="1460"/>
+        <source>nD</source>
+        <translation>耐震分段</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="1486"/>
+        <source>DFit</source>
+        <translation>耐震时程拟合</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="1502"/>
         <source>Parameters</source>
         <translation>参数</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1478"/>
-        <location filename="mainwindow.ui" line="1518"/>
+        <location filename="mainwindow.ui" line="1521"/>
+        <location filename="mainwindow.ui" line="1561"/>
         <source>PGA</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1483"/>
-        <location filename="mainwindow.ui" line="1528"/>
+        <location filename="mainwindow.ui" line="1526"/>
+        <location filename="mainwindow.ui" line="1571"/>
         <source>PGV</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1488"/>
-        <location filename="mainwindow.ui" line="1538"/>
+        <location filename="mainwindow.ui" line="1531"/>
+        <location filename="mainwindow.ui" line="1581"/>
         <source>PGD</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1493"/>
-        <location filename="mainwindow.ui" line="1548"/>
+        <location filename="mainwindow.ui" line="1536"/>
+        <location filename="mainwindow.ui" line="1591"/>
         <source>RMSA</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1498"/>
-        <location filename="mainwindow.ui" line="1558"/>
+        <location filename="mainwindow.ui" line="1541"/>
+        <location filename="mainwindow.ui" line="1601"/>
         <source>RMSV</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1503"/>
-        <location filename="mainwindow.ui" line="1568"/>
+        <location filename="mainwindow.ui" line="1546"/>
+        <location filename="mainwindow.ui" line="1611"/>
         <source>RMSD</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1508"/>
+        <location filename="mainwindow.ui" line="1551"/>
         <source>Parameter</source>
         <translation>参数</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1513"/>
-        <location filename="mainwindow.cpp" line="2643"/>
+        <location filename="mainwindow.ui" line="1556"/>
+        <location filename="mainwindow.cpp" line="2644"/>
         <source>Value</source>
         <translation>数值</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1523"/>
-        <location filename="mainwindow.ui" line="1533"/>
-        <location filename="mainwindow.ui" line="1543"/>
-        <location filename="mainwindow.ui" line="1553"/>
-        <location filename="mainwindow.ui" line="1563"/>
-        <location filename="mainwindow.ui" line="1573"/>
+        <location filename="mainwindow.ui" line="1566"/>
+        <location filename="mainwindow.ui" line="1576"/>
+        <location filename="mainwindow.ui" line="1586"/>
+        <location filename="mainwindow.ui" line="1596"/>
+        <location filename="mainwindow.ui" line="1606"/>
+        <location filename="mainwindow.ui" line="1616"/>
         <source>1.0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1701"/>
+        <location filename="mainwindow.ui" line="1744"/>
         <source>MU</source>
         <translation>延性系数</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1724"/>
+        <location filename="mainwindow.ui" line="1767"/>
         <source>MODEL</source>
         <translation>非线性弹簧</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1738"/>
+        <location filename="mainwindow.ui" line="1781"/>
         <source>Elasto-Plastic</source>
         <translation>弹塑性</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1743"/>
+        <location filename="mainwindow.ui" line="1786"/>
         <source>Origin-Orientated Unloading</source>
         <translation>完全损伤</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1748"/>
+        <location filename="mainwindow.ui" line="1791"/>
         <source>Clough</source>
         <translation>克拉夫退化双线性</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1756"/>
+        <location filename="mainwindow.ui" line="1799"/>
         <source>EP</source>
         <translation>额外参数</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1766"/>
+        <location filename="mainwindow.ui" line="1809"/>
         <source>0.01,0.5</source>
         <translation>0.01,0.5</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1783"/>
+        <location filename="mainwindow.ui" line="1826"/>
         <source>Draw Input</source>
         <translation>显示输入</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1790"/>
+        <location filename="mainwindow.ui" line="1833"/>
         <source>Calculate Response</source>
         <translation>计算响应</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1800"/>
+        <location filename="mainwindow.ui" line="1843"/>
         <source>Inelastic Spectra</source>
         <translation>非线性反应谱</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1917"/>
+        <location filename="mainwindow.ui" line="1961"/>
         <source>Gen Wave</source>
         <translation>生成信号</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1926"/>
+        <location filename="mainwindow.ui" line="1970"/>
         <source>Basic Info</source>
         <translation>基本信息</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1622"/>
+        <location filename="mainwindow.ui" line="1665"/>
         <source>PD</source>
         <translation>周期</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1674"/>
+        <location filename="mainwindow.ui" line="1717"/>
         <source>NLM</source>
         <translation>非线性控制方法</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1688"/>
+        <location filename="mainwindow.ui" line="1731"/>
         <source>Const Ductility</source>
         <translation>等延性</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1693"/>
+        <location filename="mainwindow.ui" line="1736"/>
         <source>Const Surpass Ratio</source>
         <oldsource>Const Yield-Gravity Ratio</oldsource>
         <translation>等超强比</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1773"/>
+        <location filename="mainwindow.ui" line="1816"/>
         <source>Inelastic</source>
         <translation>非线性</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1813"/>
+        <location filename="mainwindow.ui" line="1856"/>
         <source>toolBar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1842"/>
+        <location filename="mainwindow.ui" line="1886"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1845"/>
+        <location filename="mainwindow.ui" line="1889"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1854"/>
-        <location filename="mainwindow.cpp" line="1812"/>
+        <location filename="mainwindow.ui" line="1898"/>
+        <location filename="mainwindow.cpp" line="1813"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1857"/>
+        <location filename="mainwindow.ui" line="1901"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1866"/>
+        <location filename="mainwindow.ui" line="1910"/>
         <source>Save Figure</source>
         <translation>导出图片</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1869"/>
+        <location filename="mainwindow.ui" line="1913"/>
         <source>Ctrl+Shift+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1878"/>
+        <location filename="mainwindow.ui" line="1922"/>
         <source>Save Data</source>
         <translation>保存数据</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1881"/>
+        <location filename="mainwindow.ui" line="1925"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1890"/>
+        <location filename="mainwindow.ui" line="1934"/>
         <source>Save Acc</source>
         <translation>保存加速度数据</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1893"/>
+        <location filename="mainwindow.ui" line="1937"/>
         <source>Alt+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1902"/>
-        <location filename="mainwindow.ui" line="1905"/>
+        <location filename="mainwindow.ui" line="1946"/>
+        <location filename="mainwindow.ui" line="1949"/>
         <source>View Data</source>
         <translation>查看数据</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="1908"/>
+        <location filename="mainwindow.ui" line="1952"/>
         <source>Ctrl+D</source>
         <translation></translation>
     </message>
@@ -930,7 +955,7 @@
         <location filename="mainwindow.cpp" line="489"/>
         <location filename="mainwindow.cpp" line="556"/>
         <location filename="mainwindow.cpp" line="632"/>
-        <location filename="mainwindow.cpp" line="776"/>
+        <location filename="mainwindow.cpp" line="777"/>
         <source>Time</source>
         <translation>时间</translation>
     </message>
@@ -939,7 +964,7 @@
         <location filename="mainwindow.cpp" line="423"/>
         <location filename="mainwindow.cpp" line="486"/>
         <location filename="mainwindow.cpp" line="629"/>
-        <location filename="mainwindow.cpp" line="773"/>
+        <location filename="mainwindow.cpp" line="774"/>
         <source>Acceleration</source>
         <translation>加速度</translation>
     </message>
@@ -948,7 +973,7 @@
         <location filename="mainwindow.cpp" line="424"/>
         <location filename="mainwindow.cpp" line="487"/>
         <location filename="mainwindow.cpp" line="630"/>
-        <location filename="mainwindow.cpp" line="774"/>
+        <location filename="mainwindow.cpp" line="775"/>
         <source>Velocity</source>
         <translation>速度</translation>
     </message>
@@ -958,7 +983,7 @@
         <location filename="mainwindow.cpp" line="488"/>
         <location filename="mainwindow.cpp" line="507"/>
         <location filename="mainwindow.cpp" line="631"/>
-        <location filename="mainwindow.cpp" line="775"/>
+        <location filename="mainwindow.cpp" line="776"/>
         <source>Displacement</source>
         <translation>位移</translation>
     </message>
@@ -972,42 +997,42 @@
         <location filename="mainwindow.cpp" line="242"/>
         <location filename="mainwindow.cpp" line="308"/>
         <location filename="mainwindow.cpp" line="536"/>
-        <location filename="mainwindow.cpp" line="1336"/>
+        <location filename="mainwindow.cpp" line="1337"/>
         <source>Period</source>
         <translation>周期</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="252"/>
         <location filename="mainwindow.cpp" line="308"/>
-        <location filename="mainwindow.cpp" line="1346"/>
+        <location filename="mainwindow.cpp" line="1347"/>
         <source>SPA</source>
         <translation>加速度谱</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="253"/>
         <location filename="mainwindow.cpp" line="308"/>
-        <location filename="mainwindow.cpp" line="1347"/>
+        <location filename="mainwindow.cpp" line="1348"/>
         <source>SPV</source>
         <translation>速度谱</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="254"/>
         <location filename="mainwindow.cpp" line="308"/>
-        <location filename="mainwindow.cpp" line="1348"/>
+        <location filename="mainwindow.cpp" line="1349"/>
         <source>SPD</source>
         <translation>位移谱</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="255"/>
         <location filename="mainwindow.cpp" line="308"/>
-        <location filename="mainwindow.cpp" line="1349"/>
+        <location filename="mainwindow.cpp" line="1350"/>
         <source>SPE</source>
         <translation>能量谱</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="268"/>
-        <location filename="mainwindow.cpp" line="1430"/>
-        <location filename="mainwindow.cpp" line="1523"/>
+        <location filename="mainwindow.cpp" line="1431"/>
+        <location filename="mainwindow.cpp" line="1524"/>
         <source>Frequency (Hz)</source>
         <translation>频率 (Hz)</translation>
     </message>
@@ -1033,71 +1058,88 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="571"/>
-        <location filename="mainwindow.cpp" line="957"/>
-        <location filename="mainwindow.cpp" line="1914"/>
-        <location filename="mainwindow.cpp" line="1948"/>
+        <location filename="mainwindow.cpp" line="958"/>
+        <location filename="mainwindow.cpp" line="1915"/>
+        <location filename="mainwindow.cpp" line="1949"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1022"/>
-        <location filename="mainwindow.cpp" line="1064"/>
-        <location filename="mainwindow.cpp" line="1072"/>
-        <location filename="mainwindow.cpp" line="1211"/>
-        <location filename="mainwindow.cpp" line="1227"/>
-        <location filename="mainwindow.cpp" line="1384"/>
-        <location filename="mainwindow.cpp" line="2205"/>
+        <location filename="mainwindow.cpp" line="1023"/>
+        <location filename="mainwindow.cpp" line="1065"/>
+        <location filename="mainwindow.cpp" line="1073"/>
+        <location filename="mainwindow.cpp" line="1212"/>
+        <location filename="mainwindow.cpp" line="1228"/>
+        <location filename="mainwindow.cpp" line="1385"/>
+        <location filename="mainwindow.cpp" line="2206"/>
         <source>Damping Ratio: %1%</source>
         <translation>阻尼比: %1%</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1099"/>
-        <location filename="mainwindow.cpp" line="1163"/>
+        <location filename="mainwindow.cpp" line="1100"/>
+        <location filename="mainwindow.cpp" line="1164"/>
         <source>Max Error Point</source>
         <translation>最大误差点</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2197"/>
+        <location filename="mainwindow.cpp" line="2198"/>
         <source>Fitting, please waiting ...</source>
         <translation>拟合中，请等待……</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2223"/>
+        <location filename="mainwindow.cpp" line="2224"/>
         <source>Spectrum Fitting Converged not more than %1 iterations!</source>
         <translation>反应谱拟合计算已收敛（不超过%1次迭代）！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2224"/>
-        <location filename="mainwindow.cpp" line="2231"/>
-        <location filename="mainwindow.cpp" line="2286"/>
-        <location filename="mainwindow.cpp" line="2293"/>
-        <location filename="mainwindow.cpp" line="2352"/>
-        <location filename="mainwindow.cpp" line="2359"/>
+        <location filename="mainwindow.cpp" line="2225"/>
+        <location filename="mainwindow.cpp" line="2232"/>
+        <location filename="mainwindow.cpp" line="2287"/>
+        <location filename="mainwindow.cpp" line="2294"/>
+        <location filename="mainwindow.cpp" line="2353"/>
+        <location filename="mainwindow.cpp" line="2360"/>
         <source>
 Total Consumed Time: %1 s</source>
         <translation>
 耗时：%1 s</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2285"/>
-        <location filename="mainwindow.cpp" line="2351"/>
+        <location filename="mainwindow.cpp" line="2286"/>
+        <location filename="mainwindow.cpp" line="2352"/>
         <source>Spectrum Fitting Converged After %1 iterations!</source>
         <translation>反应谱拟合计算已收敛（经过%1次迭代）！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2640"/>
+        <location filename="mainwindow.cpp" line="2641"/>
         <source>Index</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2230"/>
-        <location filename="mainwindow.cpp" line="2292"/>
-        <location filename="mainwindow.cpp" line="2358"/>
+        <location filename="mainwindow.cpp" line="2812"/>
+        <source>Number of Points</source>
+        <translation>点数</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="2731"/>
+        <source>T = %1 s</source>
+        <oldsource>Time = %1 s</oldsource>
+        <translation>T = %1 s</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="2737"/>
+        <source>T = %1 s (Target)</source>
+        <oldsource>Time = %1 s (Target)</oldsource>
+        <translation>T = %1 s （目标谱）</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="2231"/>
+        <location filename="mainwindow.cpp" line="2293"/>
+        <location filename="mainwindow.cpp" line="2359"/>
         <source>Spectrum Fitting not Converged After %1 iterations!</source>
         <translation>反应谱拟合计算未收敛（经过%1次迭代）！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2483"/>
+        <location filename="mainwindow.cpp" line="2484"/>
         <source>Name: %1
 Time Interval: %2
 No. of Points: %3</source>
@@ -1106,104 +1148,105 @@ No. of Points: %3</source>
 信号长度：%3</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="877"/>
+        <location filename="mainwindow.cpp" line="878"/>
         <source>Viscous Damping Energy</source>
         <translation>粘滞阻尼耗能</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="878"/>
+        <location filename="mainwindow.cpp" line="879"/>
         <source>Hysteretic Energy</source>
         <translation>塑性滞回耗能</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="879"/>
+        <location filename="mainwindow.cpp" line="880"/>
         <source>Elastic Energy</source>
         <translation>弹性应变能</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="880"/>
+        <location filename="mainwindow.cpp" line="881"/>
         <source>Kinetic Energy</source>
         <translation>动能</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="269"/>
-        <location filename="mainwindow.cpp" line="1431"/>
+        <location filename="mainwindow.cpp" line="1432"/>
         <source>Fourier Amplitude</source>
         <translation>傅里叶幅值</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1064"/>
-        <location filename="mainwindow.cpp" line="1099"/>
-        <location filename="mainwindow.cpp" line="2056"/>
-        <location filename="mainwindow.cpp" line="2182"/>
-        <location filename="mainwindow.cpp" line="2369"/>
-        <location filename="mainwindow.cpp" line="2420"/>
+        <location filename="mainwindow.cpp" line="1065"/>
+        <location filename="mainwindow.cpp" line="1100"/>
+        <location filename="mainwindow.cpp" line="2057"/>
+        <location filename="mainwindow.cpp" line="2183"/>
+        <location filename="mainwindow.cpp" line="2370"/>
+        <location filename="mainwindow.cpp" line="2421"/>
         <source>Before Fitting</source>
         <translation>拟合前</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1467"/>
-        <location filename="mainwindow.cpp" line="1501"/>
+        <location filename="mainwindow.cpp" line="1468"/>
+        <location filename="mainwindow.cpp" line="1502"/>
         <source>Count</source>
         <translation>计数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="857"/>
-        <location filename="mainwindow.cpp" line="1493"/>
+        <location filename="mainwindow.cpp" line="1494"/>
         <source>Phase Difference</source>
         <translation>相位差</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2059"/>
-        <location filename="mainwindow.cpp" line="2185"/>
-        <location filename="mainwindow.cpp" line="2372"/>
-        <location filename="mainwindow.cpp" line="2377"/>
-        <location filename="mainwindow.cpp" line="2423"/>
+        <location filename="mainwindow.cpp" line="2060"/>
+        <location filename="mainwindow.cpp" line="2186"/>
+        <location filename="mainwindow.cpp" line="2373"/>
+        <location filename="mainwindow.cpp" line="2378"/>
+        <location filename="mainwindow.cpp" line="2424"/>
         <source>CV: %1</source>
         <translation>误差变异系数: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2193"/>
+        <location filename="mainwindow.cpp" line="2194"/>
         <source>Error is less than Tolerance. Need no Fitting!</source>
         <translation>误差小于容许值, 无需拟合!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1163"/>
-        <location filename="mainwindow.cpp" line="2205"/>
-        <location filename="mainwindow.cpp" line="2374"/>
+        <location filename="mainwindow.cpp" line="1164"/>
+        <location filename="mainwindow.cpp" line="2206"/>
+        <location filename="mainwindow.cpp" line="2375"/>
         <source>After Fitting</source>
         <translation>拟合后</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1072"/>
-        <location filename="mainwindow.cpp" line="1211"/>
+        <location filename="mainwindow.cpp" line="1073"/>
+        <location filename="mainwindow.cpp" line="1212"/>
         <source>Target SPA</source>
         <translation>目标谱</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1524"/>
+        <location filename="mainwindow.cpp" line="1525"/>
         <source>PSD</source>
         <translation>功率谱密度</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="1620"/>
-        <location filename="mainwindow.cpp" line="1829"/>
-        <location filename="mainwindow.cpp" line="2592"/>
+        <location filename="mainwindow.cpp" line="1621"/>
+        <location filename="mainwindow.cpp" line="1830"/>
+        <location filename="mainwindow.cpp" line="2593"/>
+        <location filename="mainwindow.cpp" line="2811"/>
         <source>Time Interval</source>
         <translation>时间间隔</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="2057"/>
-        <location filename="mainwindow.cpp" line="2183"/>
-        <location filename="mainwindow.cpp" line="2225"/>
-        <location filename="mainwindow.cpp" line="2232"/>
-        <location filename="mainwindow.cpp" line="2287"/>
-        <location filename="mainwindow.cpp" line="2294"/>
-        <location filename="mainwindow.cpp" line="2353"/>
-        <location filename="mainwindow.cpp" line="2360"/>
-        <location filename="mainwindow.cpp" line="2370"/>
-        <location filename="mainwindow.cpp" line="2375"/>
-        <location filename="mainwindow.cpp" line="2421"/>
+        <location filename="mainwindow.cpp" line="2058"/>
+        <location filename="mainwindow.cpp" line="2184"/>
+        <location filename="mainwindow.cpp" line="2226"/>
+        <location filename="mainwindow.cpp" line="2233"/>
+        <location filename="mainwindow.cpp" line="2288"/>
+        <location filename="mainwindow.cpp" line="2295"/>
+        <location filename="mainwindow.cpp" line="2354"/>
+        <location filename="mainwindow.cpp" line="2361"/>
+        <location filename="mainwindow.cpp" line="2371"/>
+        <location filename="mainwindow.cpp" line="2376"/>
+        <location filename="mainwindow.cpp" line="2422"/>
         <source>Mean Error: %2%, Max Error: %1%</source>
         <oldsource>Max Error: %1%, Mean Error: %2%</oldsource>
         <translation>平均误差: %2%，最大误差: %1%</translation>

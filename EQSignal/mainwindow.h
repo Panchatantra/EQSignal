@@ -88,6 +88,7 @@ public slots:
 	void genWave();
     void showSPAErrorMsg();
 
+    void genArtificialEQWave(double *a, int N, double DT);
 private slots:
 
     void on_Norm_clicked();
@@ -165,6 +166,12 @@ private slots:
     void on_actionToggleXScale_triggered();
 
     void on_Recover_clicked();
+
+    void on_DSPA_clicked();
+
+    void on_DFit_clicked();
+
+    void on_actionEnduranceTH_triggered();
 
 private:
     void setupConnections();

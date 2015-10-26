@@ -115,6 +115,10 @@ void MainWindow::readtxt(const char *filename, double DT)
 	ui->Ind2->setMaximum(N - 1);
 	ui->TS->setValue(eqs->getDt()*2.5);
 
+    ui->nD->setEnabled(false);
+    ui->DSPA->setEnabled(false);
+    ui->DFit->setEnabled(false);
+
     plotTH();
 }
 
@@ -128,6 +132,10 @@ void MainWindow::readtxt(QString filename, double DT)
 	ui->Ind2->setValue(N - 1);
 	ui->Ind2->setMaximum(N - 1);
 	ui->TS->setValue(eqs->getDt()*2.5);
+
+    ui->nD->setEnabled(false);
+    ui->DSPA->setEnabled(false);
+    ui->DFit->setEnabled(false);
 
     plotTH();
 }
@@ -143,6 +151,10 @@ void MainWindow::readnga(const char *filename)
     ui->Ind2->setMaximum(N - 1);
 	ui->TS->setValue(eqs->getDt()*2.5);
 
+    ui->nD->setEnabled(false);
+    ui->DSPA->setEnabled(false);
+    ui->DFit->setEnabled(false);
+
     this->plotTH();
 }
 
@@ -156,6 +168,10 @@ void MainWindow::readnga(QString filename)
     ui->Ind2->setValue(N - 1);
     ui->Ind2->setMaximum(N - 1);
 	ui->TS->setValue(eqs->getDt()*2.5);
+
+    ui->nD->setEnabled(false);
+    ui->DSPA->setEnabled(false);
+    ui->DFit->setEnabled(false);
 
     this->plotTH();
 }
@@ -513,7 +529,7 @@ void MainWindow::initViewSPA()
 	QCustomPlot *qplot = ui->ViewSPA;
 
     qplot->legend->setVisible(false);
-    qplot->legend->setBrush(QBrush(QColor(255,255,255,150)));
+    qplot->legend->setBrush(QBrush(QColor(255,255,255,200)));
 
     qplot->setInteractions(QCP::iRangeZoom|QCP::iRangeDrag);
 
@@ -1003,7 +1019,7 @@ void MainWindow::plotSPA()
     if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
-        qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignHCenter);
+        qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignLeft);
     }
     else
     {
@@ -2669,5 +2685,174 @@ void MainWindow::on_Recover_clicked()
 {
     eqs->recover();
     eqs->a2vd();
+    plotTH();
+}
+
+void MainWindow::on_DSPA_clicked()
+{
+    QCustomPlot *qplot = ui->ViewSPA;
+    qplot->clearGraphs();
+
+    qplot->legend->setVisible(true);
+
+    if (XS_LOG)
+    {
+        qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
+		qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignLeft);
+    }
+    else
+    {
+        qplot->xAxis->setScaleType(QCPAxis::stLinear);
+        qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
+    }
+
+    double *acc = eqs->getAcc();
+    int n = eqs->getN();
+    double dt = eqs->getDt();
+
+    int i = ui->CDR->currentIndex();
+    Spectra *spi = eqs->getSP(i);
+	double zeta = spi->getZeta();
+	double *P = spi->getP();
+	double *SPT0 = spi->getSPT();
+
+	int np = spi->getNP();
+
+    int nd = ui->nD->value();
+    int dnd = (int)(n/nd);
+    int *DI = new int[nd];
+    DI[nd-1] = n;
+    for (int i = nd-2; i > -1; i--) DI[i] = DI[i+1] - dnd;
+
+    double *SPA = zeros(np*nd);
+    int *SPI = new int[np*nd];
+    double *SPT = zeros(np*nd);
+
+    for (int i = 0; i < nd; i++) {
+        for (int j = 0; j < np; j++) {
+            SPT[i*np+j] = SPT0[j]*DI[i]/(double)n;
+        }
+    }
+
+    int SM = ui->SM->currentIndex()+1;
+
+    spectrum_dur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPA,SPI,&SM);
+
+    for (int i = 0; i < nd; i++)
+    {
+        QCPGraph *gr = qplot->addGraph();
+        QPen pen = autoPen(i);
+        gr->setPen(pen);
+        gr->setData(A2QV(P,np),A2QV(SPA+i*np,np));
+        gr->setName( tr("T = %1 s").arg((double)(dt*DI[i])) );
+
+        QCPGraph *grt = qplot->addGraph();
+        pen.setStyle(Qt::DashLine);
+        grt->setPen(pen);
+        grt->setData(A2QV(P,np),A2QV(SPT+i*np,np));
+        grt->setName( tr("T = %1 s (Target)").arg((double)(dt*DI[i])) );
+    }
+
+    qplot->rescaleAxes();
+    qplot->xAxis->setRangeLower(0.01);
+    qplot->yAxis->setRangeLower(0.0);
+    qplot->replot();
+
+    ui->tabWidget->setCurrentIndex(2);
+}
+
+void MainWindow::on_DFit_clicked()
+{
+    double *acc = eqs->getAcc();
+    int n = eqs->getN();
+	
+    double dt = eqs->getDt();
+
+    int i = ui->CDR->currentIndex();
+    Spectra *spi = eqs->getSP(i);
+    double zeta = spi->getZeta();
+    double *P = spi->getP();
+    double *SPT0 = spi->getSPT();
+
+    int np = spi->getNP();
+
+    int nd = ui->nD->value();
+    int dnd = (int)(n/nd);
+    int *DI = new int[nd];
+    DI[nd-1] = n;
+    for (int i = nd-2; i > -1; i--) DI[i] = DI[i+1] - dnd;
+
+    double tol = ui->Tol->value();
+    int mit = ui->MIT->value();
+    int kpb = ui->KeepBestFit->isChecked();
+
+	double *a = new double[n];
+    adjustspectra_dur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPT0,a,&tol,&mit,&kpb);
+	eqs->setAcc(a);
+	eqs->a2vd();
+	eqs0->setAcc(a);
+	eqs0->a2vd();
+
+	plotTH(false);
+
+	on_DSPA_clicked();
+
+	QMessageBox::information(0, tr("EQSignal"), tr("Fitting Finished!"));
+
+}
+
+void MainWindow::genArtificialEQWave(double *a, int N, double DT)
+{
+
+	setupSP();
+	double Tg = ui->Tg->value();
+	double PAF = ui->PAF->value();
+	double SF = ui->SF->value();
+	if (SF<0.0) SF = fabs(eqs->getPeakAcc());
+
+	eqs->setSPT(Tg, PAF, SF);
+
+	int i = ui->CDR->currentIndex();
+	Spectra *spi = eqs->getSP(i);
+	double zeta = spi->getZeta();
+	double *P = spi->getP();
+	double *SPT = spi->getSPT();
+
+	int nP = spi->getNP();
+
+	initartwave(a, &N, &DT, &zeta, P, &nP, SPT);
+}
+
+void MainWindow::on_actionEnduranceTH_triggered()
+{
+    eqsName = QString("EnduranceTH");
+    double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+    int N = QInputDialog::getInt(this, eqsName + "'s " + tr("Number of Points"), "n = ", 2000, 200, 1000000, 1000);
+
+    ui->TS->setValue(DT*2.5);
+
+    double *a = new double[N];
+
+    genArtificialEQWave(a,N,DT);
+
+    for (int i = 0; i < N; i++) a[i] *= (double)i / (double)N;
+
+    eqs = new EQSignal(a, N, DT);
+    eqs->a2vd();
+
+    eqs0 = new EQSignal(a, N, DT);
+    eqs0->a2vd();
+
+    setupSP();
+	double Tg = ui->Tg->value();
+	double PAF = ui->PAF->value();
+	double SF = ui->SF->value();
+	if (SF<0.0) SF = fabs(eqs->getPeakAcc());
+    eqs->setSPT(Tg, PAF, SF);
+
+    ui->nD->setEnabled(true);
+    ui->DSPA->setEnabled(true);
+    ui->DFit->setEnabled(true);
+
     plotTH();
 }

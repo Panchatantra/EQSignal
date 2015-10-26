@@ -19,5 +19,6 @@
         <file>icons/End.png</file>
         <file>icons/XScale.png</file>
         <file>icons/Point.png</file>
+        <file>icons/Duration.png</file>
     </qresource>
 </RCC>

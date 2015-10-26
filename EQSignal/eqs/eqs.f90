@@ -17,15 +17,16 @@ module basic
 contains
 
 function mean(x,n) bind(c)
+! 平均值
     integer, intent(in) :: n
     real(8), intent(in) :: x(n)
     real(8) :: mean
 
     mean = sum(x)/dble(n)
-
 end function mean
 
 function rms(x,n) bind(c)
+! 均方根值
     integer, intent(in) :: n
     real(8), intent(in) :: x(n)
     real(8) :: rms
@@ -34,6 +35,7 @@ function rms(x,n) bind(c)
 end function rms
 
 function peak(x,n) bind(c)
+! 峰值
     integer, intent(in) :: n
     real(8), intent(in) :: x(n)
     real(8) :: peak
@@ -42,6 +44,7 @@ function peak(x,n) bind(c)
 end function peak
 
 function peakloc(x,n) bind(c)
+! 峰值所在位置
     integer, intent(in) :: n
     real(8), intent(in) :: x(n)
     integer :: peakloc
@@ -50,7 +53,7 @@ function peakloc(x,n) bind(c)
 end function peakloc
 
 subroutine norm(a,n) bind(c)
-
+! 按峰值归一
     integer, intent(in) :: n
     real(8), intent(inout) :: a(n)
 
@@ -73,6 +76,7 @@ subroutine norm(a,n) bind(c)
 end subroutine norm
 
 function nextpow2(n) bind(c)
+! 不小于n的2的整数次幂
     integer, intent(in) :: n
     integer :: nextpow2
 
@@ -86,7 +90,7 @@ function nextpow2(n) bind(c)
 end function nextpow2
 
 function nextpow(n,base) bind(c)
-
+! 不小于n的base的整数次幂
     integer, intent(in) :: n, base
     integer :: nextpow
 
@@ -100,7 +104,7 @@ function nextpow(n,base) bind(c)
 end function nextpow
 
 function dpower(x,n,m) bind(c)
-
+! 对x^n求m阶导数后的值
     real(8), intent(in) :: x
     integer, intent(in) :: n, m
     real(8) :: dpower
@@ -121,11 +125,10 @@ function dpower(x,n,m) bind(c)
         l = l - 1
         k = k - 1
     end do
-
 end function dpower
 
 function trapz(y,n,dx,y0) bind(c)
-
+! 等间隔dx离散数据梯形法数值积分，初值为y0
     implicit none
     real*8, intent(in) :: dx, y0
     integer, intent(in) :: n
@@ -154,6 +157,7 @@ end function trapz
 
 
 subroutine cumtrapz(y,z,n,dx,z0) bind(c)
+! 等间隔dx离散数据梯形法累积数值积分，结果保存在数组z中，初值为z0
 
     real*8, intent(in) :: dx, z0
     integer, intent(in) :: n
@@ -175,6 +179,7 @@ end subroutine cumtrapz
 
 subroutine ariasIntensity(a,Ia,n) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: ariasIntensity
+! 计算Arias强度，结果记录在数组Ia中
     integer, intent(in) :: n
     real*8, intent(in) :: a(n)
     real*8, intent(out) :: Ia(n)
@@ -187,6 +192,7 @@ end subroutine ariasIntensity
 
 subroutine fftfreqs(Nfft,fs,freqs) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: fftfreqs
+! 离散傅里叶变换的频率轴刻度值，fs为采样频率，结果记录在数组freqs中
     integer, intent(in) :: Nfft
     real(8), intent(in) :: fs
     real(8), intent(out) :: freqs(Nfft)
@@ -214,6 +220,7 @@ end subroutine fftfreqs
 
 subroutine acc2vd(a,v,d,n,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: acc2vd
+! 加速度积分为速度、位移
     real(8), intent(in) :: dt,v0,d0
     integer(4), intent(in) :: n
     real(8), intent(in) :: a(n)
@@ -239,6 +246,7 @@ end subroutine acc2vd
 
 subroutine ratacc2vd(a,v,d,n,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: ratacc2vd
+! 加速度积分为速度、位移，采用预估的初速度和初位移
     real(8), intent(in) :: dt,v0,d0
     integer(4), intent(in) :: n
     real(8), intent(in) :: a(n)
@@ -260,7 +268,7 @@ subroutine ratacc2vd(a,v,d,n,dt,v0,d0) bind(c)
 end subroutine ratacc2vd
 
 subroutine leastsqs(a,b,m,n) bind(c)
-
+! 最小二乘法解方程组 A*x = b, b为一维数组
     integer, intent(in) :: m, n
     real*8, intent(in) :: a(m,n)
     real*8, intent(inout) :: b(m)
@@ -271,7 +279,7 @@ subroutine leastsqs(a,b,m,n) bind(c)
     integer :: tiwork(1)
     real*8, allocatable :: s(:)
     real*8, allocatable :: work(:)
-    integer,allocatable :: iwork(:)
+    integer, allocatable :: iwork(:)
 
     ! m = size(a, dim=1)
     ! n = size(a, dim=2)
@@ -303,8 +311,7 @@ subroutine leastsqs(a,b,m,n) bind(c)
 end subroutine leastsqs
 
 subroutine leastsqm(a,b,m,n,nrhs) bind(c)
-
-    implicit none
+! 最小二乘法解方程组 A*x = b, b为二维数组
     real*8, intent(in) :: a(m,n)
     real*8, intent(inout) :: b(m,nrhs)
     integer, intent(in) :: m, n, nrhs
@@ -347,6 +354,7 @@ subroutine leastsqm(a,b,m,n,nrhs) bind(c)
 end subroutine leastsqm
 
 subroutine error(y,y0,n,aerror,merror) bind(c)
+! 计算数组y和y0的相对误差（不包括首尾元素），aerror 为平均误差，merror 为最大误差
     integer, intent(in) :: n
     real(8), intent(in) :: y(n), y0(n)
     real(8), intent(out) :: aerror, merror
@@ -365,6 +373,7 @@ subroutine error(y,y0,n,aerror,merror) bind(c)
 end subroutine error
 
 subroutine errora(y,y0,n,aerror,merror) bind(c)
+! 计算数组y和y0的相对误差（包括所有元素），aerror 为平均误差，merror 为最大误差
     integer, intent(in) :: n
     real(8), intent(in) :: y(n), y0(n)
     real(8), intent(out) :: aerror, merror
@@ -382,7 +391,32 @@ subroutine errora(y,y0,n,aerror,merror) bind(c)
 
 end subroutine errora
 
+subroutine errora_dur(y,y0,n,m,aerror,merror) bind(c)
+! 计算矩阵y和y0的相对误差（包括所有元素），aerror 为平均误差，merror 为最大误差
+    integer, intent(in) :: n, m
+    real(8), intent(in) :: y(n,m), y0(n,m)
+    real(8), intent(out) :: aerror, merror
+
+    real(8) :: eij
+
+    integer :: i,j
+
+    aerror = 0.D0
+    merror = 0.D0
+    do i = 1, n, 1
+        do j = 1, m, 1
+            eij = (y(i,j) - y0(i,j))/y0(i,j)
+            aerror = aerror + eij*eij
+            if ( merror < abs(eij) ) merror = abs(eij)
+        end do
+    end do
+
+    aerror = aerror/dble(n*m)
+
+end subroutine errora_dur
+
 subroutine incrlininterp(x,y,n,xi,yi,ni) bind(c)
+! 线性插值（x, xi为递增数组）
     integer, intent(in) :: n, ni
     real(8), intent(in) :: x(n), y(n), xi(ni)
     real(8), intent(out) :: yi(ni)
@@ -409,6 +443,7 @@ subroutine incrlininterp(x,y,n,xi,yi,ni) bind(c)
 end subroutine incrlininterp
 
 subroutine incrfindfirst(a,n,x,i) bind(c)
+! 找到数组a从头开始第一个超过x的值的位置（a的包络线为递增趋势）
     integer, intent(in) :: n
     real(8), intent(in) :: a(n), x
     integer, intent(out) :: i
@@ -423,6 +458,7 @@ subroutine incrfindfirst(a,n,x,i) bind(c)
 end subroutine incrfindfirst
 
 subroutine incrfindlast(a,n,x,i) bind(c)
+! 找到数组a从尾开始第一个超过x的值的位置（a的包络线为递增趋势）
     integer, intent(in) :: n
     real(8), intent(in) :: a(n), x
     integer, intent(out) :: i
@@ -437,6 +473,7 @@ subroutine incrfindlast(a,n,x,i) bind(c)
 end subroutine incrfindlast
 
 subroutine decrlininterp(x,y,n,xi,yi,ni) bind(c)
+! 线性插值（x, xi为递减数组）
     integer, intent(in) :: n, ni
     real(8), intent(in) :: x(n), y(n), xi(ni)
     real(8), intent(out) :: yi(ni)
@@ -463,12 +500,13 @@ subroutine decrlininterp(x,y,n,xi,yi,ni) bind(c)
 end subroutine decrlininterp
 
 subroutine decrfindfirst(a,n,x,i) bind(c)
+! 找到数组a从头开始第一个超过x的值的位置（a的包络线为递减趋势）
     integer, intent(in) :: n
     real(8), intent(in) :: a(n), x
     integer, intent(out) :: i
 
     i = 1
-    do while ( a(i)>x .and. i<=n )
+    do while ( a(i)>x .and. i<=n-1 )
         i = i + 1
     end do
 
@@ -477,6 +515,7 @@ subroutine decrfindfirst(a,n,x,i) bind(c)
 end subroutine decrfindfirst
 
 subroutine decrfindlast(a,n,x,i) bind(c)
+! 找到数组a从尾开始第一个超过x的值的位置（a的包络线为递减趋势）
     integer, intent(in) :: n
     real(8), intent(in) :: a(n), x
     integer, intent(out) :: i
@@ -492,6 +531,7 @@ end subroutine decrfindlast
 
 subroutine targetdc(a,td,n,tp,ntp,ph,pl,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: targetdc
+! 基线调整，以规定位移为目标
     integer(4), intent(in) :: n
     real(8), intent(in) :: dt,v0,d0
     real(8), intent(in) :: td(n)
@@ -546,6 +586,7 @@ end subroutine targetdc
 
 subroutine targetdvc(a,td,tv,n,tp,ntp,ph,pl,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: targetdvc
+! 基线调整，以规定速度、位移为目标
     integer(4), intent(in) :: n
     real(8), intent(in) :: dt,v0,d0
     real(8), intent(in) :: td(n),tv(n)
@@ -602,6 +643,7 @@ end subroutine targetdvc
 
 subroutine targetdvac(a,td,tv,ta,n,tp,ntp,ph,pl,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: targetdvac
+! 基线调整，以规定加速度、速度、位移为目标
     integer(4), intent(in) :: n
     real(8), intent(in) :: dt,v0,d0
     real(8), intent(in) :: td(n),tv(n),ta(n)
@@ -660,6 +702,7 @@ end subroutine targetdvac
 
 subroutine fft(in,out,n) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: fft
+! 快速离散傅里叶变换
     integer, intent(in) :: n
     real*8, intent(inout) :: in(n)
     complex*16, intent(inout) :: out(n)
@@ -675,6 +718,7 @@ end subroutine fft
 
 subroutine ifft(in,out,n) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: ifft
+! 快速离散傅里叶拟变换
     integer, intent(in) :: n
     complex*16, intent(inout) :: in(n)
     real*8, intent(inout) :: out(n)
@@ -690,7 +734,7 @@ subroutine ifft(in,out,n) bind(c)
 end subroutine ifft
 
 subroutine hann(w,n) bind(c)
-
+! hann窗函数
     integer(C_INT), intent(in) :: n
     real(C_DOUBLE), intent(inout) :: w(n)
 
@@ -704,6 +748,7 @@ end subroutine hann
 
 subroutine welch(a,n,m,olr,psd,win) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: welch
+! Welch 法估计功率谱
     integer(C_INT), intent(in) :: n, m
     real(C_DOUBLE), intent(in) :: a(n)
     real(C_DOUBLE), intent(out) :: psd(m)
@@ -785,7 +830,7 @@ subroutine welch(a,n,m,olr,psd,win) bind(c)
 end subroutine welch
 
 subroutine fftpadding(in,out,n,nfft) bind(c)
-!     数据序列后补零
+! 数据序列后补零
     integer, intent(in) :: n, nfft
     real*8, intent(in) :: in(n)
     real*8, intent(out) :: out(nfft)
@@ -798,6 +843,7 @@ end subroutine fftpadding
 
 subroutine fftresample(a,n,r,ar,nr) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: fftresample
+! 用FFT的方法进行数据重采样（降低采样频率）
     integer(C_INT), intent(in) :: n, r, nr
     real(C_DOUBLE), intent(in) :: a(n)
     real(C_DOUBLE), intent(out) :: ar(nr)
@@ -842,7 +888,7 @@ subroutine fftresample(a,n,r,ar,nr) bind(c)
 end subroutine fftresample
 
 subroutine polyvals(p,m,x,y) bind(c)
-
+! 多项式求值（单个值）
     integer, intent(in) :: m
     real*8, intent(in) :: p(m), x        
     real*8, intent(out) :: y
@@ -861,7 +907,7 @@ subroutine polyvals(p,m,x,y) bind(c)
 end subroutine polyvals
 
 subroutine polyvalv(p,m,x,y,n) bind(c)
-
+! 多项式求值（数组）
     integer, intent(in) :: m, n
     real*8, intent(in) :: p(m), x(n)
     real*8, intent(out) :: y(n)
@@ -883,7 +929,7 @@ subroutine polyvalv(p,m,x,y,n) bind(c)
 end subroutine polyvalv
 
 subroutine polyder(p,m,n,r,l) bind(c)
-
+! 多项式求导，p, r为求导前后的多项式系数（阶次从高到低，最后为常数项）
     integer, intent(in) :: m,n
     real*8, intent(in) :: p(m)
     real*8, intent(inout) :: r(l)
@@ -915,7 +961,7 @@ subroutine polyder(p,m,n,r,l) bind(c)
 end subroutine polyder
 
 subroutine polyint(p,m,n,r,l) bind(c)
-
+! 多项式积分，p, r为积分前后的多项式系数
     integer, intent(in) :: m,n
     real*8, intent(in) :: p(m)
     real*8, intent(inout) :: r(l)
@@ -942,7 +988,7 @@ subroutine polyint(p,m,n,r,l) bind(c)
 end subroutine polyint
 
 subroutine polymul(p,m,q,n,r,l) bind(c)
-
+! 多项式乘法，r = p * q
     integer, intent(in) :: m,n
     real*8, intent(in) :: p(m),q(n)
     real*8, intent(inout) :: r(l)
@@ -968,7 +1014,7 @@ subroutine polymul(p,m,q,n,r,l) bind(c)
 end subroutine polymul
 
 subroutine polydiv(p,m,q,n,r,l) bind(c)
-
+! 多项式除法，r = p / q
     integer, intent(in) :: m,n
     real*8, intent(in) :: p(m),q(n)
     integer, intent(inout) :: l
@@ -994,7 +1040,7 @@ subroutine polydiv(p,m,q,n,r,l) bind(c)
 end subroutine polydiv
 
 subroutine polyadd(p,m,q,n,r,l) bind(c)
-
+! 多项式加法，r = p + q
     integer, intent(in) :: m,n
     real*8, intent(in) :: p(m),q(n)
     integer, intent(inout) :: l
@@ -1030,9 +1076,10 @@ subroutine polyadd(p,m,q,n,r,l) bind(c)
 end subroutine polyadd
 
 subroutine polyroots(p,m,r,l) bind(c)
-    !> Find roots of the (m-1)-order polynomial by solving the eigen
-    ! problem of the coresponding companion matrix.
-    !> The roots are all in complex form.
+! 多项式求根
+! Find roots of the (m-1)-order polynomial by solving the eigen
+! problem of the coresponding companion matrix.
+! The roots are all in complex form.
 
     integer, intent(in) :: m
     real*8, intent(in) :: p(m)
@@ -1084,22 +1131,22 @@ subroutine polyroots(p,m,r,l) bind(c)
 
 end subroutine polyroots
 
-
 function idnz(p)
-    !> Return the index of first non-zero element in the array
+! 多项式系数数组中第一个非零值的位置
+! Return the index of first non-zero element in the array
     real*8, intent(in) :: p(:)
     integer :: idnz
 
     idnz = 1
-
-    do while ( p(idnz)==0.d0 )
+    do while ( abs(p(idnz)) < 1.0d-30 )
         idnz = idnz + 1
     end do
     return
 end function idnz
 
 subroutine polyfit(a,t,n,c,oh,ol) bind(c)
-
+! 多项式拟合，a(n)为待拟合数据，t(n)为自变量
+! oh, ol为拟合所用多项式的最高与最低阶次, c为拟合多项式的系数
     integer, intent(in) :: n
     real(8), intent(in) :: a(n), t(n)
     integer, intent(in) :: oh,ol
@@ -1248,6 +1295,39 @@ subroutine spamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     end if
 end subroutine spamixed
 
+subroutine spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+
+    integer(C_INT), intent(in) :: n, nP, nD
+    integer(C_INT), intent(in) :: DI(nD)
+    real(C_DOUBLE), intent(in) :: dt, zeta
+    real(C_DOUBLE), intent(in) :: acc(n), P(nP)
+    real(C_DOUBLE), intent(out) :: SPA(nP,nd)
+    integer(C_INT), intent(out) :: SPI(nP,nd)
+
+    integer(C_INT) :: k,i,ind
+    real(C_DOUBLE) :: SPVk, SPDk, SPEk
+    real(C_DOUBLE), allocatable :: ra(:), rv(:), rd(:), ara(:)
+
+    if ( nd < 2 ) return
+
+    allocate(ra(n))
+    allocate(ara(n))
+
+    do k = 1, nP, 1
+        call ramixed(acc,n,dt,zeta,P(k),ra)
+        ara = abs(ra)
+        do i = 1, nD, 1
+            ind = maxloc(ara(1:DI(i)),1)
+            SPI(k,i) = ind
+            SPA(k,i) = ra(ind)
+        end do
+    end do
+
+    deallocate(ra)
+    deallocate(ara)
+
+end subroutine spamixed_dur
+
 subroutine pspamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     integer, intent(in) :: n, nP
     real(C_DOUBLE), intent(in) :: dt, zeta
@@ -1347,7 +1427,6 @@ subroutine spafreq(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
     !$OMP END PARALLEL DO
 
-
     call fftw_destroy_plan(plan)
     call fftw_destroy_plan(iplan)
 
@@ -1360,6 +1439,38 @@ subroutine spafreq(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
     return
 end subroutine spafreq
+
+subroutine spafreq_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+
+    integer, intent(in) :: n, nP, nD
+    integer, intent(in) :: DI(nD)
+    real(8), intent(in) :: dt, zeta
+    real(8), intent(in) :: acc(n), P(nP)
+    real(8), intent(out) :: SPA(nP,nd)
+    integer, intent(out) :: SPI(nP,nd)
+
+    integer :: k,i,ind
+    real(8) :: SPVk, SPDk, SPEk
+    real(8), allocatable :: ra(:), ara(:)
+
+    if ( nd < 2 ) return
+
+    allocate(ra(n))
+    allocate(ara(n))
+
+    !!$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(k,i,ra,ara)
+    do k = 1, nP, 1
+        call rafreq(acc,n,dt,zeta,P(k),ra)
+        ara = abs(ra)
+        do i = 1, nD, 1
+            ind = maxloc(ara(1:DI(i)),1)
+            SPI(k,i) = ind
+            SPA(k,i) = ra(ind)
+        end do
+    end do
+    !!$OMP END PARALLEL DO
+
+end subroutine spafreq_dur
 
 subroutine pspafreq(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
@@ -1530,6 +1641,38 @@ subroutine spanmk(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     !$OMP END PARALLEL DO
 
 end subroutine spanmk
+
+subroutine spanmk_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+
+    integer, intent(in) :: n, nP, nD
+    integer, intent(in) :: DI(nD)
+    real(8), intent(in) :: dt, zeta
+    real(8), intent(in) :: acc(n), P(nP)
+    real(8), intent(out) :: SPA(nP,nd)
+    integer, intent(out) :: SPI(nP,nd)
+
+    integer :: k,i,ind
+    real(8) :: SPVk, SPDk, SPEk
+    real(8), allocatable :: ra(:), ara(:)
+
+    if ( nd < 2 ) return
+
+    allocate(ra(n))
+    allocate(ara(n))
+
+    !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(k,i,ra,ara)
+    do k = 1, nP, 1
+        call ranmk(acc,n,dt,zeta,P(k),ra)
+        ara = abs(ra)
+        do i = 1, nD, 1
+            ind = maxloc(ara(1:DI(i)),1)
+            SPI(k,i) = ind
+            SPA(k,i) = ra(ind)
+        end do
+    end do
+    !$OMP END PARALLEL DO
+
+end subroutine spanmk_dur
 
 subroutine pspanmk(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
@@ -1732,7 +1875,7 @@ subroutine ranmk(acc,n,dt0,zeta,P,ra) bind(c)
     real(8), intent(in) :: acc(n), P
     real(8), intent(out) :: ra(n)
 
-    real(8), allocatable :: rv(:),rd(:)
+    real(8), allocatable :: rv(:), rd(:)
 
     allocate(rv(n))
     allocate(rd(n))
@@ -1876,7 +2019,7 @@ subroutine rafreq(acc,n,dt,zeta,P,ra) bind(c)
     real(C_DOUBLE), intent(out) :: ra(n)
 
     complex(C_DOUBLE_COMPLEX), allocatable :: af(:), raf(:)
-    real(C_DOUBLE), allocatable :: a0(:), w(:)
+    real(C_DOUBLE), allocatable :: a0(:), w(:), rac(:)
     integer :: i, j, Nfft
     complex(C_DOUBLE_COMPLEX) :: IONE=cmplx(0.d0,1.d0)
     real(C_DOUBLE) :: w0i2, w0iwj, wj2, iNfft, w0
@@ -1884,24 +2027,25 @@ subroutine rafreq(acc,n,dt,zeta,P,ra) bind(c)
 
     Nfft = nextpow2(n)*2
     iNfft = 1.d0/dble(Nfft)
-
+    
+    allocate(rac(Nfft))
     allocate(a0(Nfft))
     allocate(af(Nfft))
     allocate(raf(Nfft))
     allocate(w(Nfft))
-
+    
     call fftfreqs(Nfft,1.d0/dt,w)
     w = w*TWO_PI
     w0 = TWO_PI/P
-
-    ra = 0.d0
+    
+    rac = 0.d0
     a0 = 0.d0
     a0(1:n) = acc
-
+    
     plan  = fftw_plan_dft_r2c_1d(Nfft, a0, af, FFTW_ESTIMATE)
-    iplan = fftw_plan_dft_c2r_1d(Nfft, af, ra, FFTW_ESTIMATE)
+    iplan = fftw_plan_dft_c2r_1d(Nfft, af, rac, FFTW_ESTIMATE)
     call fftw_execute_dft_r2c(plan, a0, af)
-
+    
     w0i2 = w0*w0
     do j = 1, Nfft/2+1, 1
         w0iwj = w0*w(j)
@@ -1909,17 +2053,20 @@ subroutine rafreq(acc,n,dt,zeta,P,ra) bind(c)
         raf(j) = af(j)*(w0i2+2.D0*zeta*w0iwj*IONE)/&
                 (w0i2-wj2+2.d0*zeta*w0iwj*IONE)*iNfft
     end do
-    call fftw_execute_dft_c2r(iplan, raf, ra)
-
+    call fftw_execute_dft_c2r(iplan, raf, rac)
+    ra = rac(1:n)
+    
     call fftw_destroy_plan(plan)
     call fftw_destroy_plan(iplan)
-
+    
+    deallocate(rac)
     deallocate( a0)
     deallocate( af)
     deallocate(raf)
     deallocate(  w)
 
     return
+    
 end subroutine rafreq
 
 subroutine rmixed(acc,n,dt,zeta,P,ra,rv,rd) bind(c)
@@ -2065,6 +2212,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     deallocate(af)
     deallocate(afs)
     deallocate(f)
+
 end subroutine fitspectra
 
 subroutine adjustpeak(a,n,peak0) bind(c)
@@ -2210,6 +2358,167 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     deallocate(M)
     deallocate(W)
 end subroutine adjustspectra
+
+subroutine flat_double(A,n,m,af)
+
+    integer, intent(in) :: n, m
+    real(8), intent(in) :: A(n,m)
+    real(8), intent(out) :: af(n*m)
+
+    integer :: i, j
+
+    do i = 1, n, 1
+        do j = 1, m, 1
+            af(n*(j-1)+i) = A(i,j)
+        end do
+    end do
+
+end subroutine flat_double
+
+subroutine flat_int(A,n,m,af)
+
+    integer, intent(in) :: n, m
+    integer, intent(in) :: A(n,m)
+    integer, intent(out) :: af(n*m)
+
+    integer :: i, j
+
+    do i = 1, n, 1
+        do j = 1, m, 1
+            af(n*(j-1)+i) = A(i,j)
+        end do
+    end do
+
+end subroutine flat_int
+
+subroutine repeat_double(a,n,m,Ar)
+    integer, intent(in) :: n,m
+    real(8), intent(in) :: a(n)
+    real(8), intent(out) :: Ar(n*m)
+
+    integer :: i
+
+    do i = 1, m, 1
+        Ar((i-1)*n+1:(i-1)*n+n) = a
+    end do
+    
+end subroutine repeat_double
+
+subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: adjustspectra_dur
+    integer, intent(in) :: n, nP, mit, kpb, nD
+    integer, intent(in) :: DI(nD)
+    real(8), intent(in) :: dt, zeta, tol
+    real(8), intent(in) :: acc(n), P(nP), SPAT0(nP)
+    real(8), intent(out) :: a(n)
+
+    real(8), allocatable :: SPA1(:), SPAT1(:), dR1(:), P1(:)
+    real(8), allocatable :: SPA(:,:), dR(:,:), ra(:,:,:), best(:)
+    real(8), allocatable :: M(:,:), W(:,:), SPAT(:,:)
+    integer, allocatable :: SPI(:,:), SPI1(:)
+
+    real(8) :: aerror, merror, peak0, minerr
+    integer :: i,j,iter,nT
+
+    nT = nP*nD
+
+    allocate(best(n))
+    allocate(SPA(nP,nD))
+    allocate(SPAT(nP,nD))
+    allocate(SPA1(nT))
+    allocate(SPAT1(nT))
+    allocate(dR(nP,nD))
+    allocate(dR1(nT))
+    allocate(SPI(nP,nD))
+    allocate(SPI1(nT))
+    allocate(P1(nT))
+    allocate(ra(n,nT,nT))
+    allocate(M(nT,nT))
+    allocate(W(n,nT))
+
+    call repeat_double(P,nP,nD,P1)
+
+    peak0 = maxval(abs(acc), dim=1)
+    a = acc
+
+    do i = 1, nD, 1
+        SPAT(:,i) = SPAT0*dble(DI(i))/dble(n)
+        P1((i-1)*nP+1:(i-1)*nP+nP) = P
+    end do
+    
+    call flat_double(SPAT,nP,nD,SPAT1)
+
+    iter = 1
+
+    call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
+    call errora_dur(abs(SPA),SPAT,nP,nD,aerror,merror)
+
+    if (aerror <= tol .and. merror<=3.0d0*tol) return
+    !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
+    minerr = merror
+    best = a
+
+    do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
+
+        dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
+
+        call flat_double(dR,nP,nD,dR1)
+        call flat_double(SPA,nP,nD,SPA1)
+        call flat_int(SPI,nP,nD,SPI1)
+
+        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
+        do i = 1, nT, 1
+            call wfunc( n,dt,SPI1(i),P1(i),zeta,W(:,i) )
+        end do    
+        !!$OMP END PARALLEL DO
+
+        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
+        do i = 1, nT, 1
+            do j = 1, nT, 1
+                call ramixed(W(:,j),n,dt,zeta,P1(i),ra(:,i,j))
+                M(i,j) = ra(SPI1(i),i,j)/SPAT1(i)
+                if ( i /= j ) then
+                    M(i,j) = M(i,j)*0.618D0
+                end if
+            end do
+        end do
+        !!$OMP END PARALLEL DO
+
+        call leastsqs(M,dR1,nT,nT)
+
+        do i = 1, nT, 1
+            a = a + dR1(i)*W(:,i)
+        end do
+
+        ! call adjustpeak(a,n,peak0)
+        ! call adjustbaseline(a,n,dt)
+        ! call adjustpeak(a,n,peak0)
+
+        call spamixed_dur(a,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
+        call errora_dur(abs(SPA),SPAT,nP,nD,aerror,merror)
+
+        if (merror<minerr) then
+            minerr = merror
+            best = a
+        end if
+        !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
+        iter = iter + 1
+
+    end do
+    if (kpb>0) a = best
+
+    deallocate(best)
+    deallocate(SPA)
+    deallocate(SPAT)
+    deallocate(SPA1)
+    deallocate(dR)
+    deallocate(dR1)
+    deallocate(SPI)
+    deallocate(ra)
+    deallocate(M)
+    deallocate(W)
+    
+end subroutine adjustspectra_dur
 
 subroutine wfunc(n,dt,itm,P,zeta,wf) bind(c)
 
@@ -3015,6 +3324,43 @@ subroutine spectrum(acc,n,dt,zeta,P,np,SPA,SPI,SM) bind(c)
     return
 end subroutine spectrum
 
+subroutine spectrum_dur(acc,n,dt,zeta,P,np,DI,nD,SPA,SPI,SM) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: spectrum_dur
+    integer, intent(in) :: n, np, SM, nD
+    integer, intent(in) :: DI(nD)
+    real(8), intent(in) :: dt,zeta
+    real(8), intent(in) :: acc(n), P(np)
+    real(8), intent(out) :: SPA(np*nD)
+    integer, intent(out) :: SPI(np*nD)
+
+    real(8), allocatable :: SPA1(:,:)
+    integer, allocatable :: SPI1(:,:)
+
+    allocate(SPA1(np,nD))
+    allocate(SPI1(np,nD))
+
+    select case (SM)
+        case (1)
+            call spafreq_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+        case (2)
+            call spanmk_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+        case (3)
+            call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+        case default
+            call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+    end select
+
+    SPA1 = abs(SPA1)
+
+    call flat_double(SPA1,nP,nD,SPA)
+    call flat_int(SPI1,nP,nD,SPI)
+
+    deallocate(SPA1)
+    deallocate(SPI1)
+
+    return
+end subroutine spectrum_dur
+
 subroutine spectrumavd(acc,n,dt,zeta,P,np,SPA,SPI,SPV,SPD,SPE,SM) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: spectrumavd
     integer, intent(in) :: n, np, SM
@@ -3037,6 +3383,7 @@ subroutine spectrumavd(acc,n,dt,zeta,P,np,SPA,SPI,SPV,SPD,SPE,SM) bind(c)
     SPA = abs(SPA)
     SPV = abs(SPV)
     SPD = abs(SPD)
+    
 end subroutine spectrumavd
 
 subroutine fitspectrum(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,fm,kpb) bind(c)
@@ -3067,5 +3414,60 @@ subroutine fitspectrum(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,fm,kpb) bind(c)
         call adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb)
     end if
 end subroutine fitspectrum
+
+subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: initartwave
+    integer, intent(in) :: n, nP
+    real(C_DOUBLE), intent(in) :: dt, zeta, P(nP), SPT(nP)
+    real(C_DOUBLE), intent(out) :: a(n)
+
+    integer :: Nfft, i, j, k, NPf, IPf1, IPf2
+    real(C_DOUBLE) :: phi, Ak, Saw
+    real(C_DOUBLE), allocatable :: f(:), Pf(:), SPTf(:)
+    complex(C_DOUBLE_COMPLEX), allocatable :: a0(:), af(:)
+    
+    type(C_PTR) :: plan
+
+    Nfft = nextpow2(n)
+
+    allocate(a0(Nfft))
+    allocate(af(Nfft))
+    allocate(f(Nfft))
+    allocate(Pf(Nfft/2))
+    allocate(SPTf(Nfft/2))
+    
+    plan = fftw_plan_dft_1d(Nfft,af,a0,FFTW_BACKWARD,FFTW_ESTIMATE)
+
+    call fftfreqs(Nfft,1.d0/dt,f)
+    Pf(2:Nfft/2) = 1.d0/f(2:Nfft/2)
+    Pf(1) = 100.d0*Pf(2)
+
+    call decrfindfirst(Pf,Nfft/2,P(nP),IPf1)
+    call decrfindlast(Pf,Nfft/2,P(1), IPf2)
+    call decrlininterp(P,SPT,nP,Pf(IPf1:IPf2),SPTf(IPf1:IPf2),IPf2-IPf1+1)
+
+    call random_seed()
+    do k = IPf1, IPf2, 1
+        call random_number(phi)
+        phi = phi*TWO_PI
+        !phi = PI/3.D0
+        Saw = 2.0D0*zeta*SPTf(k)**2.0D0/(pi*2.0D0*pi*f(k)*&
+            (-2.0D0*dlog(-pi*dlog(0.85D0)/(2.0D0*pi*f(k)*(dt*n-dt)))))
+        Ak = 2.0D0*sqrt(Saw*2.0D0*pi*(1.D0/dt)*Nfft/2)
+        af(k) = Ak*(cmplx(cos(phi),sin(phi)))
+        af(Nfft+2-k) = Ak*(cmplx(cos(phi),-sin(phi)))
+    end do
+
+    call fftw_execute_dft(plan,af,a0)
+    a = real(a0(1:n))/Nfft
+    call fftw_destroy_plan(plan)
+    
+    deallocate(a0)
+    deallocate(af)
+    deallocate(f)
+    deallocate(Pf)
+    deallocate(SPTf)
+
+end subroutine initArtWave
 
 end module eqs

@@ -111,7 +111,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -211,9 +211,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-376</y>
-          <width>209</width>
-          <height>637</height>
+          <y>0</y>
+          <width>205</width>
+          <height>530</height>
          </rect>
         </property>
         <attribute name="label">
@@ -503,8 +503,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>237</width>
-          <height>324</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -672,8 +672,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>233</width>
-          <height>271</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -815,8 +815,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>395</width>
-          <height>215</height>
+          <width>317</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -911,8 +911,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>209</width>
-          <height>304</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -944,7 +944,7 @@
             <number>10</number>
            </property>
            <property name="value">
-            <number>90</number>
+            <number>30</number>
            </property>
           </widget>
          </item>
@@ -1140,8 +1140,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>240</width>
-          <height>228</height>
+          <width>222</width>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1284,9 +1284,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
-          <width>209</width>
-          <height>290</height>
+          <y>-39</y>
+          <width>205</width>
+          <height>326</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1368,10 +1368,10 @@
             <number>100</number>
            </property>
            <property name="singleStep">
-            <number>10</number>
+            <number>1</number>
            </property>
            <property name="value">
-            <number>30</number>
+            <number>5</number>
            </property>
           </widget>
          </item>
@@ -1410,20 +1410,6 @@
            </item>
           </widget>
          </item>
-         <item row="11" column="0" colspan="2">
-          <widget class="QPushButton" name="SPFit">
-           <property name="text">
-            <string>Fit</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0" colspan="2">
-          <widget class="QPushButton" name="SPComPare">
-           <property name="text">
-            <string>Compare</string>
-           </property>
-          </widget>
-         </item>
          <item row="8" column="0" colspan="2">
           <widget class="QCheckBox" name="SPTON">
            <property name="text">
@@ -1444,6 +1430,63 @@
            </property>
           </widget>
          </item>
+         <item row="10" column="0" colspan="2">
+          <widget class="QPushButton" name="SPComPare">
+           <property name="text">
+            <string>Compare</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="2">
+          <widget class="QPushButton" name="SPFit">
+           <property name="text">
+            <string>Fit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="0" colspan="2">
+          <widget class="QPushButton" name="DSPA">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>DSPA</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <widget class="QLabel" name="label_39">
+           <property name="text">
+            <string>nD</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1">
+          <widget class="QSpinBox" name="nD">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0" colspan="2">
+          <widget class="QPushButton" name="DFit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>DFit</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="PA">
@@ -1452,7 +1495,7 @@
           <x>0</x>
           <y>0</y>
           <width>274</width>
-          <height>228</height>
+          <height>287</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1582,8 +1625,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>302</width>
-          <height>365</height>
+          <width>243</width>
+          <height>296</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1820,6 +1863,7 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpenLast"/>
+   <addaction name="actionEnduranceTH"/>
    <addaction name="actionSaveAcc"/>
    <addaction name="actionSaveData"/>
    <addaction name="actionSaveFig"/>
@@ -1987,6 +2031,18 @@
    </property>
    <property name="text">
     <string>Toggle X-Scale</string>
+   </property>
+  </action>
+  <action name="actionEnduranceTH">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Duration.png</normaloff>:/MainWindow/icons/Duration.png</iconset>
+   </property>
+   <property name="text">
+    <string>EnduranceTH</string>
+   </property>
+   <property name="toolTip">
+    <string>Generate Endurance Signal</string>
    </property>
   </action>
  </widget>
