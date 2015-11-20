@@ -87,6 +87,10 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>copy x64\Debug\libbwf.dll ..\x64\Debug\libbwf.dll
+copy x64\Debug\libbwf.lib ..\EQSignal\lib\bwf.lib</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -116,7 +120,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy x64\Release\libbwf.dll E:\Linux\usr\bin\
+      <Command>copy x64\Release\libbwf.dll ..\x64\Release\libbwf.dll
 copy x64\Release\libbwf.lib ..\EQSignal\lib\bwf.lib</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     FIT_SPA = false;
     XS_LOG = true;
 
-    this->readConfig();
+    readConfig();
     ui->Paras->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
@@ -124,20 +124,7 @@ void MainWindow::readtxt(const char *filename, double DT)
 
 void MainWindow::readtxt(QString filename, double DT)
 {
-    eqs->readtxt(filename, DT, normOnRead);
-    eqs0->readtxt(filename, DT, normOnRead);
-
-	int N = eqs->getN();
-	ui->Ind1->setValue(0);
-	ui->Ind2->setValue(N - 1);
-	ui->Ind2->setMaximum(N - 1);
-	ui->TS->setValue(eqs->getDt()*2.5);
-
-    ui->nD->setEnabled(false);
-    ui->DSPA->setEnabled(false);
-    ui->DFit->setEnabled(false);
-
-    plotTH();
+    readtxt(filename.toUtf8().data(), DT);
 }
 
 void MainWindow::readnga(const char *filename)
@@ -155,25 +142,12 @@ void MainWindow::readnga(const char *filename)
     ui->DSPA->setEnabled(false);
     ui->DFit->setEnabled(false);
 
-    this->plotTH();
+    plotTH();
 }
 
 void MainWindow::readnga(QString filename)
 {
-    eqs->readnga(filename, normOnRead);
-    eqs0->readnga(filename, normOnRead);
-
-    int N = eqs->getN();
-    ui->Ind1->setValue(0);
-    ui->Ind2->setValue(N - 1);
-    ui->Ind2->setMaximum(N - 1);
-	ui->TS->setValue(eqs->getDt()*2.5);
-
-    ui->nD->setEnabled(false);
-    ui->DSPA->setEnabled(false);
-    ui->DFit->setEnabled(false);
-
-    this->plotTH();
+	readnga(filename.toUtf8().data());
 }
 
 QPen MainWindow::autoPen(int i)
@@ -957,8 +931,8 @@ void MainWindow::plotHyst()
 void MainWindow::confirm()
 {
 	eqs->confirm();
-	this->showDriftMsg();
-    this->plotTH();
+    showDriftMsg();
+    plotTH();
 }
 
 void MainWindow::saveTH()
@@ -1734,7 +1708,7 @@ void MainWindow::on_Adjust_clicked()
 
 void MainWindow::on_SetTrimEdge_clicked()
 {
-    int method = ui->STEMethod->currentIndex();
+	int method = ui->STEMethod->currentIndex();
     double thd1 = ui->Threshold1->value();
     double thd2 = ui->Threshold2->value();
     bool EZ = ui->EZ->isChecked();
@@ -1746,31 +1720,32 @@ void MainWindow::on_SetTrimEdge_clicked()
 
 void MainWindow::on_Trim_clicked()
 {
-    int ind1 = ui->Ind1->value();
+	int ind1 = ui->Ind1->value();
     int ind2 = ui->Ind2->value();
     eqs->trim(ind1,ind2);
     eqs0->trim(ind1,ind2);
 
-    this->plotTH();
+    plotTH();
 }
 
 void MainWindow::on_CalcFFT_clicked()
 {
-    eqs->calcFFT();
-    this->plotFFT();
+	eqs->calcFFT();
+    plotFFT();
 }
 
 void MainWindow::on_CalcPSD_clicked()
 {
-    eqs->calcPSD(ui->OLR->value(),ui->WW->isChecked());
+	eqs->calcPSD(ui->OLR->value(),ui->WW->isChecked());
     plotPSD();
 }
 
 void MainWindow::on_CalcSPA_clicked()
 {
-    setupSP();
+	setupSP();
     eqs->calcSP(false);
     plotSPA();
+
     FIT_SPA = false;
 }
 
@@ -1817,7 +1792,8 @@ void MainWindow::on_CalcSP_clicked()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString fileName;
+    
+	QString fileName;
     QStringList filters;
     QFileDialog fdialog(this);
 
@@ -2736,7 +2712,7 @@ void MainWindow::on_DSPA_clicked()
 
     int SM = ui->SM->currentIndex()+1;
 
-    spectrum_dur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPA,SPI,&SM);
+    spectrum_endur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPA,SPI,&SM);
 
     for (int i = 0; i < nd; i++)
     {
@@ -2787,7 +2763,7 @@ void MainWindow::on_DFit_clicked()
     int kpb = ui->KeepBestFit->isChecked();
 
 	double *a = new double[n];
-    adjustspectra_dur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPT0,a,&tol,&mit,&kpb);
+    adjustspectra_endur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPT0,a,&tol,&mit,&kpb);
 	eqs->setAcc(a);
 	eqs->a2vd();
 	eqs0->setAcc(a);
@@ -2823,11 +2799,11 @@ void MainWindow::genArtificialEQWave(double *a, int N, double DT)
 	initartwave(a, &N, &DT, &zeta, P, &nP, SPT);
 }
 
-void MainWindow::on_actionEnduranceTH_triggered()
+void MainWindow::on_GenAW_clicked()
 {
-    eqsName = QString("EnduranceTH");
-    double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-    int N = QInputDialog::getInt(this, eqsName + "'s " + tr("Number of Points"), "n = ", 2000, 200, 1000000, 1000);
+    eqsName = QString("AW");
+    double DT = ui->DT->value();
+    int N = ui->N->value();
 
     ui->TS->setValue(DT*2.5);
 
@@ -2835,7 +2811,26 @@ void MainWindow::on_actionEnduranceTH_triggered()
 
     genArtificialEQWave(a,N,DT);
 
-    for (int i = 0; i < N; i++) a[i] *= (double)i / (double)N;
+    int et = ui->EnvelopeType->currentIndex();
+
+    if (et == 1) {
+
+		for (int i = 0; i < N; i++) a[i] *= (double)i / (double)(N-1);
+
+		ui->nD->setEnabled(true);
+		ui->DSPA->setEnabled(true);
+		ui->DFit->setEnabled(true);
+    }
+    else if (et == 2) {
+        double Td = DT*N;
+        double Tb = 0.2*DT*N;
+        double Tc = 0.5*DT*N;
+
+        for (int i = 0; i < N; i++) {
+            if ( i*DT <= Tb-DT ) a[i] *= (i*DT/Tb)*(i*DT/Tb);
+            else if ( i*DT >= Tc-DT ) a[i] *= exp(log(0.1)/(Td-Tc)*(i*DT-Tc));
+        }
+    }
 
     eqs = new EQSignal(a, N, DT);
     eqs->a2vd();
@@ -2843,16 +2838,14 @@ void MainWindow::on_actionEnduranceTH_triggered()
     eqs0 = new EQSignal(a, N, DT);
     eqs0->a2vd();
 
-    setupSP();
-	double Tg = ui->Tg->value();
-	double PAF = ui->PAF->value();
-	double SF = ui->SF->value();
-	if (SF<0.0) SF = fabs(eqs->getPeakAcc());
-    eqs->setSPT(Tg, PAF, SF);
+    delete [] a;
 
-    ui->nD->setEnabled(true);
-    ui->DSPA->setEnabled(true);
-    ui->DFit->setEnabled(true);
+    setupSP();
+    double Tg = ui->Tg->value();
+    double PAF = ui->PAF->value();
+    double SF = ui->SF->value();
+    if (SF<0.0) SF = fabs(eqs->getPeakAcc());
+    eqs->setSPT(Tg, PAF, SF);
 
     plotTH();
 }

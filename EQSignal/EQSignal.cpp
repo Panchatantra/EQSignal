@@ -244,7 +244,7 @@ void EQSignal::readnga(const char *filename, bool NORM)
 
 void EQSignal::readnga(QString filename, bool NORM)
 {
-    this->readnga(filename.toUtf8().data(),NORM);
+    this->readnga(filename.toUtf8().data(), NORM);
 }
 
 void EQSignal::resample(int r)
@@ -268,9 +268,75 @@ void EQSignal::resample(int r)
     delete [] ar;
 }
 
-void EQSignal::interpolate()
+void EQSignal::interpolate(int r, int method)
 {
+    if (r < 2) return;
 
+    int n0 = n;
+	double dt0 = dt;
+    double *a0 = new double[n0];
+    arrayCopy(acc, a0, n0);
+	n = n0 + (n0 - 1)*r;
+	dt = dt0 / (r + 1);
+
+	reallocateTH();
+
+	if (method == 0) {
+        
+		double slope;
+        acc[0] = a0[0];
+		int j = 1;
+		double time = dt;
+
+		for (int i = 1; i < n0; i++)
+		{
+            slope = (a0[i] - a0[i - 1])/dt0;
+			while (time <= dt0*i)
+			{
+				acc[j] = a0[i - 1] + (time - dt0*(i - 1))*slope;
+				time += dt;
+				j += 1;
+			}
+		}
+    }
+    else {
+        int Nfft0 = nextpow(n0,r);
+        int Nfft  = Nfft0*r;
+
+        complex<double> *af0 = new complex<double>[Nfft0];
+        complex<double> *af = new complex<double>[Nfft];
+		for (int i = 0; i < Nfft; i++)
+		{
+			af[i] = complex<double>(0.0,0.0);
+		}
+
+        fft(a0,af0,&Nfft);
+
+		if (iseven(Nfft0)) {
+			for (int i = 0; i < Nfft0/2; i++)
+			{
+				af[i] = af0[i];
+				af[Nfft - 1 - i] = af0[Nfft0 - 1 - i];
+			}
+			af[Nfft - Nfft0 / 2] = 0.5 * af0[Nfft0 / 2];
+		}
+		else {
+			for (int i = 0; i < (Nfft0-1) / 2; i++)
+			{
+				af[i] = af0[i];
+				af[Nfft - 1 - i] = af0[Nfft0 - 1 - i];
+			}
+			af[(Nfft0 - 1) / 2] = 0.5*af0[(Nfft0 - 1) / 2];
+			af[Nfft - (Nfft0 - 1) / 2] = 0.5*af0[Nfft0 - (Nfft0 - 1) / 2];
+		}
+
+		double *ai = new double[Nfft];
+		ifft(af,ai,&Nfft);
+
+		for (int i = 0; i < n; i++) acc[i] = ai[i];
+    }
+
+	a2vd();
 }
 
 void EQSignal::recover()

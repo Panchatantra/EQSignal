@@ -147,6 +147,7 @@ function trapz(y,n,dx,y0) bind(c)
     do i = 2, n, 1
         r = r + dx*(y(i)+y(i-1))
     end do
+    
     !$OMP END DO
     !$OMP END PARALLEL
 
@@ -215,7 +216,6 @@ subroutine fftfreqs(Nfft,fs,freqs) bind(c)
     end if
 
     return
-
 end subroutine fftfreqs
 
 subroutine acc2vd(a,v,d,n,dt,v0,d0) bind(c)
@@ -241,7 +241,6 @@ subroutine acc2vd(a,v,d,n,dt,v0,d0) bind(c)
         d(i) = d0 + di
     end do
     return
-
 end subroutine acc2vd
 
 subroutine ratacc2vd(a,v,d,n,dt,v0,d0) bind(c)
@@ -391,7 +390,7 @@ subroutine errora(y,y0,n,aerror,merror) bind(c)
 
 end subroutine errora
 
-subroutine errora_dur(y,y0,n,m,aerror,merror) bind(c)
+subroutine errora_endur(y,y0,n,m,aerror,merror) bind(c)
 ! 计算矩阵y和y0的相对误差（包括所有元素），aerror 为平均误差，merror 为最大误差
     integer, intent(in) :: n, m
     real(8), intent(in) :: y(n,m), y0(n,m)
@@ -413,7 +412,7 @@ subroutine errora_dur(y,y0,n,m,aerror,merror) bind(c)
 
     aerror = aerror/dble(n*m)
 
-end subroutine errora_dur
+end subroutine errora_endur
 
 subroutine incrlininterp(x,y,n,xi,yi,ni) bind(c)
 ! 线性插值（x, xi为递增数组）
@@ -1185,6 +1184,7 @@ end subroutine polyfit
 
 subroutine polydetrend(a,n,oh,ol) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: polydetrend
+! 消除多项式趋势，oh, ol为拟合所用多项式的最高与最低阶次
     integer(4), intent(in) :: n
     real(8), intent(inout) :: a(n)
     integer(4), intent(in) :: oh,ol
@@ -1217,6 +1217,10 @@ end subroutine polydetrend
 
 subroutine polyblc(a,n,oh,ol,dt,v0,d0) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: polyblc
+! 改进的基线校正算法：
+!       1. 先用多项式拟合速度时程，将拟合所得多项式求导得到第一次修正时程，
+!       修正后重新积分计算速度、位移；
+!       2. 然后用多项式拟合位移时程，将拟合所得多项式求导两次得到第二次修正时程；
     integer, intent(in) :: n
     real(8), intent(in) :: dt, v0, d0
     real(8), intent(inout) :: a(n)
@@ -1268,10 +1272,17 @@ module eqs
 
     use, intrinsic :: iso_c_binding
     use basic
+    use omp_lib
     implicit none
+    ! 自动选择频域与时域求解方法时，SDOF周期与采样间隔之比的临界值
     integer, parameter :: MPR = 20
+    ! 非线性分析参数
     integer, parameter :: NPARA = 33
     real(8) :: para(NPARA) = 0.D0
+
+    ! 本模块中一些函数的命名规则：
+    ! 1. SDOF响应求解函数：rXXX 以r开头，当仅输出加速度响应时后跟a，XXX可能为freq, nmk, mixed
+    ! 2. SDOF反应谱求解函数：spXXX 以r开头，当仅输出加速度谱时后跟a，XXX可能为freq, nmk, mixed
 
 contains
 
@@ -1295,7 +1306,7 @@ subroutine spamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     end if
 end subroutine spamixed
 
-subroutine spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+subroutine spamixed_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
 
     integer(C_INT), intent(in) :: n, nP, nD
     integer(C_INT), intent(in) :: DI(nD)
@@ -1313,20 +1324,26 @@ subroutine spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
     allocate(ra(n))
     allocate(ara(n))
 
+    !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(k,i,ra,ara)
     do k = 1, nP, 1
         call ramixed(acc,n,dt,zeta,P(k),ra)
         ara = abs(ra)
-        do i = 1, nD, 1
-            ind = maxloc(ara(1:DI(i)),1)
+        i = 1
+        ind = maxloc(ara(1:DI(i)),1)
+        SPI(k,i) = ind
+        SPA(k,i) = ra(ind)
+        do i = 2, nD, 1
+            ind = maxloc(ara(DI(i-1)+1:DI(i)),1)+DI(i-1)
             SPI(k,i) = ind
-            SPA(k,i) = ra(ind)
+            SPA(k,i) = ra(maxloc(ara(1:DI(i)),1))
         end do
     end do
+    !$OMP END PARALLEL DO
 
     deallocate(ra)
     deallocate(ara)
 
-end subroutine spamixed_dur
+end subroutine spamixed_endur
 
 subroutine pspamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     integer, intent(in) :: n, nP
@@ -1440,7 +1457,7 @@ subroutine spafreq(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     return
 end subroutine spafreq
 
-subroutine spafreq_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+subroutine spafreq_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
 
     integer, intent(in) :: n, nP, nD
     integer, intent(in) :: DI(nD)
@@ -1458,19 +1475,23 @@ subroutine spafreq_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
     allocate(ra(n))
     allocate(ara(n))
 
-    !!$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(k,i,ra,ara)
+    !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(k,i,ra,ara)
     do k = 1, nP, 1
         call rafreq(acc,n,dt,zeta,P(k),ra)
         ara = abs(ra)
-        do i = 1, nD, 1
-            ind = maxloc(ara(1:DI(i)),1)
+        i = 1
+        ind = maxloc(ara(1:DI(i)),1)
+        SPI(k,i) = ind
+        SPA(k,i) = ra(ind)
+        do i = 2, nD, 1
+            ind = maxloc(ara(DI(i-1)+1:DI(i)),1)+DI(i-1)
             SPI(k,i) = ind
-            SPA(k,i) = ra(ind)
+            SPA(k,i) = ra(maxloc(ara(1:DI(i)),1))
         end do
     end do
-    !!$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
-end subroutine spafreq_dur
+end subroutine spafreq_endur
 
 subroutine pspafreq(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
@@ -1642,7 +1663,7 @@ subroutine spanmk(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
 end subroutine spanmk
 
-subroutine spanmk_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
+subroutine spanmk_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
 
     integer, intent(in) :: n, nP, nD
     integer, intent(in) :: DI(nD)
@@ -1664,15 +1685,19 @@ subroutine spanmk_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
     do k = 1, nP, 1
         call ranmk(acc,n,dt,zeta,P(k),ra)
         ara = abs(ra)
-        do i = 1, nD, 1
-            ind = maxloc(ara(1:DI(i)),1)
+        i = 1
+        ind = maxloc(ara(1:DI(i)),1)
+        SPI(k,i) = ind
+        SPA(k,i) = ra(ind)
+        do i = 2, nD, 1
+            ind = maxloc(ara(DI(i-1)+1:DI(i)),1)+DI(i-1)
             SPI(k,i) = ind
-            SPA(k,i) = ra(ind)
+            SPA(k,i) = ra(maxloc(ara(1:DI(i)),1))
         end do
     end do
     !$OMP END PARALLEL DO
 
-end subroutine spanmk_dur
+end subroutine spanmk_endur
 
 subroutine pspanmk(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
@@ -2308,13 +2333,13 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
 
         dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
 
-        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
         do i = 1, nP, 1
             call wfunc( n,dt,SPI(i),P(i),zeta,W(:,i) )
         end do
-        !!$OMP END PARALLEL DO
+        !$OMP END PARALLEL DO
 
-        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
         do i = 1, nP, 1
             do j = 1, nP, 1
                 call ramixed(W(:,j),n,dt,zeta,P(i),ra(:,i,j))
@@ -2324,7 +2349,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
                 end if
             end do
         end do
-        !!$OMP END PARALLEL DO
+        !$OMP END PARALLEL DO
 
         call leastsqs(M,dR,nP,nP)
 
@@ -2404,8 +2429,8 @@ subroutine repeat_double(a,n,m,Ar)
     
 end subroutine repeat_double
 
-subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(c)
-!DIR$ ATTRIBUTES DLLEXPORT :: adjustspectra_dur
+subroutine adjustspectra_endur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: adjustspectra_endur
     integer, intent(in) :: n, nP, mit, kpb, nD
     integer, intent(in) :: DI(nD)
     real(8), intent(in) :: dt, zeta, tol
@@ -2450,8 +2475,8 @@ subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(
 
     iter = 1
 
-    call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
-    call errora_dur(abs(SPA),SPAT,nP,nD,aerror,merror)
+    call spamixed_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
+    call errora_endur(abs(SPA),SPAT,nP,nD,aerror,merror)
 
     if (aerror <= tol .and. merror<=3.0d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
@@ -2460,29 +2485,29 @@ subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(
 
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
-        dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
+        dR = SPA*(SPAT/abs(SPA)-1.d0)!/SPAT
 
         call flat_double(dR,nP,nD,dR1)
         call flat_double(SPA,nP,nD,SPA1)
         call flat_int(SPI,nP,nD,SPI1)
 
-        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i)
         do i = 1, nT, 1
             call wfunc( n,dt,SPI1(i),P1(i),zeta,W(:,i) )
-        end do    
-        !!$OMP END PARALLEL DO
+        end do
+        !$OMP END PARALLEL DO
 
-        !!$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
         do i = 1, nT, 1
             do j = 1, nT, 1
                 call ramixed(W(:,j),n,dt,zeta,P1(i),ra(:,i,j))
-                M(i,j) = ra(SPI1(i),i,j)/SPAT1(i)
+                M(i,j) = ra(SPI1(i),i,j)!/SPAT1(i)
                 if ( i /= j ) then
-                    M(i,j) = M(i,j)*0.618D0
+                    M(i,j) = M(i,j)*0.7D0
                 end if
             end do
         end do
-        !!$OMP END PARALLEL DO
+        !$OMP END PARALLEL DO
 
         call leastsqs(M,dR1,nT,nT)
 
@@ -2494,8 +2519,8 @@ subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(
         ! call adjustbaseline(a,n,dt)
         ! call adjustpeak(a,n,peak0)
 
-        call spamixed_dur(a,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
-        call errora_dur(abs(SPA),SPAT,nP,nD,aerror,merror)
+        call spamixed_endur(a,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
+        call errora_endur(abs(SPA),SPAT,nP,nD,aerror,merror)
 
         if (merror<minerr) then
             minerr = merror
@@ -2518,7 +2543,7 @@ subroutine adjustspectra_dur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bind(
     deallocate(M)
     deallocate(W)
     
-end subroutine adjustspectra_dur
+end subroutine adjustspectra_endur
 
 subroutine wfunc(n,dt,itm,P,zeta,wf) bind(c)
 
@@ -3324,8 +3349,8 @@ subroutine spectrum(acc,n,dt,zeta,P,np,SPA,SPI,SM) bind(c)
     return
 end subroutine spectrum
 
-subroutine spectrum_dur(acc,n,dt,zeta,P,np,DI,nD,SPA,SPI,SM) bind(c)
-!DIR$ ATTRIBUTES DLLEXPORT :: spectrum_dur
+subroutine spectrum_endur(acc,n,dt,zeta,P,np,DI,nD,SPA,SPI,SM) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: spectrum_endur
     integer, intent(in) :: n, np, SM, nD
     integer, intent(in) :: DI(nD)
     real(8), intent(in) :: dt,zeta
@@ -3341,13 +3366,13 @@ subroutine spectrum_dur(acc,n,dt,zeta,P,np,DI,nD,SPA,SPI,SM) bind(c)
 
     select case (SM)
         case (1)
-            call spafreq_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+            call spafreq_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
         case (2)
-            call spanmk_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+            call spanmk_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
         case (3)
-            call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+            call spamixed_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
         case default
-            call spamixed_dur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
+            call spamixed_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA1,SPI1)
     end select
 
     SPA1 = abs(SPA1)
@@ -3359,7 +3384,7 @@ subroutine spectrum_dur(acc,n,dt,zeta,P,np,DI,nD,SPA,SPI,SM) bind(c)
     deallocate(SPI1)
 
     return
-end subroutine spectrum_dur
+end subroutine spectrum_endur
 
 subroutine spectrumavd(acc,n,dt,zeta,P,np,SPA,SPI,SPV,SPD,SPE,SM) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: spectrumavd
@@ -3435,6 +3460,8 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     allocate(f(Nfft))
     allocate(Pf(Nfft/2))
     allocate(SPTf(Nfft/2))
+
+    af = (0.D0,0.D0)
     
     plan = fftw_plan_dft_1d(Nfft,af,a0,FFTW_BACKWARD,FFTW_ESTIMATE)
 
@@ -3450,9 +3477,8 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     do k = IPf1, IPf2, 1
         call random_number(phi)
         phi = phi*TWO_PI
-        !phi = PI/3.D0
         Saw = 2.0D0*zeta*SPTf(k)**2.0D0/(pi*2.0D0*pi*f(k)*&
-            (-2.0D0*dlog(-pi*dlog(0.85D0)/(2.0D0*pi*f(k)*(dt*n-dt)))))
+            (-2.0D0*log(-pi*log(0.85D0)/(2.0D0*pi*f(k)*(dt*n-dt)))))
         Ak = 2.0D0*sqrt(Saw*2.0D0*pi*(1.D0/dt)*Nfft/2)
         af(k) = Ak*(cmplx(cos(phi),sin(phi)))
         af(Nfft+2-k) = Ak*(cmplx(cos(phi),-sin(phi)))
@@ -3461,6 +3487,7 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     call fftw_execute_dft(plan,af,a0)
     a = real(a0(1:n))/Nfft
     call fftw_destroy_plan(plan)
+    call fftw_cleanup()
     
     deallocate(a0)
     deallocate(af)

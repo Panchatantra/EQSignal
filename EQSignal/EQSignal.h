@@ -29,29 +29,32 @@ public:
     void readnga(QString filename, bool NORM=false);
 
     void resample(int r);
-    void interpolate();
+    void interpolate(int r, int method=0);
     void recover();
     void trim(int ind1, int ind2);
     void confirm();
     void norm();
-    void calcAriasIntensity();
 
+    void calcAriasIntensity();
     void copyAccFrom(EQSignal *eqs);
 
     int *autoTrimEdges(int method=0, double thd1=0.02, double thd2=0.98, bool EZ=true);
 
     void savetxt(const char *filename);
     void savetxt(QString filename);
+
     void savecsv(const char *filename);
     void savecsv(QString filename);
 
     void savetxtsp(const char *filename);
     void savetxtsp(QString filename);
+
     void savecsvsp(const char *filename);
     void savecsvsp(QString filename);
 
     void savetxtsp(const char *filename,int indsp);
     void savetxtsp(QString filename,int indsp);
+
     void savecsvsp(const char *filename,int indsp);
     void savecsvsp(QString filename,int indsp);
 
@@ -67,13 +70,14 @@ public:
     void setupSP(int NSP, int np, double *p, int sm, bool pseudo, double *Zetas);
 
     void calcSP(bool allSP=false);
-
     void calcSP(int i, bool allSP=false);
 
     void calcFFT();
     void calcPSD(double olr=0.5, bool win=true);
-    void setSPT(double Tg, double amax, double scale);
 
+	// Set target spectrum
+    void setSPT(double Tg, double amax, double scale);
+	// Execute spectrum fitting
     void fitSP(int i, double tol, int mit, int fm, double peak0, int kpb=1);
 
     double getDR();
@@ -124,6 +128,7 @@ public:
     Spectra *getSP() {return sp;}
     Spectra *getSP(int i) {return sp+i;}
 
+	// Response of SDOF
     void response(double zeta, double P, int method=2);
     void responseNL(double zeta, double P, int method, double *cp);
 
@@ -153,6 +158,7 @@ public:
     Response getRes() {return res;}
 
     void endAlign(int ntp=8, bool raw=true, int IZC=1, bool AccOnly=false);
+
 private:
     int n, nsp, nfft, npsd;
     double dt, v0, d0;

@@ -171,7 +171,7 @@ private slots:
 
     void on_DFit_clicked();
 
-    void on_actionEnduranceTH_triggered();
+    void on_GenAW_clicked();
 
 private:
     void setupConnections();
@@ -220,7 +220,7 @@ private:
     void ViewTHData();
     void ViewSPData();
 
-    bool FIT_SPA;
+    bool FIT_SPA; // Control whether to show spectrum fitting information
 
 };
 

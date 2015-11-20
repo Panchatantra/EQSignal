@@ -41,9 +41,9 @@ extern "C"
 
 	extern void bwfilt(double *acc, int n, double dt, int ftype, int order, double f1, double f2);
 
-	extern void spectrum_dur(double *acc, int *n, double *dt, double *zeta, double *P, int *np, int *DI, int *nd, double *SPA, int *SPI, int *SM);
+    extern void spectrum_endur(double *acc, int *n, double *dt, double *zeta, double *P, int *np, int *DI, int *nd, double *SPA, int *SPI, int *SM);
 	extern void initartwave(double *a, int *n, double *dt, double *zeta, double *P, int *nP, double *SPT);
-	extern void adjustspectra_dur(double *acc, int *n, double *dt, double *zeta, double *P, int *nP, int *DI, int *nD, double *SPAT1, double *a, double *tol, int *mit, int *kpb);
+    extern void adjustspectra_endur(double *acc, int *n, double *dt, double *zeta, double *P, int *nP, int *DI, int *nD, double *SPAT1, double *a, double *tol, int *mit, int *kpb);
 }
 
 int static inline nextpow2(int n)
@@ -56,6 +56,23 @@ int static inline nextpow2(int n)
 	}
 
 	return m;
+}
+
+int static inline nextpow(int n, int base=2)
+{
+	int m = 1;
+
+	while (m<n)
+	{
+		m *= base;
+	}
+
+	return m;
+}
+
+bool static inline iseven(int n)
+{
+	return (n%2 == 0);
 }
 
 template<typename T>
@@ -154,7 +171,7 @@ void static inline normalize(double *a, int n)
 	for (int i = 0; i < n; i++) a[i] = a[i] / fabs(m);
 }
 
-template <typename T=double>
+template <typename T = double>
 T static inline *zeros(int n)
 {
     T *res = new T[n];

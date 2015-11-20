@@ -22,7 +22,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tabTH">
        <attribute name="title">
@@ -142,7 +142,6 @@
     <property name="title">
      <string>Run</string>
     </property>
-    <addaction name="actionGenWave"/>
     <addaction name="actionFFT"/>
     <addaction name="actionCalcSPA"/>
     <addaction name="actionFitSPA"/>
@@ -205,7 +204,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -227,6 +226,9 @@
            </item>
            <item>
             <widget class="QToolButton" name="Open">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>...</string>
              </property>
@@ -1278,13 +1280,95 @@
            </property>
           </widget>
          </item>
+         <item row="9" column="0" colspan="2">
+          <widget class="QPushButton" name="GenAW">
+           <property name="text">
+            <string>Generate Artificial Wave</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QDoubleSpinBox" name="DT">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>0.001000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.005000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.020000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_40">
+           <property name="text">
+            <string>dt</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QSpinBox" name="N">
+           <property name="minimum">
+            <number>100</number>
+           </property>
+           <property name="maximum">
+            <number>100000</number>
+           </property>
+           <property name="singleStep">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>2000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_41">
+           <property name="text">
+            <string>N</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QComboBox" name="EnvelopeType">
+           <item>
+            <property name="text">
+             <string>None</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Linear (for Endurance Waves)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Three Part</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_42">
+           <property name="text">
+            <string>EVLP</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="SPF">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-39</y>
+          <y>0</y>
           <width>205</width>
           <height>326</height>
          </rect>
@@ -1863,13 +1947,11 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpenLast"/>
-   <addaction name="actionEnduranceTH"/>
    <addaction name="actionSaveAcc"/>
    <addaction name="actionSaveData"/>
    <addaction name="actionSaveFig"/>
    <addaction name="actionViewData"/>
    <addaction name="actionBasicInfo"/>
-   <addaction name="actionGenWave"/>
    <addaction name="actionEndtoZero"/>
    <addaction name="actionFFT"/>
    <addaction name="actionCalcSPA"/>
@@ -2031,18 +2113,6 @@
    </property>
    <property name="text">
     <string>Toggle X-Scale</string>
-   </property>
-  </action>
-  <action name="actionEnduranceTH">
-   <property name="icon">
-    <iconset resource="mainwindow.qrc">
-     <normaloff>:/MainWindow/icons/Duration.png</normaloff>:/MainWindow/icons/Duration.png</iconset>
-   </property>
-   <property name="text">
-    <string>EnduranceTH</string>
-   </property>
-   <property name="toolTip">
-    <string>Generate Endurance Signal</string>
    </property>
   </action>
  </widget>

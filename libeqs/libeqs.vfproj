@@ -32,7 +32,7 @@
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
 				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool" CommandLine="copy x64\Debug\libeqs.dll E:\Linux\usr\bin\&#xA;copy x64\Debug\libeqs.lib ..\EQSignal\lib\eqs.lib"/>
+				<Tool Name="VFPostBuildEventTool" CommandLine="copy x64\Debug\libeqs.dll ..\x64\Debug\libeqs.dll&#xA;copy x64\Debug\libeqs.lib ..\EQSignal\lib\eqs.lib"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|x64" ConfigurationType="typeDynamicLibrary">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" MultiProcessorCompilation="true" OpenMP="OpenMPParallelCode" RuntimeLibrary="rtMultiThreadedDLL" UseMkl="mklParallel"/>
@@ -42,12 +42,12 @@
 				<Tool Name="VFCustomBuildTool"/>
 				<Tool Name="VFPreLinkEventTool"/>
 				<Tool Name="VFPreBuildEventTool"/>
-				<Tool Name="VFPostBuildEventTool" CommandLine="copy x64\Release\libeqs.dll E:\Linux\usr\bin\&#xA;copy x64\Release\libeqs.lib ..\EQSignal\lib\eqs.lib"/>
+				<Tool Name="VFPostBuildEventTool" CommandLine="copy x64\Release\libeqs.dll ..\x64\Release\libeqs.dll&#xA;copy x64\Release\libeqs.lib ..\EQSignal\lib\eqs.lib"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd;h;inc">
 		<File RelativePath="..\EQSignal\eqs\fftw3.fi"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
-		<File RelativePath="..\EQSignal\eqs\eqs.f90"/></Filter></Files>
+		<File RelativePath=".\eqs.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

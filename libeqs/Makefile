@@ -7,7 +7,7 @@ LIB_PATH = ../lib
 NAME = eqs
 
 ifeq ($(OS),Windows_NT)
-	DLL_PATH = E:/Linux/usr/bin
+	DLL_PATH = ../x64/Release
 	BLASLAPACK = $(DLL_PATH)/libblas.dll $(DLL_PATH)/liblapack.dll
 	# BLASLAPACK=libopenblas.dll
 	FFTW = $(DLL_PATH)/libfftw3-3.dll
@@ -16,7 +16,7 @@ ifeq ($(OS),Windows_NT)
 	LIB_EXT=lib
 	DEP_LIB=$(NAME).$(LIB_EXT)
 	F90FLAG = -shared -Ofast $(OPENMP)
-	PREFIX = E:/Linux/usr/bin
+	PREFIX = ../x64/Release
 else
 	BLASLAPACK = -lblas -llapack
 	FFTW = -lfftw3
@@ -62,9 +62,9 @@ $(STLIB): $(OBJ)
 install: $(DYLIB) 
 	cp $(DYLIB) $(PREFIX)
 ifeq ($(OS),Windows_NT)
-	cp $(DEP_LIB) ../lib
+	cp $(DEP_LIB) ../EQSignal/lib
 else
-	cp $(DYLIB) ../lib
+	cp $(DYLIB) ../EQSignal/lib
 endif
 
 uninstall:

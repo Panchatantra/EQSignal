@@ -26,8 +26,6 @@ int main(int argc, char *argv[])
 
     w.move(320, 0);
 
-//    w.readtxt("../EQSignal/data/AWX0.9-1.txt",0.02);
-
     w.show();
     splash->finish(&w);
 
