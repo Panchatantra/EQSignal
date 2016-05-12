@@ -124,7 +124,7 @@ void MainWindow::readtxt(const char *filename, double DT)
 
 void MainWindow::readtxt(QString filename, double DT)
 {
-    readtxt(filename.toUtf8().data(), DT);
+	readtxt(filename.toLocal8Bit().data(), DT);
 }
 
 void MainWindow::readnga(const char *filename)
@@ -147,7 +147,7 @@ void MainWindow::readnga(const char *filename)
 
 void MainWindow::readnga(QString filename)
 {
-	readnga(filename.toUtf8().data());
+	readnga(filename.toLocal8Bit().data());
 }
 
 QPen MainWindow::autoPen(int i)
@@ -338,9 +338,10 @@ void MainWindow::readConfig()
     QFile file(f);
     file.open(QIODevice::ReadOnly);
     QTextStream ts(&file);
+	ts.setCodec(QTextCodec::codecForName("UTF-8"));
 
     QString conf = ts.readAll();
-    QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
+	QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
 
     workDir = QDir(json["work_dir"].toString());
     lastFile = json["last_file"].toString();
@@ -726,8 +727,6 @@ void MainWindow::plotTH(bool changeTab)
                 .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
         ui->statusBar->showMessage(msg);
     }
-
-
 }
 
 void MainWindow::plotRES()
@@ -1821,7 +1820,6 @@ void MainWindow::on_actionOpen_triggered()
         ui->URL->setText(fileName);
         double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
         this->readtxt(fileName, DT);
-
     }
     else if (isAt2)
     {
@@ -1830,6 +1828,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     lastFile = fileName;
+	workDir = fdialog.directory();
 
 }
 
@@ -1946,7 +1945,7 @@ void MainWindow::on_actionSaveAcc_triggered()
         filename = fdialog.selectedFiles()[0];
         sf = fdialog.selectedNameFilter();
         if (sf == filters[0]) {
-            ofstream out(filename.toUtf8().data(), ios::out);
+			ofstream out(filename.toLocal8Bit().data(), ios::out);
             for (int i = 0; i<eqs->getN(); ++i)
                 if (saveAccWithTime)
                     out << time[i] << "\t" << acc[i] << endl;
@@ -1955,7 +1954,7 @@ void MainWindow::on_actionSaveAcc_triggered()
             out.close();
         }
         else if (sf == filters[1]) {
-            ofstream out(filename.toUtf8().data(), ios::out);
+			ofstream out(filename.toLocal8Bit().data(), ios::out);
             for (int i = 0; i<eqs->getN(); ++i)
                 if (saveAccWithTime)
                     out << time[i] << ", " << acc[i] << endl;

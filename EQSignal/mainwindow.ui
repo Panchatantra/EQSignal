@@ -22,7 +22,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabTH">
        <attribute name="title">
@@ -204,7 +204,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -212,7 +212,7 @@
           <x>0</x>
           <y>0</y>
           <width>205</width>
-          <height>530</height>
+          <height>588</height>
          </rect>
         </property>
         <attribute name="label">
@@ -236,21 +236,21 @@
            </item>
           </layout>
          </item>
-         <item row="2" column="0" colspan="2">
+         <item row="5" column="0" colspan="2">
           <widget class="QPushButton" name="Norm">
            <property name="text">
             <string>Norm</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0" colspan="2">
+         <item row="6" column="0" colspan="2">
           <widget class="QPushButton" name="Reload">
            <property name="text">
             <string>Reload</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
+         <item row="10" column="0">
           <widget class="QLabel" name="label_13">
            <property name="text">
             <string>FOrder</string>
@@ -260,7 +260,7 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
+         <item row="10" column="1">
           <widget class="QSpinBox" name="FOrder">
            <property name="minimum">
             <number>1</number>
@@ -273,7 +273,7 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
+         <item row="11" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
             <string>Freq 1</string>
@@ -283,7 +283,7 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
+         <item row="11" column="1">
           <widget class="QDoubleSpinBox" name="Freq1">
            <property name="decimals">
             <number>3</number>
@@ -299,7 +299,7 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="0">
+         <item row="12" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Freq 2</string>
@@ -309,7 +309,7 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="1">
+         <item row="12" column="1">
           <widget class="QDoubleSpinBox" name="Freq2">
            <property name="decimals">
             <number>3</number>
@@ -328,7 +328,7 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
+         <item row="13" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>FType</string>
@@ -338,7 +338,7 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
+         <item row="13" column="1">
           <widget class="QComboBox" name="FilterType">
            <item>
             <property name="text">
@@ -362,7 +362,7 @@
            </item>
           </widget>
          </item>
-         <item row="11" column="0" colspan="2">
+         <item row="14" column="0" colspan="2">
           <widget class="QCheckBox" name="RawON">
            <property name="text">
             <string>Draw Raw</string>
@@ -372,14 +372,14 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="0" colspan="2">
+         <item row="15" column="0" colspan="2">
           <widget class="QPushButton" name="Filt">
            <property name="text">
             <string>Filt</string>
            </property>
           </widget>
          </item>
-         <item row="13" column="0">
+         <item row="16" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Order 1</string>
@@ -389,10 +389,10 @@
            </property>
           </widget>
          </item>
-         <item row="13" column="1">
+         <item row="16" column="1">
           <widget class="QSpinBox" name="Order1"/>
          </item>
-         <item row="14" column="0">
+         <item row="17" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Order 2</string>
@@ -402,14 +402,14 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="1">
+         <item row="17" column="1">
           <widget class="QSpinBox" name="Order2">
            <property name="value">
             <number>2</number>
            </property>
           </widget>
          </item>
-         <item row="15" column="0">
+         <item row="18" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
             <string>DM</string>
@@ -419,7 +419,7 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="1">
+         <item row="18" column="1">
           <widget class="QComboBox" name="DetrendMethod">
            <property name="currentIndex">
             <number>0</number>
@@ -436,7 +436,7 @@
            </item>
           </widget>
          </item>
-         <item row="16" column="0" colspan="2">
+         <item row="19" column="0" colspan="2">
           <widget class="QPushButton" name="Detrend">
            <property name="text">
             <string>Detrend</string>
@@ -450,14 +450,14 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="8" column="0">
           <widget class="QLabel" name="label_38">
            <property name="text">
             <string>RSR</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="8" column="1">
           <widget class="QSpinBox" name="RSR">
            <property name="minimum">
             <number>2</number>
@@ -470,31 +470,51 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
+         <item row="9" column="0" colspan="2">
           <widget class="QPushButton" name="Resample">
            <property name="text">
             <string>Resample</string>
            </property>
           </widget>
          </item>
-         <item row="17" column="0" colspan="2">
+         <item row="20" column="0" colspan="2">
           <widget class="QPushButton" name="AccEndsToZero">
            <property name="text">
             <string>Acc Ends to Zero</string>
            </property>
           </widget>
          </item>
-         <item row="19" column="0" colspan="2">
+         <item row="22" column="0" colspan="2">
           <widget class="QPushButton" name="Confirm_Pre">
            <property name="text">
             <string>Confirm</string>
            </property>
           </widget>
          </item>
-         <item row="18" column="0" colspan="2">
+         <item row="21" column="0" colspan="2">
           <widget class="QPushButton" name="Recover">
            <property name="text">
             <string>Recover</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="V0"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_43">
+           <property name="text">
+            <string>V0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QDoubleSpinBox" name="D0"/>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_44">
+           <property name="text">
+            <string>D0</string>
            </property>
           </widget>
          </item>
@@ -1142,7 +1162,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
+          <width>241</width>
           <height>287</height>
          </rect>
         </property>
