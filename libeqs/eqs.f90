@@ -2151,7 +2151,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     allocate(f(Nfft))
     allocate(Pf(Nfft/2))
     allocate(Rf(Nfft/2))
-    a = acc
+    a = acc*1.D0
 
     call fftfreqs(Nfft,1.d0/dt,f)
     Pf(2:Nfft/2) = 1.d0/f(2:Nfft/2)
@@ -2180,7 +2180,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
     ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
     minerr = merror
-    best = a
+    best = a*1.D0
     iter = 1
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
@@ -2218,11 +2218,11 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
         iter = iter + 1
         if (merror < minerr) then
             minerr = merror
-            best = a
+            best = a*1.D0
         end if
     end do
 
-    if (kpb>0) a = best
+    if (kpb>0) a = best*1.D0
 
     call fftw_destroy_plan(plan)
     call fftw_destroy_plan(iplan)
@@ -2245,8 +2245,11 @@ subroutine adjustpeak(a,n,peak0) bind(c)
     real(C_DOUBLE), intent(inout) :: a(n)
     real(C_DOUBLE), intent(in) :: peak0
 
-    integer :: pk = 0, i
-    real(C_DOUBLE) :: peak = 0.d0
+    integer :: pk, i
+    real(C_DOUBLE) :: peak
+    
+    pk = 0
+    peak = 0.D0
 
     do i = 1, n, 1
         if ( abs(a(i))>peak ) then
@@ -2263,6 +2266,7 @@ subroutine adjustpeak(a,n,peak0) bind(c)
     if ( peak<peak0 ) then
         a(pk) = sign(peak0,peak)
     end if
+    
 end subroutine adjustpeak
 
 subroutine adjustbaseline(a,n,dt) bind(c)
@@ -2318,7 +2322,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     allocate(W(n,nP))
 
     peak0 = maxval(abs(acc), dim=1)
-    a = acc
+    a = acc*1.D0
 
     iter = 1
     call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)
@@ -2328,7 +2332,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     if (aerror <= tol .and. merror<=3.0d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
     minerr = merror
-    best = a
+    best = a*1.D0
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
         dR = SPA*(SPAT/abs(SPA)-1.d0)/SPAT
@@ -2356,7 +2360,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
         do i = 1, nP, 1
             a = a + dR(i)*W(:,i)
         end do
-
+        
         call adjustpeak(a,n,peak0)
         ! call adjustbaseline(a,n,dt)
         ! call adjustpeak(a,n,peak0)
@@ -2366,13 +2370,13 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
         call errora(abs(SPA),SPAT,nP,aerror,merror)
         if (merror<minerr) then
             minerr = merror
-            best = a
+            best = a*1.D0
         end if
         !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
         iter = iter + 1
 
     end do
-    if (kpb>0) a = best
+    if (kpb>0) a = best*1.D0
 
     deallocate(best)
     deallocate(SPA)

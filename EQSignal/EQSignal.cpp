@@ -147,7 +147,7 @@ EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
         acc0[i] = acc[i];
     }
 
-    this->a2vd();
+    a2vd();
 
     nfft = nextpow2(n);
     npsd = nfft/NS;
@@ -190,33 +190,44 @@ EQSignal::~EQSignal()
     //if (psd != 0)   delete [] psd;
 }
 
-void EQSignal::readtxt(const char *filename, double DT, bool NORM)
+void EQSignal::readtxt(const char *filename, double DT, bool NORM, bool singleCol)
 {
     n = countFileLines(filename);
     dt = DT;
 
-    this->reallocateTH();
+    reallocateTH();
 
     ifstream in(filename);
 
-    for (int i = 0; i < n; ++i)
-    {
-        t[i] = i*dt;
-        in >> acc[i];
-        acc0[i] = acc[i];
-    }
+	if (singleCol)
+	{
+		for (int i = 0; i < n; ++i)
+		{
+			t[i] = i*dt;
+			in >> acc[i];
+			acc0[i] = acc[i];
+		}
+	}
+	else
+	{
+		for (int i = 0; i < n; ++i)
+		{
+			in >> t[i] >> acc[i];
+			acc0[i] = acc[i];
+		}
+	}	
 
     in.close();
 
-    if (NORM) this->norm();
+    if (NORM) norm();
 
-    this->a2vd();
+    a2vd();
 
 }
 
-void EQSignal::readtxt(QString filename, double DT, bool NORM)
+void EQSignal::readtxt(QString filename, double DT, bool NORM, bool singleCol)
 {
-    this->readtxt(filename.toUtf8().data(),DT,NORM);
+	readtxt(filename.toUtf8().data(), DT, NORM, singleCol);
 }
 
 void EQSignal::readnga(const char *filename, bool NORM)
@@ -224,9 +235,10 @@ void EQSignal::readnga(const char *filename, bool NORM)
     ifstream in(filename, ios::in);
     string line;
     for (int i = 0; i < 3; i++) getline(in, line);
-	in >> n >> dt >> line >> line;
+	// in >> n >> dt >> line >> line; // Order format
+	in >> line >> n >> line >> line >> dt >> line;
 
-    this->reallocateTH();
+    reallocateTH();
 
     for (int i = 0; i < n; i++)
     {
@@ -237,14 +249,14 @@ void EQSignal::readnga(const char *filename, bool NORM)
 
     in.close();
 
-    if (NORM) this->norm();
+    if (NORM) norm();
 
-    this->a2vd();
+    a2vd();
 }
 
 void EQSignal::readnga(QString filename, bool NORM)
 {
-    this->readnga(filename.toUtf8().data(), NORM);
+    readnga(filename.toUtf8().data(), NORM);
 }
 
 void EQSignal::resample(int r)
@@ -255,7 +267,7 @@ void EQSignal::resample(int r)
 
     n = nr;
     dt = dt*r;
-    this->reallocateTH();
+    reallocateTH();
 
     for (int i = 0; i < n; ++i)
     {
@@ -263,7 +275,7 @@ void EQSignal::resample(int r)
         acc0[i] = acc[i];
     }
 
-    this->a2vd();
+    a2vd();
 
     delete [] ar;
 }
@@ -348,10 +360,10 @@ void EQSignal::trim(int ind1, int ind2)
 {
     n = ind2 - ind1 + 1;
 	double *a = arraySlice(acc, ind1, ind2);
-    this->reallocateTH();
+    reallocateTH();
 
 	for (int i = 0; i < n; i++) { acc[i] = a[i]; acc0[i] = a[i]; }
-    this->a2vd();
+    a2vd();
 }
 
 void EQSignal::confirm()
@@ -361,7 +373,7 @@ void EQSignal::confirm()
 
 void EQSignal::a2vd(bool raw, bool rat)
 {
-    if (raw) this->recover();
+    if (raw) recover();
 
     if (rat) ratacc2vd(acc,vel,disp,&n,&dt,&v0,&d0);
     else acc2vd(acc,vel,disp,&n,&dt,&v0,&d0);
@@ -370,9 +382,8 @@ void EQSignal::a2vd(bool raw, bool rat)
 void EQSignal::norm()
 {
 	normalize(acc, n);
-	normalize(acc0, n);
-
-    this->a2vd();
+    a2vd();
+	confirm();
 }
 
 void EQSignal::calcAriasIntensity()
@@ -401,7 +412,7 @@ int *EQSignal::autoTrimEdges(int method, double thd1, double thd2, bool EZ)
     double pk, th1, th2;
     switch (method) {
     case 0:
-        this->calcAriasIntensity();
+        calcAriasIntensity();
         for (int i = 0; i < n; ++i)
         {
             if (Ia[i]>thd1) { edges[0]=i; break; }
@@ -439,12 +450,12 @@ int *EQSignal::autoTrimEdges(int method, double thd1, double thd2, bool EZ)
 
 void EQSignal::detrend(int method, int oh, int ol, bool raw)
 {
-    if (raw) this->recover();
+    if (raw) recover();
 
     if (method == 0) polyblc(acc,&n,&oh,&ol,&dt,&v0,&d0);
     else polydetrend(acc,&n,&oh,&ol);
 
-    this->a2vd();
+    a2vd();
 }
 
 void EQSignal::align(int method, int ntp, int oh, int ol,
@@ -452,8 +463,8 @@ void EQSignal::align(int method, int ntp, int oh, int ol,
 {
     if (raw)
     {
-        this->recover();
-        this->a2vd();
+        recover();
+        a2vd();
     }
 
     for (int i = 0; i < n; i++)
@@ -500,7 +511,7 @@ void EQSignal::align(int method, int ntp, int oh, int ol,
     }
 
     delete [] tp;
-    this->a2vd();
+    a2vd();
 }
 
 void EQSignal::endAlign(int ntp, bool raw, int IZC, bool AccOnly)
@@ -547,11 +558,11 @@ void EQSignal::endAlign(int ntp, bool raw, int IZC, bool AccOnly)
 void EQSignal::filt(int ftype, int order, double f1, double f2, bool raw)
 {
 
-    if (raw) this->recover();
+    if (raw) recover();
 
 	bwfilt(acc, n, dt, ftype, order, f1, f2);
 
-    this->a2vd();
+    a2vd();
 }
 
 void EQSignal::setupSP(int NSP, int np, double P1, double P2, int dm, int sm, bool pseudo, double *Zetas)
@@ -639,10 +650,8 @@ void EQSignal::setSPT(double Tg, double amax, double scale)
 void EQSignal::fitSP(int i, double tol, int mit, int fm, double peak0, int kpb)
 {
     acc = sp[i].fitSP(tol,mit,fm,peak0,kpb);
-    this->confirm();
+    confirm();
 }
-
-
 
 double EQSignal::getDR()
 {
@@ -725,7 +734,7 @@ void EQSignal::savetxt(const char *filename)
 
 void EQSignal::savetxt(QString filename)
 {
-    this->savetxt(filename.toUtf8().data());
+    savetxt(filename.toUtf8().data());
 }
 
 void EQSignal::savecsv(const char *filename)
@@ -745,13 +754,13 @@ void EQSignal::savecsv(const char *filename)
 
 void EQSignal::savecsv(QString filename)
 {
-    this->savecsv(filename.toUtf8().data());
+    savecsv(filename.toUtf8().data());
 }
 
 void EQSignal::savetxtsp(const char *filename)
 {
     ofstream out(filename, ios::out);
-    double ***data = this->getSPData();
+    double ***data = getSPData();
     int np = sp->getNP();
     
     for (int i = 0; i < nsp; ++i)
@@ -783,13 +792,13 @@ void EQSignal::savetxtsp(const char *filename)
 
 void EQSignal::savetxtsp(QString filename)
 {
-    this->savetxtsp(filename.toUtf8().data());
+    savetxtsp(filename.toUtf8().data());
 }
 
 void EQSignal::savecsvsp(const char *filename)
 {
     ofstream out(filename, ios::out);
-    double ***data = this->getSPData();
+    double ***data = getSPData();
     int np = sp->getNP();
 
     for (int i = 0; i < nsp; ++i)
@@ -821,7 +830,7 @@ void EQSignal::savecsvsp(const char *filename)
 
 void EQSignal::savecsvsp(QString filename)
 {
-    this->savecsvsp(filename.toUtf8().data());
+    savecsvsp(filename.toUtf8().data());
 }
 
 void EQSignal::savetxtsp(const char *filename, int indsp)
@@ -848,7 +857,7 @@ void EQSignal::savetxtsp(const char *filename, int indsp)
 
 void EQSignal::savetxtsp(QString filename, int indsp)
 {
-    this->savetxtsp(filename.toUtf8().data(),indsp);
+    savetxtsp(filename.toUtf8().data(),indsp);
 }
 
 void EQSignal::savecsvsp(const char *filename, int indsp)
@@ -875,7 +884,7 @@ void EQSignal::savecsvsp(const char *filename, int indsp)
 
 void EQSignal::savecsvsp(QString filename, int indsp)
 {
-    this->savecsvsp(filename.toUtf8().data(),indsp);
+    savecsvsp(filename.toUtf8().data(),indsp);
 }
 
 void EQSignal::setAcc(double *a)

@@ -23,8 +23,8 @@ public:
     EQSignal(double *a, int N, double DT, double V0=0.0, double D0=0.0);
     ~EQSignal();
 
-    void readtxt(const char *filename, double DT=0.02, bool NORM=false);
-    void readtxt(QString filename, double DT=0.02, bool NORM=false);
+	void readtxt(const char *filename, double DT = 0.02, bool NORM = false, bool singleCol=true);
+	void readtxt(QString filename, double DT = 0.02, bool NORM = false, bool singleCol = true);
     void readnga(const char *filename, bool NORM=false);
     void readnga(QString filename, bool NORM=false);
 

@@ -137,6 +137,8 @@
      <string>About</string>
     </property>
     <addaction name="actionBasicInfo"/>
+    <addaction name="actionGen_Machine_Code"/>
+    <addaction name="actionRegister"/>
    </widget>
    <widget class="QMenu" name="menuRun">
     <property name="title">
@@ -162,8 +164,8 @@
   <widget class="QDockWidget" name="dockToolBox">
    <property name="minimumSize">
     <size>
-     <width>240</width>
-     <height>400</height>
+     <width>242</width>
+     <height>402</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -211,7 +213,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>205</width>
+          <width>207</width>
           <height>588</height>
          </rect>
         </property>
@@ -525,7 +527,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
+          <width>224</width>
           <height>287</height>
          </rect>
         </property>
@@ -694,7 +696,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
+          <width>224</width>
           <height>287</height>
          </rect>
         </property>
@@ -933,7 +935,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>222</width>
+          <width>224</width>
           <height>287</height>
          </rect>
         </property>
@@ -1389,7 +1391,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>205</width>
+          <width>207</width>
           <height>326</height>
          </rect>
         </property>
@@ -2133,6 +2135,16 @@
    </property>
    <property name="text">
     <string>Toggle X-Scale</string>
+   </property>
+  </action>
+  <action name="actionGen_Machine_Code">
+   <property name="text">
+    <string>Gen Machine Code</string>
+   </property>
+  </action>
+  <action name="actionRegister">
+   <property name="text">
+    <string>Register</string>
    </property>
   </action>
  </widget>

@@ -37,8 +37,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void readtxt(const char *filename, double dt);
-    void readtxt(QString filename, double dt);
+	void readtxt(const char *filename, double dt, bool singleCol=true);
+	void readtxt(QString filename, double dt, bool singleCol=true);
     void readnga(const char *filename);
     void readnga(QString filename);
 
@@ -173,6 +173,10 @@ private slots:
 
     void on_GenAW_clicked();
 
+    void on_actionGen_Machine_Code_triggered();
+
+    void on_actionRegister_triggered();
+
 private:
     void setupConnections();
 	void initViewTH();
@@ -183,6 +187,8 @@ private:
     void initViewFFT();
     void initViewEnergy();
     void initTable();
+	
+	void checkLicense();
 
     void clearView(QCustomPlot *qplot);
 

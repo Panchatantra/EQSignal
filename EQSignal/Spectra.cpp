@@ -203,8 +203,13 @@ void Spectra::calc(bool all)
 double *Spectra::fitSP(double tol, int mit, int fm, double peak0, int kpb)
 {
     double *a = new double[n];
+	double p = 1.0;
+
+	p = peak(acc, n);
     peakScale(acc, n, peak0);
+	p = peak(acc, n);
     fitspectrum(acc,&n,&dt,&zeta,P,&NP,SPT,a,&tol,&mit,&fm,&kpb);
+	p = peak(a, n);
     return a;
 }
 

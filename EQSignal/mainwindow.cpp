@@ -11,6 +11,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#endif
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
@@ -41,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     normOnRead = false;
     FIT_SPA = false;
     XS_LOG = true;
+    eqsName = QString("EQSignal");
 
     readConfig();
     ui->Paras->setCurrentIndex(0);
@@ -57,6 +62,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     #ifdef Q_OS_MAC
     ui->menuBar->setParent(0);
 	#endif
+
+	#ifdef Q_OS_WIN
+	checkLicense();
+	#endif
+
 
 }
 
@@ -104,10 +114,10 @@ void MainWindow::setupConnections()
             this, &MainWindow::sptw_applyButton_clicked);
 }
 
-void MainWindow::readtxt(const char *filename, double DT)
+void MainWindow::readtxt(const char *filename, double DT, bool singleCol)
 {
-	eqs->readtxt(filename, DT);
-	eqs0->readtxt(filename, DT);
+	eqs->readtxt(filename, DT, false, singleCol);
+	eqs0->readtxt(filename, DT, false, singleCol);
 
 	int N = eqs->getN();
 	ui->Ind1->setValue(0);
@@ -122,9 +132,9 @@ void MainWindow::readtxt(const char *filename, double DT)
     plotTH();
 }
 
-void MainWindow::readtxt(QString filename, double DT)
+void MainWindow::readtxt(QString filename, double DT, bool singleCol)
 {
-	readtxt(filename.toLocal8Bit().data(), DT);
+	readtxt(filename.toLocal8Bit().data(), DT, singleCol);
 }
 
 void MainWindow::readnga(const char *filename)
@@ -1605,10 +1615,11 @@ void MainWindow::on_Reload_clicked()
     QString filename = ui->URL->text();
 
     if (filename.endsWith(".txt"))
-    {
-        double DT;
-        DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-        this->readtxt(filename, DT);
+    {	
+		double DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
+		bool singleCol = (NC == 1)? true : false;
+        this->readtxt(filename, DT, singleCol);
     }
     else if (filename.endsWith(".at2"))
     {
@@ -1818,8 +1829,10 @@ void MainWindow::on_actionOpen_triggered()
     if (isTxt)
     {
         ui->URL->setText(fileName);
-        double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-        this->readtxt(fileName, DT);
+		double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
+		bool singleCol = (NC == 1) ? true : false;
+		this->readtxt(fileName, DT, singleCol);
     }
     else if (isAt2)
     {
@@ -2234,10 +2247,14 @@ void MainWindow::on_SPFit_clicked()
         double Emin = Emax;
         double *acc = new double[eqs->getN()];
 
+		double p = 1.0;
+
         while ( (Emax > 3.0*tol || Emean > tol) && iter<mit )
 		{
             iter ++;
-            eqs->fitSP(i, tol, 1, fm, peak0, 0);
+			p = eqs->getPeakAcc();
+			eqs->fitSP(i, tol, 1, fm, peak0, kpb);
+			p = eqs->getPeakAcc();
             eqs->calcSP(i);
             spi->fitError(Emax, Emean, CV);
 
@@ -2300,7 +2317,7 @@ void MainWindow::on_SPFit_clicked()
         while ( (Emax > 3.0*tol || Emean > tol) && iter<mit)
         {
             iter ++;
-            eqs->fitSP(i, tol, 1, 1, peak0, 0);
+			eqs->fitSP(i, tol, 1, 1, peak0, kpb);
             if (iter%5==0 && Emean<tol)
                 eqs->fitSP(i, tol, 10, 0, peak0, 0);
 
@@ -2581,9 +2598,10 @@ void MainWindow::on_actionOpenLast_triggered()
     if (isTxt)
     {
         ui->URL->setText(fileName);
-        double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-        this->readtxt(fileName, DT);
-
+		double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
+		bool singleCol = (NC == 1) ? true : false;
+		this->readtxt(fileName, DT, singleCol);
     }
     else if (isAt2)
     {
@@ -2847,4 +2865,106 @@ void MainWindow::on_GenAW_clicked()
     eqs->setSPT(Tg, PAF, SF);
 
     plotTH();
+}
+
+
+
+void MainWindow::checkLicense()
+{
+#ifdef Q_OS_WIN
+    QString lic("/license.lic");
+    lic.prepend(QApplication::applicationDirPath());
+
+	QFile licFile(lic);
+    if (licFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&licFile);
+		DWORD inRN;
+        in >> inRN;
+
+        DWORD  VolumeSerialNumber;
+        wchar_t  VolumeName[256];
+
+        GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
+		
+		DWORD RN = VolumeSerialNumber;
+		while (RN > 999999L)
+		{
+            RN = RN / 10L;
+		}
+		RN = RN * 3L + 851228L;
+
+        if (RN == inRN)
+        {
+            ui->centralWidget->show();
+        }
+        else
+        {
+            ui->centralWidget->hide();
+            QMessageBox::warning(0,"EQSignal",tr("Invalid Register Number! \n Press \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number."));
+        }
+    }
+    else
+    {
+        QMessageBox::warning(0,"EQSignal",tr("License File not Found! \n Press \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number."));
+        ui->centralWidget->hide();
+    }
+#endif
+}
+
+void MainWindow::on_actionGen_Machine_Code_triggered()
+{
+
+#ifdef Q_OS_WIN
+    DWORD  VolumeSerialNumber;
+    wchar_t  VolumeName[256];
+
+    GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
+
+    QMessageBox::information(0, tr("EQSignal"), tr("Machine Code: EQSignal-%1.\nSend it to 2011_panchao@tongji.edu.cn to apply for a free license serial number.").arg(VolumeSerialNumber));
+#else
+    QMessageBox::information(0,tr("EQSignal"),tr("Windows Only."));
+#endif
+}
+
+void MainWindow::on_actionRegister_triggered()
+{
+#ifdef Q_OS_WIN
+    QString lic("/license.lic");
+    lic.prepend(QApplication::applicationDirPath());
+
+    DWORD  VolumeSerialNumber;
+    wchar_t  VolumeName[256];
+
+    GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
+
+	DWORD RN = VolumeSerialNumber;
+	while (RN > 999999L)
+	{
+		RN = RN / 10L;
+	}
+	RN = RN * 3L + 851228L;
+
+	DWORD inRN = QInputDialog::getInt(0, "EQSignal", tr("Input Register Number:"));
+
+    if (RN == inRN)
+    {
+        QFile licFile(lic);
+        licFile.open(QIODevice::WriteOnly);
+        QTextStream out(&licFile);
+
+        out << inRN << endl;
+
+        QMessageBox::information(0, tr("EQSignal"), tr("Valid Register Number!"));
+        ui->centralWidget->show();
+
+        licFile.close();
+    }
+    else
+    {
+        QMessageBox::warning(0, tr("EQSignal"), tr("Invalid Register Number!\nPress \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number." ));
+    }
+#else
+    QMessageBox::information(0,tr("EQSignal"),tr("Windows Only."));
+#endif
 }
