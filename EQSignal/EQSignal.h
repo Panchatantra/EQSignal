@@ -25,8 +25,8 @@ public:
 
 	void readtxt(const char *filename, double DT = 0.02, bool NORM = false, bool singleCol=true);
 	void readtxt(QString filename, double DT = 0.02, bool NORM = false, bool singleCol = true);
-    void readnga(const char *filename, bool NORM=false);
-    void readnga(QString filename, bool NORM=false);
+	void readnga(const char *filename, bool NORM = false, bool IsOld = false);
+	void readnga(QString filename, bool NORM = false, bool IsOld = false);
 
     void resample(int r);
     void interpolate(int r, int method=0);
@@ -72,11 +72,15 @@ public:
     void calcSP(bool allSP=false);
     void calcSP(int i, bool allSP=false);
 
+	void calcNLSP(double mu, int model, double rk, double alpha);
+	void calcNLSP(int i, double mu, int model, double rk, double alpha);
+
     void calcFFT();
     void calcPSD(double olr=0.5, bool win=true);
 
 	// Set target spectrum
-    void setSPT(double Tg, double amax, double scale);
+	void setSPT(double Tg, double PAF, double scale);
+    void setSPT(double *p, double *spt, int np, int drr);
 	// Execute spectrum fitting
     void fitSP(int i, double tol, int mit, int fm, double peak0, int kpb=1);
 
@@ -122,6 +126,8 @@ public:
     double **getTHData();
     double **getSPData(int i);
     double ***getSPData();
+
+    double *getSPTData();
 
     double **getEnergy();
 

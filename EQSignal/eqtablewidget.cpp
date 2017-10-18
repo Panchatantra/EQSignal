@@ -5,12 +5,12 @@
 
 double *EQTableWidget::getColumnData(int col)
 {
-    int nc = this->columnCount();
-    double *data = new double[nc];
+    int nr = this->rowCount();
+    double *data = new double[nr];
 
     QTableWidgetItem *item;
 
-    for (int i=0; i<nc; ++i) {
+    for (int i=0; i<nr; ++i) {
         item = this->item(i,col);
         if (0 == item)
             data[i] = 0.0;
@@ -22,12 +22,12 @@ double *EQTableWidget::getColumnData(int col)
 
 double *EQTableWidget::getRowData(int row)
 {
-    int nr = this->rowCount();
-    double *data = new double[nr];
+    int nc = this->columnCount();
+    double *data = new double[nc];
 
     QTableWidgetItem *item;
 
-    for (int i=0; i<nr; ++i) {
+    for (int i=0; i<nc; ++i) {
         item = this->item(row,i);
         if (0 == item)
             data[i] = 0.0;
@@ -35,6 +35,24 @@ double *EQTableWidget::getRowData(int row)
             data[i] = item->text().toDouble();
     }
     return data;
+}
+
+void EQTableWidget::setColumn(int col, double *data)
+{
+    int nr = rowCount();
+
+    for (int i=0; i<nr; ++i) {
+		setItem(i, col, new QTableWidgetItem(QString::number(data[i])));
+    }
+}
+
+void EQTableWidget::setColumn(int col, QStringList data)
+{
+    int nr = rowCount();
+
+    for (int i=0; i<nr; ++i) {
+        setItem(i, col, new QTableWidgetItem(data[i]));
+    }
 }
 
 void EQTableWidget::keyPressEvent(QKeyEvent *e)

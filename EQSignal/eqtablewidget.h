@@ -13,6 +13,9 @@ public:
     double *getColumnData(int col);
     double *getRowData(int row);
 
+    void setColumn(int col, double *data);
+    void setColumn(int col, QStringList data);
+
 signals:
     void rowNumberChanged(int);
 

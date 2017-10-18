@@ -364,6 +364,7 @@ subroutine error(y,y0,n,aerror,merror) bind(c)
 
     e = (y(2:n-1) - y0(2:n-1))/y0(2:n-1)
 
+    !aerror = sum(abs(e))/dble(n-2)
     aerror = sqrt(sum(e*e)/dble(n-2))
     merror = maxval(abs(e), dim=1)
 
@@ -383,6 +384,7 @@ subroutine errora(y,y0,n,aerror,merror) bind(c)
 
     e = (y - y0)/y0
 
+    !aerror = sum(abs(e))/dble(n)
     aerror = sqrt(sum(e*e)/dble(n))
     merror = maxval(abs(e), dim=1)
 
@@ -405,6 +407,7 @@ subroutine errora_endur(y,y0,n,m,aerror,merror) bind(c)
     do i = 1, n, 1
         do j = 1, m, 1
             eij = (y(i,j) - y0(i,j))/y0(i,j)
+            !aerror = aerror + abs(eij)
             aerror = aerror + eij*eij
             if ( merror < abs(eij) ) merror = abs(eij)
         end do
@@ -1112,10 +1115,10 @@ subroutine polyroots(p,m,r,l) bind(c)
     end do
 
     lwork = -1
-    call dgeev ( "N", "N", l, A, l, wr, wi, temp, l, temp, l, temp, lwork, info )
+    call dgeev( "N", "N", l, A, l, wr, wi, temp, l, temp, l, temp, lwork, info )
     lwork = int(temp(1))
     allocate(work(lwork))
-    call dgeev ( "N", "N", l, A, l, wr, wi, temp, l, temp, l, work, lwork, info )
+    call dgeev( "N", "N", l, A, l, wr, wi, temp, l, temp, l, work, lwork, info )
 
     do i = 1, l, 1
         r(i) = cmplx(wr(i),wi(i))
@@ -1282,7 +1285,7 @@ module eqs
 
     ! 本模块中一些函数的命名规则：
     ! 1. SDOF响应求解函数：rXXX 以r开头，当仅输出加速度响应时后跟a，XXX可能为freq, nmk, mixed
-    ! 2. SDOF反应谱求解函数：spXXX 以r开头，当仅输出加速度谱时后跟a，XXX可能为freq, nmk, mixed
+    ! 2. SDOF反应谱求解函数：spXXX 以sp开头，当仅输出加速度谱时后跟a，XXX可能为freq, nmk, mixed
 
 contains
 
@@ -1344,6 +1347,25 @@ subroutine spamixed_endur(acc,n,dt,zeta,P,nP,DI,nD,SPA,SPI) bind(c)
     deallocate(ara)
 
 end subroutine spamixed_endur
+
+subroutine spamixed_md(acc,n,dt,zeta,P,nP,nD,SPA,SPI) bind(c)
+! 多阻尼比反应谱
+    integer(C_INT), intent(in) :: n, nP, nD
+    real(C_DOUBLE), intent(in) :: dt, zeta(nd)
+    real(C_DOUBLE), intent(in) :: acc(n), P(nP)
+    real(C_DOUBLE), intent(out) :: SPA(nP,nd)
+    integer(C_INT), intent(out) :: SPI(nP,nd)
+
+    integer(C_INT) :: i
+    real(C_DOUBLE) :: SPVk, SPDk, SPEk
+
+    if ( nd < 2 ) return
+
+    do i = 1, nd, 1
+        call spamixed(acc,n,dt,zeta(i),P,nP,SPA(:,i),SPI(:,i))
+    end do
+
+end subroutine spamixed_md
 
 subroutine pspamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     integer, intent(in) :: n, nP
@@ -2179,7 +2201,7 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
     R = SPAT/abs(SPA)
     call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
     ! write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
-    minerr = merror
+    minerr = aerror
     best = a*1.D0
     iter = 1
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
@@ -2216,8 +2238,8 @@ subroutine fitspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
         call decrlininterp(P,R,nP,Pf(IPf1:IPf2),Rf(IPf1:IPf2),NPf)
         ! write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
         iter = iter + 1
-        if (merror < minerr) then
-            minerr = merror
+        if (aerror < minerr) then
+            minerr = aerror
             best = a*1.D0
         end if
     end do
@@ -2331,7 +2353,7 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
 
     if (aerror <= tol .and. merror<=3.0d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
-    minerr = merror
+    minerr = aerror
     best = a*1.D0
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
 
@@ -2368,8 +2390,8 @@ subroutine adjustspectra(acc,n,dt,zeta,P,nP,SPAT,a,tol,mit,kpb) bind(c)
         SPIp = SPI
         call spamixed(a,n,dt,zeta,P,nP,SPA,SPI)
         call errora(abs(SPA),SPAT,nP,aerror,merror)
-        if (merror<minerr) then
-            minerr = merror
+        if (aerror<minerr) then
+            minerr = aerror
             best = a*1.D0
         end if
         !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
@@ -2484,7 +2506,7 @@ subroutine adjustspectra_endur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bin
 
     if (aerror <= tol .and. merror<=3.0d0*tol) return
     !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
-    minerr = merror
+    minerr = aerror
     best = a
 
     do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
@@ -2526,8 +2548,8 @@ subroutine adjustspectra_endur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bin
         call spamixed_endur(a,n,dt,zeta,P,nP,DI,nD,SPA,SPI)
         call errora_endur(abs(SPA),SPAT,nP,nD,aerror,merror)
 
-        if (merror<minerr) then
-            minerr = merror
+        if (aerror<minerr) then
+            minerr = aerror
             best = a
         end if
         !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
@@ -2548,6 +2570,123 @@ subroutine adjustspectra_endur(acc,n,dt,zeta,P,nP,DI,nD,SPAT0,a,tol,mit,kpb) bin
     deallocate(W)
     
 end subroutine adjustspectra_endur
+
+subroutine adjustspectra_md(acc,n,dt,zeta,P,nP,nD,SPAT,nT,a,tol,mit,kpb) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: adjustspectra_md
+    integer, intent(in) :: n, nP, mit, kpb, nD, nT
+    real(8), intent(in) :: dt, zeta(nD), tol
+    real(8), intent(in) :: acc(n), P(nP), SPAT(nT)
+    real(8), intent(out) :: a(n)
+
+    real(8), allocatable :: SPA1(:), SPAT1(:), dR1(:), P1(:), zeta1(:)
+    real(8), allocatable :: SPA(:,:), dR(:,:), ra(:,:,:), best(:)
+    real(8), allocatable :: M(:,:), W(:,:)
+    integer, allocatable :: SPI(:,:), SPI1(:)
+
+    real(8) :: aerror, merror, peak0, minerr
+    integer :: i,j,iter,k
+
+    allocate(best(n))
+    allocate(SPA(nP,nD))
+    allocate(SPA1(nT))
+    allocate(SPAT1(nT))
+    allocate(dR(nP,nD))
+    allocate(dR1(nT))
+    allocate(SPI(nP,nD))
+    allocate(SPI1(nT))
+    allocate(P1(nT))
+    allocate(zeta1(nT))
+    allocate(ra(n,nT,nT))
+    allocate(M(nT,nT))
+    allocate(W(n,nT))
+
+    call repeat_double(P,nP,nD,P1)
+
+    peak0 = maxval(abs(acc), dim=1)
+    a = acc
+
+    do i = 1, nD, 1
+        P1((i-1)*nP+1:(i-1)*nP+nP) = P
+        zeta1((i-1)*nP+1:(i-1)*nP+nP) = zeta(i)
+    end do
+    
+    SPAT1 = SPAT
+    
+    iter = 1
+    
+    call spamixed_md(acc,n,dt,zeta,P,nP,nD,SPA,SPI)
+    call flat_double(SPA,nP,nD,SPA1)
+    call errora(abs(SPA1),SPAT1,nT,aerror,merror)
+    
+    if (aerror <= tol .and. merror<=3.0d0*tol) return
+    !write(unit=*, fmt="(A29,2F8.4)") "Initial Error: ",aerror,merror
+    minerr = aerror
+    best = a
+    
+    do while ( (aerror>tol .or. merror>3.0d0*tol) .and. iter<=mit )
+    
+        !call flat_double(dR,nP,nD,dR1)
+        call flat_double(SPA,nP,nD,SPA1)
+        call flat_int(SPI,nP,nD,SPI1)
+        
+        dR1 = SPA1*(SPAT1/abs(SPA1)-1.d0)!/SPAT
+    
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
+        do i = 1, nT, 1
+            call wfunc( n,dt,SPI1(i),P1(i),zeta1(i),W(:,i) )
+        end do
+        !$OMP END PARALLEL DO
+    
+        !$OMP PARALLEL DO DEFAULT(SHARED), PRIVATE(i, j)
+        do i = 1, nT, 1
+            do j = 1, nT, 1
+                call ramixed(W(:,j),n,dt,zeta1(i),P1(i),ra(:,i,j))
+                M(i,j) = ra(SPI1(i),i,j)!/SPAT1(i)
+                if ( i /= j ) then
+                    M(i,j) = M(i,j)*0.7D0
+                end if
+            end do
+        end do
+        !$OMP END PARALLEL DO
+    
+        call leastsqs(M,dR1,nT,nT)
+    
+        do i = 1, nT, 1
+            a = a + dR1(i)*W(:,i)
+        end do
+    
+        call adjustpeak(a,n,peak0)
+        ! call adjustbaseline(a,n,dt)
+        ! call adjustpeak(a,n,peak0)
+    
+        call spamixed_md(a,n,dt,zeta,P,nP,nD,SPA,SPI)
+        call flat_double(SPA,nP,nD,SPA1)
+        call errora(abs(SPA1),SPAT1,nT,aerror,merror)
+    
+        if (aerror<minerr) then
+            minerr = aerror
+            best = a
+        end if
+        !write(unit=*, fmt="(A11,I4,A14,2F8.4)") "Error After",iter,"  Iterations: ",aerror,merror
+        iter = iter + 1
+    
+    end do
+    if (kpb>0) a = best
+
+    deallocate(best)
+    deallocate(SPA)
+    deallocate(SPA1)
+    deallocate(dR)
+    deallocate(dR1)
+    deallocate(SPI)
+    deallocate(SPI1)
+    deallocate(P1)
+    deallocate(zeta1)
+    deallocate(ra)
+    deallocate(M)
+    deallocate(W)
+    
+end subroutine adjustspectra_md
 
 subroutine wfunc(n,dt,itm,P,zeta,wf) bind(c)
 
@@ -3158,6 +3297,7 @@ subroutine balance_func(fval,kc,x,model,update) bind(c)
         end if
     end select
     
+    ! 迭代求解收敛时更新历史变量
     if (update) then
         para(4) = x
         para(5) = f
@@ -3181,18 +3321,22 @@ subroutine balance_func(fval,kc,x,model,update) bind(c)
     return
 end subroutine balance_func
 
-subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,rtol,maxiter,uy,rk,alpha) bind(c)
+subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,uy,rk,alpha) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: spmu
-    integer, intent(in) :: n, nP, model, maxiter
-    real(8), intent(in) :: mu, dt, zeta, P(nP), rtol, rk, alpha
+    integer, intent(in) :: n, nP, model
+    real(8), intent(in) :: mu, dt, zeta, P(nP), rk, alpha
     real(8), intent(in) :: acc(n)
     real(8), intent(out) :: SPA(nP), SPV(nP), SPD(nP), SPE(nP)
     integer, intent(out) :: SPI(nP)
     real(8), intent(out) :: uy(nP)
 
-    real(8) :: w, k0, k1, fy, mu1, pkd, tol
-    integer :: i, j, pki
+    real(8) :: w, k0, k1, fy, mu1, pkd, tol, rtol
+    integer :: i, j, pki, maxiter
+    
+    maxiter = 1000
+    rtol = 1.D-9
 
+    !!$OMP PARALLEL DO PRIVATE(i,j,para,tol,mu1,w,k0,k1,fy)
     do i = 1, nP, 1
         call newmark(acc,n,dt,zeta,P(i),SPA(i),SPI(i),SPV(i),SPD(i),SPE(i))
         uy(i) = abs(SPD(i))/mu
@@ -3202,7 +3346,7 @@ subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,rtol,maxiter,uy,
         k0 = w*w
         k1 = k0*rk
         fy = k0*uy(i)
-        para = 0.D0
+        para = 0.D0  ! 非线性参数及历史变量清零
         para(1:3) = [ k0,fy,k1 ]
         para(6) = k0
         para(9) = alpha
@@ -3210,7 +3354,7 @@ subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,rtol,maxiter,uy,
         para(15:16) = [ uy,-uy ]
         para(23:24) = [ fy,-fy ]
 
-        do j = 1, 100, 1
+        do j = 1, 1000, 1
             call newmark_nl(acc,n,dt,zeta,P(i),SPA(i),SPI(i),SPV(i),SPD(i),SPE(i),model,tol,maxiter)
             mu1 = abs(SPD(i))/uy(i)
 
@@ -3221,6 +3365,7 @@ subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,rtol,maxiter,uy,
             para(2) = fy
             para(4:NPARA) = 0.D0
             para(6) = k0
+            para(9) = alpha
             para(13) = k0
             para(15:16) = [ uy,-uy ]
             para(23:24) = [ fy,-fy ]
@@ -3230,8 +3375,10 @@ subroutine spmu(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE,mu,model,rtol,maxiter,uy,
         SPV(i) = abs(SPV(i))
         SPD(i) = abs(SPD(i))
     end do
+    !!$OMP END PARALLEL DO
 
     return
+    
 end subroutine spmu
 
 subroutine rnl(acc,n,dt,zeta,P,ra,rv,rd,ku,SM,cp) bind(c)
@@ -3264,12 +3411,14 @@ subroutine rnl(acc,n,dt,zeta,P,ra,rv,rd,ku,SM,cp) bind(c)
     uy = pkd/mu
     pkf = pkd*k0
     para = 0.D0
-    para(9) = alpha
+    ! para(9) = alpha
 
+    ! SM = 0 用迭代的方法求解目标延性下的响应
     if ( SM == 0 ) then
         fy = k0*uy
         para(1:3) = [ k0,fy,k1 ]
         para(6) = k0
+        para(9) = alpha
         para(13) = k0
         para(15:16) = [ uy,-uy ]
         para(23:24) = [ fy,-fy ]
@@ -3283,14 +3432,17 @@ subroutine rnl(acc,n,dt,zeta,P,ra,rv,rd,ku,SM,cp) bind(c)
             para(2) = fy
             para(4:NPARA) = 0.D0
             para(6) = k0
+            para(9) = alpha
             para(13) = k0
             para(15:16) = [ uy,-uy ]
             para(23:24) = [ fy,-fy ]
         end do
+    ! SM = 1 根据预定的强度比（目标延性的倒数）确定屈服力计算响应
     else
         fy = pkf/mu
         para(1:3) = [ k0,fy,k1 ]
         para(6) = k0
+        para(9) = alpha
         para(13) = k0
         para(15:16) = [ uy,-uy ]
         para(23:24) = [ fy,-fy ]
@@ -3446,6 +3598,7 @@ end subroutine fitspectrum
 
 subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
 !DIR$ ATTRIBUTES DLLEXPORT :: initartwave
+! 根据目标反应谱估计功率谱并生成随机的时域信号
     integer, intent(in) :: n, nP
     real(C_DOUBLE), intent(in) :: dt, zeta, P(nP), SPT(nP)
     real(C_DOUBLE), intent(out) :: a(n)
@@ -3500,5 +3653,58 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     deallocate(SPTf)
 
 end subroutine initArtWave
+
+subroutine whiteNoise(a,n,dt) bind(c)
+!DIR$ ATTRIBUTES DLLEXPORT :: whiteNoise
+! 生成随机白噪声信号
+    integer, intent(in) :: n
+    real(C_DOUBLE), intent(in) :: dt
+    real(C_DOUBLE), intent(out) :: a(n)
+
+    integer :: Nfft, k
+    real(C_DOUBLE) :: phi, Ak
+    real(C_DOUBLE), allocatable :: f(:)
+    complex(C_DOUBLE_COMPLEX), allocatable :: a0(:), af(:)
+    
+    type(C_PTR) :: plan
+
+    Nfft = nextpow2(n)
+
+    allocate(a0(Nfft))
+    allocate(af(Nfft))
+    allocate(f(Nfft))
+
+    af = (0.D0,0.D0)
+    
+    plan = fftw_plan_dft_1d(Nfft,af,a0,FFTW_BACKWARD,FFTW_ESTIMATE)
+
+    call fftfreqs(Nfft,1.d0/dt,f)
+    
+    call random_seed()
+    call random_number(phi)
+    phi = phi*TWO_PI
+    Ak = 2.0D0*sqrt(2.0D0*pi*(1.D0/dt))
+    af(1) = Ak*(cmplx(cos(phi),sin(phi)))
+    af(Nfft/2+1) = Ak*(cmplx(cos(phi),-sin(phi)))
+
+    call random_seed()
+    do k = 2, Nfft/2, 1
+        call random_number(phi)
+        phi = phi*TWO_PI
+        Ak = 2.0D0*sqrt(2.0D0*pi*(1.D0/dt))
+        af(k) = Ak*(cmplx(cos(phi),sin(phi)))
+        af(Nfft+2-k) = Ak*(cmplx(cos(phi),-sin(phi)))
+    end do
+
+    call fftw_execute_dft(plan,af,a0)
+    a = real(a0(1:n))/Nfft
+    call fftw_destroy_plan(plan)
+    call fftw_cleanup()
+    
+    deallocate(a0)
+    deallocate(af)
+    deallocate(f)
+
+end subroutine whiteNoise
 
 end module eqs

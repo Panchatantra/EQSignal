@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     a.setFont(font);
     MainWindow w;
 
-    w.move(320, 0);
+    w.move(320, 100);
 
     w.show();
     splash->finish(&w);

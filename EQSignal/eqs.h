@@ -32,8 +32,9 @@ extern "C"
 	extern void rnl(double *acc, int *n, double *dt, double *zeta, double *P, double *ra, double *rv, double *rd, double *ku, int *SM, double *cp);
     extern void spectrum(double *acc,int *n,double *dt,double *zeta,double *P,int *np,double *SPA,int *SPI,int *SM);
     extern void spectrumavd(double *acc, int *n, double *dt, double *zeta, double *P, int *np, double *SPA, int *SPI, double *SPV, double *SPD, double *SPE, int *SM);
-    extern void spmu(double *acc,int *n,double *dt,double *zeta,double *P,int *nP,double *SPA,int *SPI,double *SPV,double *SPD,double *SPE,double *mu,int *model,
-                     double *rtol,int *maxiter,double *uy,double *rk,double *alpha);
+    // ÑÓÐÔ·´Ó¦Æ×
+	extern void spmu(double *acc,int *n,double *dt,double *zeta,double *P,int *nP,double *SPA,int *SPI,double *SPV,double *SPD,double *SPE,double *mu,int *model,
+                     double *uy,double *rk,double *alpha);
     extern void targetdc(double *a, double *td, int *n, int *tp, int *ntp, int *ph, int *pl, double *dt, double *v0, double *d0);
     extern void targetdvac(double *a, double *td, double *tv, double *ta, int *n, int *tp, int *ntp, int *ph, int *pl, double *dt, double *v0, double *d0);
     extern void targetdvc(double *a, double *td, double *tv, int *n, int *tp, int *ntp, int *ph, int *pl, double *dt, double *v0, double *d0);
@@ -43,7 +44,9 @@ extern "C"
 
     extern void spectrum_endur(double *acc, int *n, double *dt, double *zeta, double *P, int *np, int *DI, int *nd, double *SPA, int *SPI, int *SM);
 	extern void initartwave(double *a, int *n, double *dt, double *zeta, double *P, int *nP, double *SPT);
+	extern void whitenoise(double *a, int *n, double *dt);
     extern void adjustspectra_endur(double *acc, int *n, double *dt, double *zeta, double *P, int *nP, int *DI, int *nD, double *SPAT1, double *a, double *tol, int *mit, int *kpb);
+	extern void adjustspectra_md(double *acc, int *n, double *dt, double *zeta, double *P, int *nP, int *nD, double *SPAT, int *nT, double *a, double *tol, int *mit, int *kpb);
 }
 
 int static inline nextpow2(int n)
@@ -169,6 +172,18 @@ void static inline normalize(double *a, int n)
 {
 	double m = peak(a, n);
 	for (int i = 0; i < n; i++) a[i] = a[i] / fabs(m);
+}
+
+void static inline scale(double *a, int n, double factor)
+{
+    for (int i = 0; i < n; i++) a[i] = a[i] * factor;
+}
+
+double static inline *scaled(double *a, int n, double factor)
+{
+    double *b = new double[n];
+    for (int i = 0; i < n; i++) b[i] = a[i] * factor;
+    return b;
 }
 
 template <typename T = double>

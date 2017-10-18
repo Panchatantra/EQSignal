@@ -33,6 +33,8 @@ public:
     QGridLayout *gridLayout;
     QDialogButtonBox *buttonBox;
 
+private slots:
+	void on_wavetype_activated(int index);
 };
 
 #endif // GENWAVEDIALOG

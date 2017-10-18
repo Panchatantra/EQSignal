@@ -16,6 +16,7 @@ GenWaveDialog::GenWaveDialog(QWidget *parent) : QDialog(parent)
 
     wavetype = new QComboBox(this);
     wavetype->addItem(tr("A0 + A*sin(2*pi/T*t + phi)"));
+    wavetype->addItem(tr("White Noise"));
     N = new QSpinBox(this);
     N->setRange(128,65536);
     N->setValue(2048);
@@ -26,7 +27,7 @@ GenWaveDialog::GenWaveDialog(QWidget *parent) : QDialog(parent)
     A = new QDoubleSpinBox(this);
     A->setValue(1.0);
     T = new QDoubleSpinBox(this);
-    T->setValue(1.0);
+    T->setValue(10.0);
     phi = new QDoubleSpinBox(this);
 
     gridLayout->addWidget(label_wavetype, 0, 0, 1, 1);
@@ -52,4 +53,22 @@ GenWaveDialog::GenWaveDialog(QWidget *parent) : QDialog(parent)
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+	connect(wavetype, SIGNAL(activated(int)), this, SLOT(on_wavetype_activated(int)));
+}
+
+void GenWaveDialog::on_wavetype_activated(int index)
+{
+	if (index == 0) {
+		A0->setEnabled(true);
+		A->setEnabled(true);
+		T->setEnabled(true);
+		phi->setEnabled(true);
+	}
+	else if (index == 1) {
+        A0->setEnabled(false);
+        A->setEnabled(false);
+        T->setEnabled(false);
+        phi->setEnabled(false);
+    }
 }

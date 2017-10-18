@@ -10,6 +10,7 @@
 #include <QProgressDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QDate>
 
 #ifdef Q_OS_WIN
 #include <Windows.h>
@@ -18,71 +19,82 @@
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    gwd(new GenWaveDialog),
-    eqs(new EQSignal),
-    eqs0(new EQSignal),
-    pdw(new PeriodsDefineWidget),
-    sptw(new SPTDefineWidget),
-    wth(new QWidget),
-    wres(new QWidget),
-    wsp(new QWidget)
+    ui(new Ui::MainWindow), // 主界面
+    gwd(new GenWaveDialog(this)), // 信号生成器 
+    eqs(new EQSignal), // 当前地震动信号对象
+	eqs0(new EQSignal), // 当前地震动信号对象副本
+    pdw(new PeriodsDefineWidget), // 反应谱周期点定义界面
+	sptw(new SPTDefineWidget), // 目标反应谱定义界面
+    wth(new QWidget), // 时程数据表格
+	wres(new QWidget), // 响应时程数据表格
+	wsp(new QWidget) // 反应谱数据表格
 {
-    ui->setupUi(this);
+    ui->setupUi(this); // 初始化主界面
 
-    initViewTH();
-    initViewSPA();
-    initViewSP();
-    initViewFFT();
-    initViewRES();
-    initViewEnergy();
-    initViewHyst();
-    initTable();
-    setupConnections();
+    initViewTH();  // 初始化时程曲线绘图区
+    initViewSPA(); // 初始化加速度反应谱曲线绘图区
+    initViewSP();  // 初始化反应谱曲线绘图区
+    initViewFFT(); // 初始化傅里叶谱曲线绘图区
+    initViewRES(); // 初始化响应时程曲线绘图区
+    initViewEnergy(); // 初始化能量时程曲线绘图区
+    initViewHyst(); // 初始化滞回曲线绘图区
+    initTable(); // 初始化表格
+    setupConnections(); // 相关联信号和槽之间建立连接
 
-    workDir = QDir::current();
-    saveAccWithTime = true;
-    normOnRead = false;
-    FIT_SPA = false;
-    XS_LOG = true;
-    eqsName = QString("EQSignal");
+	IS_PRO = true; // 是否专业版
+	// IS_PRO = false;
+    REG_STATE = 0; // 注册状态：0——未注册；1——注册试用版；2——注册专业版
 
-    readConfig();
-    ui->Paras->setCurrentIndex(0);
-    ui->tabWidget->setCurrentIndex(0);
+    workDir = QDir::current(); // 工作目录
+    saveAccWithTime = false; // 保存加速度时程数据时是否包含时刻
+    normOnRead = false; // 读取信号时是否进行峰值归一化处理
+    FIT_SPA = false; // 标示是否在进行反应谱拟合操作
+    XS_LOG = true; // X轴是否为对数刻度
+    eqsName = QString("EQSignal"); // 信号的名称
+    version = QString("v1.1.2");
 
-    ui->progressBar->hide();
+    QString title = tr("EQSignal %1 (Professional Version)");
+    this->setWindowTitle(title.arg(version));
 
+    readConfig(); // 从Home文件夹读取.eqsignal配置文件
+    ui->Paras->setCurrentIndex(0); // 工具箱当前页设为第一页
+	ui->tabWidget->setCurrentIndex(0); // 绘图区当前页设为第一页
+
+    ui->progressBar->hide(); // 隐藏进度条
+
+	// 非Mac系统的界面设置
     #ifndef Q_OS_MAC
     ui->dockToolBox->setFloating(true);
-    ui->dockToolBox->move(10, 0);
-    ui->dockToolBox->resize(300,640);
+    ui->dockToolBox->move(10, 100);
+    ui->dockToolBox->resize(300,height());
     #endif
 
     #ifdef Q_OS_MAC
     ui->menuBar->setParent(0);
-	#endif
+    #endif
 
+	// Windows系统检查许可证
 	#ifdef Q_OS_WIN
-	checkLicense();
-	#endif
-
-
+    checkLicense();
+    #endif
 }
 
 MainWindow::~MainWindow()
 {
-	delete ui;
-	delete eqs;
+    delete ui;
+    delete eqs;
     delete eqs0;
 }
 
+// 相关联信号和槽之间建立连接
 void MainWindow::setupConnections()
 {
     connect(ui->actionGenWave, &QAction::triggered,
             gwd, &GenWaveDialog::show);
     connect(gwd, &GenWaveDialog::accepted,
             this, &MainWindow::genWave);
+    connect(gwd, &GenWaveDialog::rejected,
+            this, &MainWindow::nothing);
 
     connect(ui->Open, &QToolButton::clicked,
             this, &MainWindow::on_actionOpen_triggered);
@@ -112,41 +124,23 @@ void MainWindow::setupConnections()
             this, &MainWindow::pdw_applyButton_clicked);
     connect(sptw->applyButton, &QPushButton::clicked,
             this, &MainWindow::sptw_applyButton_clicked);
+	connect(pdw->readButton, &QPushButton::clicked,
+		pdw, &PeriodsDefineWidget::readFromFile);
+	connect(sptw->readButton, &QPushButton::clicked,
+		sptw, &SPTDefineWidget::readFromFile);
 }
 
+// 读取文本格式的地震波数据文件
 void MainWindow::readtxt(const char *filename, double DT, bool singleCol)
 {
-	eqs->readtxt(filename, DT, false, singleCol);
-	eqs0->readtxt(filename, DT, false, singleCol);
-
-	int N = eqs->getN();
-	ui->Ind1->setValue(0);
-	ui->Ind2->setValue(N - 1);
-	ui->Ind2->setMaximum(N - 1);
-	ui->TS->setValue(eqs->getDt()*2.5);
-
-    ui->nD->setEnabled(false);
-    ui->DSPA->setEnabled(false);
-    ui->DFit->setEnabled(false);
-
-    plotTH();
-}
-
-void MainWindow::readtxt(QString filename, double DT, bool singleCol)
-{
-	readtxt(filename.toLocal8Bit().data(), DT, singleCol);
-}
-
-void MainWindow::readnga(const char *filename)
-{
-    eqs->readnga(filename, normOnRead);
-    eqs0->readnga(filename, normOnRead);
+    eqs->readtxt(filename, DT, false, singleCol);
+    eqs0->readtxt(filename, DT, false, singleCol);
 
     int N = eqs->getN();
     ui->Ind1->setValue(0);
     ui->Ind2->setValue(N - 1);
     ui->Ind2->setMaximum(N - 1);
-	ui->TS->setValue(eqs->getDt()*2.5);
+    ui->TS->setValue(eqs->getDt()*2.5);
 
     ui->nD->setEnabled(false);
     ui->DSPA->setEnabled(false);
@@ -155,11 +149,38 @@ void MainWindow::readnga(const char *filename)
     plotTH();
 }
 
-void MainWindow::readnga(QString filename)
+// 读取文本格式的地震波数据文件
+void MainWindow::readtxt(QString filename, double DT, bool singleCol)
 {
-	readnga(filename.toLocal8Bit().data());
+    readtxt(filename.toLocal8Bit().data(), DT, singleCol);
 }
 
+// 读取NGA格式的地震波数据文件
+void MainWindow::readnga(const char *filename, bool IsOld)
+{
+    eqs->readnga(filename, normOnRead, IsOld);
+    eqs0->readnga(filename, normOnRead, IsOld);
+
+    int N = eqs->getN();
+    ui->Ind1->setValue(0);
+    ui->Ind2->setValue(N - 1);
+    ui->Ind2->setMaximum(N - 1);
+    ui->TS->setValue(eqs->getDt()*2.5);
+
+    ui->nD->setEnabled(false);
+    ui->DSPA->setEnabled(false);
+    ui->DFit->setEnabled(false);
+
+    plotTH();
+}
+
+// 读取NGA格式的地震波数据文件
+void MainWindow::readnga(QString filename, bool IsOld)
+{
+    readnga(filename.toLocal8Bit().data(), IsOld);
+}
+
+// 循环设置6种绘图颜色
 QPen MainWindow::autoPen(int i)
 {
     int nc = 6;
@@ -196,6 +217,7 @@ QPen MainWindow::autoPen(int i)
     return pen;
 }
 
+// 反色
 QColor MainWindow::reverseColor(QColor c)
 {
     int r = 255 - c.red();
@@ -205,30 +227,31 @@ QColor MainWindow::reverseColor(QColor c)
     return QColor(r,g,b);
 }
 
+// 初始化时程曲线绘图区
 void MainWindow::initViewSP()
 {
     QCustomPlot *qplot = ui->ViewSP;
     qplot->plotLayout()->clear();
 
-	QCPAxisRect *plotSPA = new QCPAxisRect(qplot);
-	QCPAxisRect *plotSPV = new QCPAxisRect(qplot);
+    QCPAxisRect *plotSPA = new QCPAxisRect(qplot);
+    QCPAxisRect *plotSPV = new QCPAxisRect(qplot);
     QCPAxisRect *plotSPD = new QCPAxisRect(qplot);
-	QCPAxisRect *plotSPE = new QCPAxisRect(qplot);
+    QCPAxisRect *plotSPE = new QCPAxisRect(qplot);
 
-	qplot->plotLayout()->addElement(0, 0, plotSPA);
+    qplot->plotLayout()->addElement(0, 0, plotSPA);
     qplot->plotLayout()->addElement(0, 1, plotSPV);
-	qplot->plotLayout()->addElement(1, 0, plotSPD);
-	qplot->plotLayout()->addElement(1, 1, plotSPE);
+    qplot->plotLayout()->addElement(1, 0, plotSPD);
+    qplot->plotLayout()->addElement(1, 1, plotSPE);
 
-	QCPMarginGroup *marginGroup = new QCPMarginGroup(qplot);
+    QCPMarginGroup *marginGroup = new QCPMarginGroup(qplot);
 
     plotSPA->setMarginGroup(QCP::msAll, marginGroup);
     plotSPV->setMarginGroup(QCP::msAll, marginGroup);
     plotSPD->setMarginGroup(QCP::msAll, marginGroup);
     plotSPE->setMarginGroup(QCP::msAll, marginGroup);
 
-	foreach(QCPAxisRect *rect, qplot->axisRects())
-	{
+    foreach(QCPAxisRect *rect, qplot->axisRects())
+    {
         rect->axis(QCPAxis::atBottom)->setRange(0.01, 10.0);
         if (XS_LOG)
         {
@@ -239,23 +262,24 @@ void MainWindow::initViewSP()
             rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
         }
         rect->axis(QCPAxis::atBottom)->grid()->setSubGridVisible(true);
-		rect->axis(QCPAxis::atBottom)->setLabel(tr("Period"));
+        rect->axis(QCPAxis::atBottom)->setLabel(tr("Period"));
         rect->axis(QCPAxis::atLeft)->setRange(0.0, 2.5);
 
         foreach(QCPAxis *axis, rect->axes())
-		{
-			axis->setLayer("axes");
-			axis->grid()->setLayer("grid");
-		}
-	}
+        {
+            axis->setLayer("axes");
+            axis->grid()->setLayer("grid");
+        }
+    }
 
-	plotSPA->axis(QCPAxis::atLeft)->setLabel(tr("SPA"));
-	plotSPV->axis(QCPAxis::atLeft)->setLabel(tr("SPV"));
-	plotSPD->axis(QCPAxis::atLeft)->setLabel(tr("SPD"));
-	plotSPE->axis(QCPAxis::atLeft)->setLabel(tr("SPE"));
+    plotSPA->axis(QCPAxis::atLeft)->setLabel(tr("SPA"));
+    plotSPV->axis(QCPAxis::atLeft)->setLabel(tr("SPV"));
+    plotSPD->axis(QCPAxis::atLeft)->setLabel(tr("SPD"));
+    plotSPE->axis(QCPAxis::atLeft)->setLabel(tr("SPE"));
 
 }
 
+// 初始化傅里叶谱曲线绘图区
 void MainWindow::initViewFFT()
 {
     QCustomPlot *qplot = ui->ViewFFT;
@@ -274,9 +298,9 @@ void MainWindow::initViewFFT()
 
 }
 
+// 初始化表格
 void MainWindow::initTable()
 {
-
     dataTableTH = new EQTableWidget(wth);
     QVBoxLayout *lth = new QVBoxLayout(wth);
 
@@ -340,6 +364,7 @@ void MainWindow::clearView(QCustomPlot *qplot)
     qplot->clearGraphs();
 }
 
+// 从Home文件夹读取.eqsignal配置文件
 void MainWindow::readConfig()
 {
     QString f = QDir::home().filePath(".eqsignal");
@@ -348,10 +373,10 @@ void MainWindow::readConfig()
     QFile file(f);
     file.open(QIODevice::ReadOnly);
     QTextStream ts(&file);
-	ts.setCodec(QTextCodec::codecForName("UTF-8"));
+    ts.setCodec(QTextCodec::codecForName("UTF-8"));
 
     QString conf = ts.readAll();
-	QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
+    QJsonObject json = QJsonDocument::fromJson(conf.toUtf8()).object();
 
     workDir = QDir(json["work_dir"].toString());
     lastFile = json["last_file"].toString();
@@ -365,10 +390,10 @@ void MainWindow::readConfig()
 
 }
 
+// 向Home文件夹写入.eqsignal配置文件
 void MainWindow::writeConfig()
 {
     QString f = QDir::home().filePath(".eqsignal");
-    //if (!QFile::exists(f)) return;
 
     QFile file(f);
     file.open(QIODevice::WriteOnly);
@@ -386,6 +411,7 @@ void MainWindow::writeConfig()
 
 }
 
+// 初始化加速度反应谱曲线绘图区
 void MainWindow::initViewTH()
 {
     QCustomPlot *qplot = ui->ViewTH;
@@ -449,6 +475,7 @@ void MainWindow::initViewTH()
     //    qplot->graph(8)->setPen(penTar);
 }
 
+// 初始化响应时程曲线绘图区
 void MainWindow::initViewRES()
 {
     QCustomPlot *qplot = ui->ViewRES;
@@ -490,6 +517,7 @@ void MainWindow::initViewRES()
     plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time"));
 }
 
+// 初始化滞回曲线绘图区
 void MainWindow::initViewHyst()
 {
     QCustomPlot *qplot = ui->ViewHyst;
@@ -509,9 +537,10 @@ void MainWindow::initViewHyst()
     qplot->yAxis->setLabel(tr("Force"));
 }
 
+// 初始化加速度反应谱曲线绘图区
 void MainWindow::initViewSPA()
 {
-	QCustomPlot *qplot = ui->ViewSPA;
+    QCustomPlot *qplot = ui->ViewSPA;
 
     qplot->legend->setVisible(false);
     qplot->legend->setBrush(QBrush(QColor(255,255,255,200)));
@@ -530,15 +559,16 @@ void MainWindow::initViewSPA()
         qplot->xAxis->setScaleType(QCPAxis::stLinear);
     }
 
-	qplot->xAxis->grid()->setSubGridVisible(true);
-	qplot->xAxis->setRange(0.01, 10.0);
+    qplot->xAxis->grid()->setSubGridVisible(true);
+    qplot->xAxis->setRange(0.01, 10.0);
     qplot->yAxis->setRange(0.0, 3.0);
 
-	qplot->xAxis->setLabel(tr("Period"));
+    qplot->xAxis->setLabel(tr("Period"));
     qplot->yAxis->setLabel(tr("Response Acceleration"));
 
 }
 
+// 初始化能量时程曲线绘图区
 void MainWindow::initViewEnergy()
 {
     QCustomPlot *qplot = ui->ViewEnergy;
@@ -559,42 +589,34 @@ void MainWindow::initViewEnergy()
 
 }
 
+// 保存反应谱数据（txt或csv格式）
 void MainWindow::saveSP()
 {
-	QString filename, sf;
-	QStringList filters;
-	QFileDialog fdialog(this);
+    QString filename, sf;
+    QStringList filters;
+    QFileDialog fdialog(this);
 
-	filters << "Text file (*.txt)" << "CSV file (*.csv)";
+    filters << "Text file (*.txt)" << "CSV file (*.csv)";
 
-	fdialog.setAcceptMode(QFileDialog::AcceptSave);
-	fdialog.setNameFilters(filters);
-	fdialog.setWindowTitle(tr("Save"));
-	fdialog.setDirectory(workDir);
-	fdialog.selectFile(eqsName + "-SP");
+    fdialog.setAcceptMode(QFileDialog::AcceptSave);
+    fdialog.setNameFilters(filters);
+    fdialog.setWindowTitle(tr("Save"));
+    fdialog.setDirectory(workDir);
+    fdialog.selectFile(eqsName + "-SP");
 
-	if (fdialog.exec()) {
-		filename = fdialog.selectedFiles()[0];
-		sf = fdialog.selectedNameFilter();
-		if (sf == filters[0]) {
-			eqs->savetxtsp(filename);
-		}
-		else if (sf == filters[1]) {
-			eqs->savecsvsp(filename);
-		}
-	}
-	
-	//QString filename,autoname;
- //   autoname.append(getenv("EQS_WORK_DIR"));
- //   autoname.append(eqsName);
- //   autoname.append("-SP.txt");
- //   filename = qfile->getSaveFileName(this, "Save", autoname, "*.txt *.csv");
-
-    //if (filename.endsWith(".txt")) eqs->savetxtsp(filename);
-    //else if (filename.endsWith(".csv")) eqs->savecsvsp(filename);
-
+    if (fdialog.exec()) {
+        filename = fdialog.selectedFiles()[0];
+        sf = fdialog.selectedNameFilter();
+        if (sf == filters[0]) {
+            eqs->savetxtsp(filename);
+        }
+        else if (sf == filters[1]) {
+            eqs->savecsvsp(filename);
+        }
+    }
 }
 
+// 绘制时程曲线
 void MainWindow::plotTH(bool changeTab)
 {
     QCustomPlot *qplot = ui->ViewTH;
@@ -679,16 +701,16 @@ void MainWindow::plotTH(bool changeTab)
         e = true;
     }
 
-	QVector<double> Acc = eqs->qGetAcc();
-	QVector<double> Vel = eqs->qGetVel();
-	QVector<double> Dsp = eqs->qGetDisp();
+    QVector<double> Acc = eqs->qGetAcc();
+    QVector<double> Vel = eqs->qGetVel();
+    QVector<double> Dsp = eqs->qGetDisp();
 
-	qplot->graph(3)->setData(Time, Acc);
-	qplot->graph(3)->rescaleAxes(e);
-	qplot->graph(4)->setData(Time, Vel);
-	qplot->graph(4)->rescaleAxes(e);
-	qplot->graph(5)->setData(Time, Dsp);
-	qplot->graph(5)->rescaleAxes(e);
+    qplot->graph(3)->setData(Time, Acc);
+    qplot->graph(3)->rescaleAxes(e);
+    qplot->graph(4)->setData(Time, Vel);
+    qplot->graph(4)->rescaleAxes(e);
+    qplot->graph(5)->setData(Time, Dsp);
+    qplot->graph(5)->rescaleAxes(e);
 
     if (ui->IAON->isChecked()) {
         eqs->calcAriasIntensity();
@@ -715,11 +737,9 @@ void MainWindow::plotTH(bool changeTab)
         GID->setPen(QPen(Qt::gray));
         GID->setBrush(QBrush(QColor(0, 0, 255, 20)));
         GID->rescaleValueAxis();
-
     }
 
-
-	qplot->replot();
+    qplot->replot();
     if (changeTab) {
         ui->tabWidget->setCurrentIndex(0);
         QString msg;
@@ -739,10 +759,11 @@ void MainWindow::plotTH(bool changeTab)
     }
 }
 
+// 绘制响应时程曲线
 void MainWindow::plotRES()
 {
     QCustomPlot *qplot = ui->ViewRES;
-	qplot->plotLayout()->clear();
+    qplot->plotLayout()->clear();
     qplot->clearGraphs();
 
     QCPAxisRect *plotAcc = new QCPAxisRect(qplot);
@@ -819,8 +840,8 @@ void MainWindow::plotRES()
     qplot->graph(4)->setData(Time, Rv);
     qplot->graph(5)->setData(Time, Rd);
 
-	qplot->rescaleAxes();
-	qplot->replot();
+    qplot->rescaleAxes();
+    qplot->replot();
     ui->tabWidget->setCurrentWidget(ui->tabRes);
 
     int IPA = peakLoc(Ra.data(), Ra.count());
@@ -829,12 +850,12 @@ void MainWindow::plotRES()
     double dt = eqs->getDt();
 
     QString msg;
-    msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6").arg(Ra[IPA]).arg(Rv[IPV]).arg(Rd[IPD])
-        .arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD));
-
-    ui->statusBar->showMessage(msg);
+    msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6 u_y=%7").arg(Ra[IPA]).arg(Rv[IPV]).arg(Rd[IPD])
+		.arg(dt*(IPA)).arg(dt*(IPV)).arg(dt*(IPD)).arg(eqs->getRes().uy);
+	ui->statusBar->showMessage(msg);
 }
 
+// 绘制能量时程曲线
 void MainWindow::plotEnergy()
 {
     double **e = eqs->getEnergy();
@@ -871,7 +892,7 @@ void MainWindow::plotEnergy()
        << qplot->addGraph();
 
     QList<QColor> COLOR;
-	COLOR << Qt::yellow << Qt::blue << Qt::red << Qt::darkGreen;
+    COLOR << Qt::yellow << Qt::blue << Qt::red << Qt::darkGreen;
 
     QStringList NAME;
     NAME << tr("Viscous Damping Energy")
@@ -901,6 +922,7 @@ void MainWindow::plotEnergy()
 //    ui->tabWidget->setCurrentWidget(ui->tabEnergy);
 }
 
+// 绘制滞回曲线
 void MainWindow::plotHyst()
 {
     QCustomPlot *qplot = ui->ViewHyst;
@@ -913,10 +935,10 @@ void MainWindow::plotHyst()
     QVector<double> rF = eqs->qGetRF();
 
     double xrl, xru, dx;
-	double yrl, yru, dy;
+    double yrl, yru, dy;
 
     autoScale(rd.data(), eqs->getN(), xrl, xru, dx);
-	autoScale(rF.data(), eqs->getN(), yrl, yru, dy);
+    autoScale(rF.data(), eqs->getN(), yrl, yru, dy);
 
     qplot->xAxis->setAutoTickStep(false);
     qplot->yAxis->setAutoTickStep(false);
@@ -937,13 +959,15 @@ void MainWindow::plotHyst()
 
 }
 
+// 基线校正完成后进行确认
 void MainWindow::confirm()
 {
-	eqs->confirm();
+    eqs->confirm();
     showDriftMsg();
     plotTH();
 }
 
+// 保存时程数据（txt或csv格式）
 void MainWindow::saveTH()
 {
     QString filename, sf;
@@ -968,12 +992,15 @@ void MainWindow::saveTH()
     }
 }
 
+// 设置反应谱计算参数
 void MainWindow::setupSP()
 {
     QString DR = ui->DR->text().trimmed();
     QStringList DRL = DR.split(",",QString::SkipEmptyParts);
     ui->CDR->clear();
     ui->CDR->addItems(DRL);
+	ui->RDR->clear();
+	ui->RDR->addItems(DRL);
     int NSP = DRL.count();
     double *Zeta = new double[NSP];
     for (int i = 0; i < NSP; i++) Zeta[i] = DRL[i].toDouble();
@@ -992,6 +1019,42 @@ void MainWindow::setupSP()
     }
 }
 
+// 绘制加速度反应谱
+void MainWindow::plotSPA(int i)
+{
+	QCustomPlot *qplot = ui->ViewSPA;
+	qplot->clearGraphs();
+
+	qplot->legend->setVisible(true);
+
+	if (XS_LOG)
+	{
+		qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
+		qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignLeft);
+	}
+	else
+	{
+		qplot->xAxis->setScaleType(QCPAxis::stLinear);
+		qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
+	}
+
+	QCPGraph *gr = qplot->addGraph();
+	QPen pen = autoPen(i);
+	gr->setPen(pen);
+	Spectra *spi = eqs->getSP(i);
+
+	gr->setData(spi->qGetP(), spi->qGetSPA());
+	gr->setName(tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)));
+
+	qplot->rescaleAxes();
+	qplot->xAxis->setRangeLower(0.01);
+	qplot->yAxis->setRangeLower(0.0);
+	qplot->replot();
+
+	ui->tabWidget->setCurrentIndex(2);
+}
+
+// 绘制加速度反应谱
 void MainWindow::plotSPA()
 {
     QCustomPlot *qplot = ui->ViewSPA;
@@ -1023,14 +1086,14 @@ void MainWindow::plotSPA()
     }
 
     qplot->rescaleAxes();
-	qplot->xAxis->setRangeLower(0.01);
-	qplot->yAxis->setRangeLower(0.0);
+    qplot->xAxis->setRangeLower(0.01);
+    qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
 
     ui->tabWidget->setCurrentIndex(2);
-
 }
 
+// 进行反应谱拟合时绘制拟合前的加速度反应谱
 void MainWindow::plotSPABeforeFit()
 {
     QCustomPlot *qplot = ui->ViewSPA;
@@ -1107,6 +1170,7 @@ void MainWindow::plotSPABeforeFit()
 
 }
 
+// 进行反应谱拟合时绘制拟合后的加速度反应谱
 void MainWindow::plotSPAAfterFit()
 {
     QCustomPlot *qplot = ui->ViewSPA;
@@ -1170,6 +1234,7 @@ void MainWindow::plotSPAAfterFit()
     ui->tabWidget->setCurrentWidget(ui->tabSPA);
 }
 
+// 绘制目标反应谱
 void MainWindow::plotSPT()
 {
     QCustomPlot *qplot = ui->ViewSPA;
@@ -1232,10 +1297,11 @@ void MainWindow::plotSPT()
     qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
 
-	ui->tabWidget->setCurrentWidget(ui->tabSPA);
+    ui->tabWidget->setCurrentWidget(ui->tabSPA);
 
 }
 
+// 反应谱数据填充到表格中
 void MainWindow::fillSPTable(int k)
 {
     Spectra *spi = eqs->getSP(k);
@@ -1260,6 +1326,149 @@ void MainWindow::fillSPTable(int k)
     }
 }
 
+// 绘制反应谱曲线（加速度谱、速度谱、位移谱、能量谱）
+void MainWindow::plotSP(int i)
+{
+	QCustomPlot *qplot = ui->ViewSP;
+
+	qplot->clearGraphs();
+	qplot->plotLayout()->clear();
+
+	QCPAxisRect *axisSPA = new QCPAxisRect(qplot);
+	QCPAxisRect *axisSPV = new QCPAxisRect(qplot);
+	QCPAxisRect *axisSPD = new QCPAxisRect(qplot);
+	QCPAxisRect *axisSPE = new QCPAxisRect(qplot);
+
+	qplot->plotLayout()->addElement(0, 0, axisSPA);
+	qplot->plotLayout()->addElement(0, 1, axisSPV);
+	qplot->plotLayout()->addElement(1, 0, axisSPD);
+	qplot->plotLayout()->addElement(1, 1, axisSPE);
+
+	QCPMarginGroup *marginGroup = new QCPMarginGroup(qplot);
+
+	axisSPA->setMarginGroup(QCP::msAll, marginGroup);
+	axisSPV->setMarginGroup(QCP::msAll, marginGroup);
+	axisSPD->setMarginGroup(QCP::msAll, marginGroup);
+	axisSPE->setMarginGroup(QCP::msAll, marginGroup);
+
+	QCPLegend *legendSPA = new QCPLegend;
+	QCPLegend *legendSPV = new QCPLegend;
+	QCPLegend *legendSPD = new QCPLegend;
+	QCPLegend *legendSPE = new QCPLegend;
+
+	QBrush brush = QBrush(QColor(255, 255, 255, 150));
+
+	legendSPA->setBrush(brush);
+	legendSPV->setBrush(brush);
+	legendSPD->setBrush(brush);
+	legendSPE->setBrush(brush);
+
+	if (XS_LOG) {
+		axisSPA->insetLayout()->addElement(legendSPA, Qt::AlignBottom | Qt::AlignHCenter);
+		axisSPV->insetLayout()->addElement(legendSPV, Qt::AlignTop | Qt::AlignLeft);
+		axisSPD->insetLayout()->addElement(legendSPD, Qt::AlignTop | Qt::AlignLeft);
+		axisSPE->insetLayout()->addElement(legendSPE, Qt::AlignTop | Qt::AlignLeft);
+	}
+	else {
+		axisSPA->insetLayout()->addElement(legendSPA, Qt::AlignTop | Qt::AlignRight);
+		axisSPV->insetLayout()->addElement(legendSPV, Qt::AlignBottom | Qt::AlignRight);
+		axisSPD->insetLayout()->addElement(legendSPD, Qt::AlignTop | Qt::AlignLeft);
+		axisSPE->insetLayout()->addElement(legendSPE, Qt::AlignBottom | Qt::AlignRight);
+	}
+
+	legendSPA->setLayer("legend");
+	legendSPV->setLayer("legend");
+	legendSPD->setLayer("legend");
+	legendSPE->setLayer("legend");
+
+	legendSPA->setBorderPen(QPen(Qt::transparent));
+	legendSPV->setBorderPen(QPen(Qt::transparent));
+	legendSPD->setBorderPen(QPen(Qt::transparent));
+	legendSPE->setBorderPen(QPen(Qt::transparent));
+
+	qplot->setAutoAddPlottableToLegend(false);
+
+	foreach(QCPAxisRect *rect, qplot->axisRects())
+	{
+		rect->axis(QCPAxis::atBottom)->setRange(0.01, 10.0);
+		if (XS_LOG)
+		{
+			rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
+		}
+		else
+		{
+			rect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLinear);
+		}
+		rect->axis(QCPAxis::atBottom)->grid()->setSubGridVisible(true);
+		rect->axis(QCPAxis::atBottom)->setLabel(tr("Period"));
+		rect->axis(QCPAxis::atLeft)->setRange(0.0, 2.5);
+
+		foreach(QCPAxis *axis, rect->axes())
+		{
+			axis->setLayer("axes");
+			axis->grid()->setLayer("grid");
+		}
+	}
+
+	axisSPA->axis(QCPAxis::atLeft)->setLabel(tr("SPA"));
+	axisSPV->axis(QCPAxis::atLeft)->setLabel(tr("SPV"));
+	axisSPD->axis(QCPAxis::atLeft)->setLabel(tr("SPD"));
+	axisSPE->axis(QCPAxis::atLeft)->setLabel(tr("SPE"));
+
+	bool rs = false;
+
+	QCPGraph *grSPA = qplot->addGraph(axisSPA->axis(QCPAxis::atBottom), axisSPA->axis(QCPAxis::atLeft));
+	QCPGraph *grSPV = qplot->addGraph(axisSPV->axis(QCPAxis::atBottom), axisSPV->axis(QCPAxis::atLeft));
+	QCPGraph *grSPD = qplot->addGraph(axisSPD->axis(QCPAxis::atBottom), axisSPD->axis(QCPAxis::atLeft));
+	QCPGraph *grSPE = qplot->addGraph(axisSPE->axis(QCPAxis::atBottom), axisSPE->axis(QCPAxis::atLeft));
+
+	grSPA->setPen(autoPen(i));
+	grSPV->setPen(autoPen(i));
+	grSPD->setPen(autoPen(i));
+	grSPE->setPen(autoPen(i));
+
+	Spectra *spi = eqs->getSP(i);
+
+	QVector<double> P = spi->qGetP();
+	QVector<double> SPA = spi->qGetSPA();
+	QVector<double> SPV = spi->qGetSPV();
+	QVector<double> SPD = spi->qGetSPD();
+	QVector<double> SPE = spi->qGetSPE();
+
+	grSPA->setData(P, SPA);
+	grSPV->setData(P, SPV);
+	grSPD->setData(P, SPD);
+	grSPE->setData(P, SPE);
+
+	if (i>0) rs = true;
+	grSPA->rescaleValueAxis(rs);
+	grSPV->rescaleValueAxis(rs);
+	grSPD->rescaleValueAxis(rs);
+	grSPE->rescaleValueAxis(rs);
+
+	QString name = tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0));
+	grSPA->setName(name);
+	grSPV->setName(name);
+	grSPD->setName(name);
+	grSPE->setName(name);
+
+	legendSPA->addItem(new QCPPlottableLegendItem(legendSPA, grSPA));
+	legendSPV->addItem(new QCPPlottableLegendItem(legendSPV, grSPV));
+	legendSPD->addItem(new QCPPlottableLegendItem(legendSPD, grSPD));
+	legendSPE->addItem(new QCPPlottableLegendItem(legendSPE, grSPE));
+
+	axisSPA->axis(QCPAxis::atLeft)->setRangeLower(0.0);
+	axisSPV->axis(QCPAxis::atLeft)->setRangeLower(0.0);
+	axisSPD->axis(QCPAxis::atLeft)->setRangeLower(0.0);
+	axisSPE->axis(QCPAxis::atLeft)->setRangeLower(0.0);
+
+	qplot->replot();
+
+	ui->tabWidget->setCurrentIndex(3);
+
+}
+
+// 绘制反应谱曲线（加速度谱、速度谱、位移谱、能量谱）
 void MainWindow::plotSP()
 {
     QCustomPlot *qplot = ui->ViewSP;
@@ -1356,7 +1565,7 @@ void MainWindow::plotSP()
         QCPGraph *grSPV = qplot->addGraph(axisSPV->axis(QCPAxis::atBottom), axisSPV->axis(QCPAxis::atLeft));
         QCPGraph *grSPD = qplot->addGraph(axisSPD->axis(QCPAxis::atBottom), axisSPD->axis(QCPAxis::atLeft));
         QCPGraph *grSPE = qplot->addGraph(axisSPE->axis(QCPAxis::atBottom), axisSPE->axis(QCPAxis::atLeft));
-        
+
         grSPA->setPen(autoPen(i));
         grSPV->setPen(autoPen(i));
         grSPD->setPen(autoPen(i));
@@ -1404,6 +1613,7 @@ void MainWindow::plotSP()
 
 }
 
+// 绘制傅里叶谱曲线
 void MainWindow::plotFFT()
 {
     QCustomPlot *qplot = ui->ViewFFT;
@@ -1505,6 +1715,7 @@ void MainWindow::plotFFT()
     qplot->xAxis->setScaleType(QCPAxis::stLinear);
 
     qplot->rescaleAxes();
+    qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
 
     ui->tabWidget->setCurrentIndex(1);
@@ -1514,22 +1725,23 @@ void MainWindow::plotFFT()
 
 }
 
+// 绘制功率谱曲线
 void MainWindow::plotPSD()
 {
     QCustomPlot *qplot = ui->ViewFFT;
     qplot->clearGraphs();
-	qplot->clearPlottables();
+    qplot->clearPlottables();
 
-	qplot->xAxis->setLabel(tr("Frequency (Hz)"));
+    qplot->xAxis->setLabel(tr("Frequency (Hz)"));
     qplot->yAxis->setLabel(tr("PSD"));
 
-	qplot->xAxis->setRangeReversed(false);
-	qplot->xAxis->setAutoTicks(true);
-	qplot->xAxis->setAutoTickLabels(true);
-	qplot->xAxis->setAutoTickStep(true);
-	qplot->yAxis->setAutoTickStep(true);
-	qplot->xAxis->setAutoSubTicks(true);
-	qplot->yAxis->setAutoSubTicks(true);
+    qplot->xAxis->setRangeReversed(false);
+    qplot->xAxis->setAutoTicks(true);
+    qplot->xAxis->setAutoTickLabels(true);
+    qplot->xAxis->setAutoTickStep(true);
+    qplot->yAxis->setAutoTickStep(true);
+    qplot->xAxis->setAutoSubTicks(true);
+    qplot->yAxis->setAutoSubTicks(true);
 
     QCPGraph *gr = qplot->addGraph();
     gr->setData(eqs->qGetFpsd(),eqs->qGetPsd());
@@ -1548,6 +1760,7 @@ void MainWindow::plotPSD()
     }
 
     qplot->rescaleAxes();
+    qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
 
     ui->Amp->setDisabled(true);
@@ -1557,6 +1770,7 @@ void MainWindow::plotPSD()
     ui->tabWidget->setCurrentIndex(1);
 }
 
+// 设置X轴刻度
 void MainWindow::setXScale()
 {
     switch (ui->tabWidget->currentIndex()) {
@@ -1591,18 +1805,20 @@ void MainWindow::setXScale()
     }
 }
 
+// 在状态栏显示基线校正后漂移指标的变化
 void MainWindow::showDriftMsg()
 {
-	double dr0 = eqs0->getDR();
-	double ar0 = eqs0->getAR();
-	double dr = eqs->getDR();
-	double ar = eqs->getAR();
+    double dr0 = eqs0->getDR();
+    double ar0 = eqs0->getAR();
+    double dr = eqs->getDR();
+    double ar = eqs->getAR();
 
-	QString msg;
-	msg.sprintf("DR: %.4g>>%.4g\t\tAR: %.4g>>%.4g", dr0, dr, ar0, ar);
-	ui->statusBar->showMessage(msg);
+    QString msg;
+    msg.sprintf("DR: %.4g>>%.4g\t\tAR: %.4g>>%.4g", dr0, dr, ar0, ar);
+    ui->statusBar->showMessage(msg);
 }
 
+// 峰值归一
 void MainWindow::on_Norm_clicked()
 {
     eqs->norm();
@@ -1610,24 +1826,36 @@ void MainWindow::on_Norm_clicked()
     this->plotTH();
 }
 
+// 重新载入
 void MainWindow::on_Reload_clicked()
 {
     QString filename = ui->URL->text();
 
     if (filename.endsWith(".txt"))
-    {	
-		double DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
-		bool singleCol = (NC == 1)? true : false;
+    {
+        double DT = QInputDialog::getDouble(this, tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
+        int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
+        bool singleCol = (NC == 1)? true : false;
         this->readtxt(filename, DT, singleCol);
     }
     else if (filename.endsWith(".at2"))
     {
-        this->readnga(filename);
+        QStringList fmts;
+        fmts << tr("New Format") << tr("Old Format");
+        QString fmt = QInputDialog::getItem(this, tr("AT2 File Format"), tr("AT2 File Format"), fmts, 0, false);
+        if (fmt == tr("Old Format"))
+        {
+            this->readnga(filename, true);
+        }
+        else
+        {
+            this->readnga(filename);
+        }
     }
 
 }
 
+// 滤波
 void MainWindow::on_Filt_clicked()
 {
     double f1 = ui->Freq1->value();
@@ -1640,6 +1868,7 @@ void MainWindow::on_Filt_clicked()
     this->plotTH();
 }
 
+// 消除趋势
 void MainWindow::on_Detrend_clicked()
 {
     int oh = ui->Order2->value();
@@ -1652,6 +1881,7 @@ void MainWindow::on_Detrend_clicked()
     this->plotTH();
 }
 
+// 基线对齐
 void MainWindow::on_Align_clicked()
 {
     int oh = ui->TDispTrend->value();
@@ -1678,11 +1908,12 @@ void MainWindow::on_Align_clicked()
         qplot->graph(7)->rescaleValueAxis(true);
         qplot->graph(8)->setData(T, eqs->qGetTd());
         qplot->graph(8)->rescaleValueAxis(true);
-        
+
         qplot->replot();
     }
 }
 
+// 基线一键调整
 void MainWindow::on_Adjust_clicked()
 {
     bool raw = true;
@@ -1716,9 +1947,10 @@ void MainWindow::on_Adjust_clicked()
     this->plotTH();
 }
 
+// 自动设置截断位置
 void MainWindow::on_SetTrimEdge_clicked()
 {
-	int method = ui->STEMethod->currentIndex();
+    int method = ui->STEMethod->currentIndex();
     double thd1 = ui->Threshold1->value();
     double thd2 = ui->Threshold2->value();
     bool EZ = ui->EZ->isChecked();
@@ -1728,9 +1960,10 @@ void MainWindow::on_SetTrimEdge_clicked()
     ui->Ind2->setValue(edges[1]);
 }
 
+// 截断
 void MainWindow::on_Trim_clicked()
 {
-	int ind1 = ui->Ind1->value();
+    int ind1 = ui->Ind1->value();
     int ind2 = ui->Ind2->value();
     eqs->trim(ind1,ind2);
     eqs0->trim(ind1,ind2);
@@ -1738,27 +1971,31 @@ void MainWindow::on_Trim_clicked()
     plotTH();
 }
 
+// 计算傅里叶变换
 void MainWindow::on_CalcFFT_clicked()
 {
-	eqs->calcFFT();
+    eqs->calcFFT();
     plotFFT();
 }
 
+// 计算功率谱
 void MainWindow::on_CalcPSD_clicked()
 {
-	eqs->calcPSD(ui->OLR->value(),ui->WW->isChecked());
+    eqs->calcPSD(ui->OLR->value(),ui->WW->isChecked());
     plotPSD();
 }
 
+// 计算加速度反应谱
 void MainWindow::on_CalcSPA_clicked()
 {
-	setupSP();
+    setupSP();
     eqs->calcSP(false);
     plotSPA();
 
     FIT_SPA = false;
 }
 
+// 计算反应谱
 void MainWindow::on_CalcSP_clicked()
 {
     setupSP();
@@ -1767,12 +2004,13 @@ void MainWindow::on_CalcSP_clicked()
     FIT_SPA = false;
 }
 
+//// 阻尼比定义文本框内容改变对应的槽函数
 //void MainWindow::on_DR_textChanged(const QString &arg1)
 //{
 
 //    QString DR;
 //    DR.append(arg1.trimmed());
-//    QStringList DRL = DR.split(",");
+//    QStringList DRL = DR.split(",");`
 //    ui->CDR->clear();
 //    ui->CDR->addItems(DRL);
 
@@ -1780,6 +2018,7 @@ void MainWindow::on_CalcSP_clicked()
 //    dr->addItems(DRL);
 //}
 
+//// 绘图区标签页改变对应工具箱标签页变化的槽函数
 //void MainWindow::on_tabWidget_tabBarClicked(int index)
 //{
 //    switch (index) {
@@ -1800,10 +2039,10 @@ void MainWindow::on_CalcSP_clicked()
 //    }
 //}
 
+// 打开
 void MainWindow::on_actionOpen_triggered()
 {
-    
-	QString fileName;
+    QString fileName;
     QStringList filters;
     QFileDialog fdialog(this);
 
@@ -1826,22 +2065,40 @@ void MainWindow::on_actionOpen_triggered()
     eqsName = fi.baseName();
     this->setWindowTitle("EQSignal -- " + eqsName);
 
+    bool ok;
+
     if (isTxt)
     {
         ui->URL->setText(fileName);
-		double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
-		bool singleCol = (NC == 1) ? true : false;
-		this->readtxt(fileName, DT, singleCol);
+        double DT = QInputDialog::getDouble(this,
+                                            eqsName + "'s " + tr("Time Interval"),
+                                            "dt = ", 0.02, 0.0, 10.0, 3, &ok);
+        if (!ok) return;
+        int NC = QInputDialog::getInt(this,
+                                      tr("Number of Columns"),
+                                      "NC = ", 1, 1, 2, 1, &ok);
+        if (!ok) return;
+        bool singleCol = (NC == 1) ? true : false;
+        this->readtxt(fileName, DT, singleCol);
     }
     else if (isAt2)
     {
         ui->URL->setText(fileName);
-        this->readnga(fileName);
+        QStringList fmts;
+        fmts << tr("New Format") << tr("Old Format");
+        QString fmt = QInputDialog::getItem(this, tr("AT2 File Format"), tr("AT2 File Format"), fmts, 0, false);
+        if (fmt == tr("Old Format"))
+        {
+            this->readnga(fileName, true);
+        }
+        else
+        {
+            this->readnga(fileName);
+        }
     }
 
     lastFile = fileName;
-	workDir = fdialog.directory();
+    workDir = fdialog.directory();
 
 }
 
@@ -1869,7 +2126,7 @@ void MainWindow::on_actionSaveFig_triggered()
 {
     QString figName,autoName;
     autoName.append(workDir.path());
-	autoName.append("/");
+    autoName.append("/");
     QCustomPlot *qplot;
 
     switch (ui->tabWidget->currentIndex()) {
@@ -1893,21 +2150,21 @@ void MainWindow::on_actionSaveFig_triggered()
         autoName.append(eqsName);
         autoName.append("-SP");
         break;
-	case 4:
-		qplot = ui->ViewRES;
-		autoName.append(eqsName);
-		autoName.append("-RES");
-		break;
-	case 5:
-		qplot = ui->ViewEnergy;
-		autoName.append(eqsName);
-		autoName.append("-RES-Energy");
-		break;
-	case 6:
-		qplot = ui->ViewHyst;
-		autoName.append(eqsName);
-		autoName.append("-RES-Hyst");
-		break;
+    case 4:
+        qplot = ui->ViewRES;
+        autoName.append(eqsName);
+        autoName.append("-RES");
+        break;
+    case 5:
+        qplot = ui->ViewEnergy;
+        autoName.append(eqsName);
+        autoName.append("-RES-Energy");
+        break;
+    case 6:
+        qplot = ui->ViewHyst;
+        autoName.append(eqsName);
+        autoName.append("-RES-Hyst");
+        break;
     default:
         qplot = ui->ViewTH;
         autoName.append(eqsName);
@@ -1915,12 +2172,12 @@ void MainWindow::on_actionSaveFig_triggered()
         break;
     }
 
-	autoName.append(".png");
+    autoName.append(".png");
     figName = QFileDialog::getSaveFileName(this, tr("Save"), autoName, "*.png");
 
     qplot->setBackground(Qt::transparent);
     qplot->savePng(figName,800,600);
-	qplot->setBackground(Qt::white);
+    qplot->setBackground(Qt::white);
 
 //    QString filename, sf;
 //    QStringList filters;
@@ -1958,7 +2215,7 @@ void MainWindow::on_actionSaveAcc_triggered()
         filename = fdialog.selectedFiles()[0];
         sf = fdialog.selectedNameFilter();
         if (sf == filters[0]) {
-			ofstream out(filename.toLocal8Bit().data(), ios::out);
+            ofstream out(filename.toLocal8Bit().data(), ios::out);
             for (int i = 0; i<eqs->getN(); ++i)
                 if (saveAccWithTime)
                     out << time[i] << "\t" << acc[i] << endl;
@@ -1967,7 +2224,7 @@ void MainWindow::on_actionSaveAcc_triggered()
             out.close();
         }
         else if (sf == filters[1]) {
-			ofstream out(filename.toLocal8Bit().data(), ios::out);
+            ofstream out(filename.toLocal8Bit().data(), ios::out);
             for (int i = 0; i<eqs->getN(); ++i)
                 if (saveAccWithTime)
                     out << time[i] << ", " << acc[i] << endl;
@@ -2019,8 +2276,8 @@ void MainWindow::fillRESTable()
 
 void MainWindow::genWave()
 {
-	
-	int N = gwd->N->value();
+
+    int N = gwd->N->value();
     double dt = gwd->dt->value();
     double A0 = gwd->A0->value();
     double A = gwd->A->value();
@@ -2029,26 +2286,31 @@ void MainWindow::genWave()
 
     double *t = linspace(0.0,dt*N-dt,N);
     double *a = zeros(N);
-	
-	switch (gwd->wavetype->currentIndex())
-	{
-	case(0) :
-		for (int i = 0; i < N; i++)
-		{
-			a[i] = A0 + A*sin(PI2 / T*t[i] + phi);
-		}
-		break;
-	default:
-		break;
-	}
 
-	eqs = new EQSignal(a,N,dt);
-	eqs->a2vd();
+    switch (gwd->wavetype->currentIndex())
+    {
+    case(0) :
+        for (int i = 0; i < N; i++)
+        {
+            a[i] = A0 + A*sin(PI2 / T*t[i] + phi);
+        }
+		eqsName = QString("Sine_Wave");
+        break;
+    case(1):
+        whitenoise(a,&N,&dt);
+		eqsName = QString("White_Noise");
+        break;
+    default:
+        break;
+    }
 
-	eqs0 = new EQSignal(a, N, dt);
-	eqs0->a2vd();
+    eqs = new EQSignal(a,N,dt);
+    eqs->a2vd();
 
-	plotTH();
+    eqs0 = new EQSignal(a, N, dt);
+    eqs0->a2vd();
+
+    plotTH();
 
 }
 
@@ -2058,16 +2320,17 @@ void MainWindow::showSPAErrorMsg()
     double Emax, Emean, CV;
     eqs->getSP(i)->fitError(Emax, Emean, CV);
 
-    QString ErrInfo = tr("Before Fitting")
-            + tr("Mean Error: %2%, Max Error: %1%")
-            .arg(Emax*100.0).arg(Emean*100.0)
-            + ", " + tr("CV: %1").arg(CV);
+	QString ErrInfo = tr("Before Fitting")
+		+ tr("Mean Error: %2%, Max Error: %1%")
+		.arg(Emax*100.0).arg(Emean*100.0);
+            //+ ", " + tr("CV: %1%").arg(CV*100.0);
     ui->statusBar->showMessage(ErrInfo);
 }
 
 void MainWindow::on_GenSPT_clicked()
 {
-    if (ui->TSPT->currentIndex() == 0) {
+    int ind = ui->TSPT->currentIndex();
+    if (ind == 0 || ind == 1) {
         double Tg = ui->Tg->value();
         double PAF = ui->PAF->value();
         double SF = ui->SF->value();
@@ -2076,8 +2339,10 @@ void MainWindow::on_GenSPT_clicked()
 
         eqs->setSPT(Tg,PAF,SF);
     }
+
+	FIT_SPA = false;
     this->plotSPT();
-    FIT_SPA = false;
+    
 }
 
 void MainWindow::on_actionViewData_triggered()
@@ -2089,6 +2354,13 @@ void MainWindow::on_actionViewData_triggered()
         wth->show();
     }
     else if (tabi == 2 || tabi == 3) {
+        int nsp = eqs->getNsp();
+        dr->clear();
+        QString drValue;
+        for (int i=0; i<nsp; ++i) {
+            drValue = QString::number(eqs->getSP(i)->getZeta());
+            dr->addItem(drValue);
+        }
         this->fillSPTable();
         wsp->show();
     }
@@ -2102,6 +2374,8 @@ void MainWindow::on_actionViewData_triggered()
 void MainWindow::on_DM_activated(int index)
 {
     if (index == 3) {
+        pdw->setNP(ui->NP->value());
+        pdw->setPeriods(eqs->getSP(0)->getP());
         pdw->show();
         ui->NP->setEnabled(false);
         ui->TS->setEnabled(false);
@@ -2117,18 +2391,36 @@ void MainWindow::on_DM_activated(int index)
 void MainWindow::on_TSPT_activated(int index)
 {
     switch (index) {
-    case 1:
     case 2:
+        sptw->setNP(ui->NP->value());
+        sptw->setPeriods(eqs->getSP(0)->getP());
+        sptw->setSPT(eqs->getSP(0)->getSPT());
         sptw->show();
         ui->Tg->setEnabled(false);
         ui->PAF->setEnabled(false);
-        ui->SF->setEnabled(false);
+		ui->SF->setEnabled(false);
+		ui->GenSPT->setEnabled(false);
+        break;
+    case 1:
+        ui->Tg->setEnabled(true);
+        ui->PAF->setEnabled(true);
+        ui->PAF->setValue(2.25);
+        ui->SF->setEnabled(true);
+        ui->GenSPT->setEnabled(true);
+        break;
+    case 0:
+        ui->Tg->setEnabled(true);
+        ui->PAF->setEnabled(true);
+        ui->PAF->setValue(2.5);
+        ui->SF->setEnabled(true);
+        ui->GenSPT->setEnabled(true);
         break;
     default:
         ui->Tg->setEnabled(true);
         ui->PAF->setEnabled(true);
         ui->SF->setEnabled(true);
-        break;
+		ui->GenSPT->setEnabled(true);
+		break;
     }
 }
 
@@ -2149,19 +2441,24 @@ void MainWindow::sptw_applyButton_clicked()
     double *p = sptw->getPeriods();
     double *spt = sptw->getSPT();
     int np = sptw->dataTable->rowCount();
+	int drr = sptw->comBox_dr->currentIndex();
 
-    for (int i=0; i<eqs->getNsp(); ++i) eqs->getSP(i)->setSPT(p,spt,np);
+    eqs->setSPT(p,spt,np,drr);
 
     ui->TS->setValue(p[0]);
     ui->TL->setValue(p[np-1]);
     ui->NP->setValue(np);
+
+	FIT_SPA = false;
+	this->plotSPT();
+
 }
 
 void MainWindow::on_SPFit_clicked()
 {
     int i = ui->CDR->currentIndex();
     double tol = ui->Tol->value();
-	double peak0 = ui->SF->value();
+    double peak0 = ui->SF->value();
     int mit = ui->MIT->value();
     int fm = ui->FitMethod->currentIndex();
     int iter = 0;
@@ -2182,23 +2479,23 @@ void MainWindow::on_SPFit_clicked()
     double Emax, Emean, CV;
     double Emaxp, Emeanp, CVp;
     QString ErrInfo;
-	QString msg;
+    QString msg;
     spi->fitError(Emax, Emean, CV);
-    ErrInfo = tr("Before Fitting")
-            + tr("Mean Error: %2%, Max Error: %1%")
-            .arg(Emax*100.0).arg(Emean*100.0)
-            + ", " + tr("CV: %1").arg(CV);
+	ErrInfo = tr("Before Fitting")
+		+ tr("Mean Error: %2%, Max Error: %1%")
+		.arg(Emax*100.0).arg(Emean*100.0);
+            //+ ", " + tr("CV: %1%").arg(CV*100.0);
     ui->statusBar->showMessage(ErrInfo);
 
-	Emaxp = Emax;
-	Emeanp = Emean;
+    Emaxp = Emax;
+    Emeanp = Emean;
     CVp = CV;
 
     if (Emax <= 3.0*tol && Emean <= tol) {
         msg = tr("Error is less than Tolerance. Need no Fitting!");
-		QMessageBox::information(0, tr("EQSignal"), msg);
-		return;
-	}
+        QMessageBox::information(this, tr("EQSignal"), msg);
+        return;
+    }
     msg = tr("Fitting, please waiting ...");
     ui->statusBar->showMessage(msg);
 
@@ -2210,10 +2507,10 @@ void MainWindow::on_SPFit_clicked()
     gr_post->setName(tr("After Fitting") + " (" + tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)) + ")");
 
     clock_t ct = clock();
-	if (fm == 0)
-	{
+    if (fm == 0)
+    {
         eqs->fitSP(i, tol, mit, fm, peak0, kpb);
-		eqs->calcSP(i);
+        eqs->calcSP(i);
         spi->fitError(Emax, Emean, CV);
 
         gr_post->setData(spi->qGetP(), spi->qGetSPA());
@@ -2229,32 +2526,32 @@ void MainWindow::on_SPFit_clicked()
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::information(0, tr("EQSignal"), msg);
+            QMessageBox::information(this, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(mit)
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::warning(0, tr("EQSignal"), msg);
+            QMessageBox::warning(this, tr("EQSignal"), msg);
         }
 
-	}
+    }
     else if (fm == 1)
     {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
-        double Emin = Emax;
+		double Emin = Emean;
         double *acc = new double[eqs->getN()];
 
-		double p = 1.0;
+        double p = 1.0;
 
         while ( (Emax > 3.0*tol || Emean > tol) && iter<mit )
-		{
+        {
             iter ++;
-			p = eqs->getPeakAcc();
-			eqs->fitSP(i, tol, 1, fm, peak0, kpb);
-			p = eqs->getPeakAcc();
+            p = eqs->getPeakAcc();
+            eqs->fitSP(i, tol, 1, fm, peak0, 0);
+            p = eqs->getPeakAcc();
             eqs->calcSP(i);
             spi->fitError(Emax, Emean, CV);
 
@@ -2264,13 +2561,13 @@ void MainWindow::on_SPFit_clicked()
             qplot->yAxis->setRangeLower(0.0);
             qplot->replot();
 
-            if (Emax < Emin && kpb>0) {
-                Emin = Emax;
+			if (Emean < Emin && kpb>0) {
+				Emin = Emean;
                 arrayCopy(eqs->getAcc(),acc,eqs->getN());
             }
 
             ui->progressBar->setValue(iter);
-		}
+        }
 
         if (kpb>0) {
             eqs->setAcc(acc);
@@ -2295,31 +2592,31 @@ void MainWindow::on_SPFit_clicked()
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::information(0, tr("EQSignal"), msg);
+            QMessageBox::information(this, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::warning(0, tr("EQSignal"), msg);
+            QMessageBox::warning(this, tr("EQSignal"), msg);
         }
 
-	}
+    }
     else
     {
         ui->progressBar->setMaximum(mit);
         ui->progressBar->show();
 //        eqs->fitSP(i, tol, 5, 0, peak0);
-        double Emin = Emax;
+		double Emin = Emean;
         double *acc = new double[eqs->getN()];
 
         while ( (Emax > 3.0*tol || Emean > tol) && iter<mit)
         {
             iter ++;
-			eqs->fitSP(i, tol, 1, 1, peak0, kpb);
+            eqs->fitSP(i, tol, 1, 1, peak0, 0);
             if (iter%5==0 && Emean<tol)
-                eqs->fitSP(i, tol, 10, 0, peak0, 0);
+                eqs->fitSP(i, tol, 10, 0, peak0, kpb);
 
             eqs->calcSP(i);
             spi->fitError(Emax, Emean, CV);
@@ -2330,8 +2627,8 @@ void MainWindow::on_SPFit_clicked()
             qplot->yAxis->setRangeLower(0.0);
             qplot->replot();
 
-            if (Emax < Emin && kpb>0) {
-                Emin = Emax;
+			if (Emean < Emin && kpb>0) {
+				Emin = Emean;
                 arrayCopy(eqs->getAcc(),acc,eqs->getN());
             }
 
@@ -2361,33 +2658,33 @@ void MainWindow::on_SPFit_clicked()
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::information(0, tr("EQSignal"), msg);
+            QMessageBox::information(this, tr("EQSignal"), msg);
         }
         else {
             msg = tr("Spectrum Fitting not Converged After %1 iterations!").arg(iter)
                     + tr("\nTotal Consumed Time: %1 s").arg(sec,0,'g',2)
                     + "\n" + tr("Mean Error: %2%, Max Error: %1%")
                     .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3);
-            QMessageBox::warning(0, tr("EQSignal"), msg);
+            QMessageBox::warning(this, tr("EQSignal"), msg);
         }
 
     }
 
     plotSPAAfterFit();
 
-    ErrInfo = tr("Before Fitting")
-            + tr("Mean Error: %2%, Max Error: %1%")
-            .arg(Emaxp*100.0,0,'g',3).arg(Emeanp*100.0,0,'g',3)
-            + ", " + tr("CV: %1").arg(CVp,0,'g',2)
-            + QString(";  ")
-            + tr("After Fitting")
-            + tr("Mean Error: %2%, Max Error: %1%")
-            .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3)
-            + ", " + tr("CV: %1").arg(CV,0,'g',2);
+	ErrInfo = tr("Before Fitting")
+		+ tr("Mean Error: %2%, Max Error: %1%")
+		.arg(Emaxp*100.0, 0, 'g', 3).arg(Emeanp*100.0, 0, 'g', 3)
+	//+", " + tr("CV: %1%").arg(CVp*100.0, 0, 'g', 2)
+		+ QString(";  ")
+		+ tr("After Fitting")
+		+ tr("Mean Error: %2%, Max Error: %1%")
+		.arg(Emax*100.0, 0, 'g', 3).arg(Emean*100.0, 0, 'g', 3);
+			//+ ", " + tr("CV: %1%").arg(CV*100.0, 0, 'g', 2);
     ui->statusBar->showMessage(ErrInfo);
 
-    qDebug() << eqsName << "," << iter << "," << sec << "," << Emaxp << "," << Emax
-             << "," << Emeanp << "," << Emean << "," << CVp << "," << CV;
+    // qDebug() << eqsName << "," << iter << "," << sec << "," << Emaxp << "," << Emax
+             // << "," << Emeanp << "," << Emean << "," << CVp << "," << CV;
 
     eqs->a2vd();
     eqs0->copyAccFrom(eqs);
@@ -2426,16 +2723,17 @@ void MainWindow::on_SPComPare_clicked()
 
     FIT_SPA = true;
 
-    QString ErrInfo = tr("Before Fitting")
-            + tr("Mean Error: %2%, Max Error: %1%")
-            .arg(Emax*100.0,0,'g',3).arg(Emean*100.0,0,'g',3)
-            + ", " + tr("CV: %1").arg(CV,0,'g',2);
+	QString ErrInfo = tr("Before Fitting")
+		+ tr("Mean Error: %2%, Max Error: %1%")
+		.arg(Emax*100.0, 0, 'g', 3).arg(Emean*100.0, 0, 'g', 3);
+            //+ ", " + tr("CV: %1%").arg(CV*100.0,0,'g',2);
     ui->statusBar->showMessage(ErrInfo);
 }
 
+// 单自由度体系响应求解（弹性或弹塑性）
 void MainWindow::on_CalcRes_clicked()
 {
-    double zeta = ui->RDR->value();
+    double zeta = ui->RDR->currentText().toDouble();
     double P = ui->RPD->value();
     int method;
 
@@ -2446,8 +2744,8 @@ void MainWindow::on_CalcRes_clicked()
 
     if (ui->NLR->isChecked()) {
         method = ui->NLMethod->currentIndex();
-		cp[0] = ui->MU->value();
-        cp[7] = (double)(ui->NLModel->currentIndex());
+        cp[0] = ui->MU->value(); // 延性系数
+        cp[7] = (double)(ui->NLModel->currentIndex()); // 非线性本构模型
 
         extra_para = ui->ExtraPara->text().trimmed();
         extra_para_list = extra_para.split(",",QString::SkipEmptyParts);
@@ -2455,11 +2753,12 @@ void MainWindow::on_CalcRes_clicked()
         if (extra_para_list.count()>0) {
             cp[1] = extra_para_list[0].toDouble();
         }
-		if (extra_para_list.count()>1) {
-			cp[2] = extra_para_list[1].toDouble();
-		}
+        if (extra_para_list.count()>1) {
+            cp[2] = extra_para_list[1].toDouble();
+        }
 
         eqs->responseNL(zeta,P,method,cp);
+
     }
     else {
         method = ui->RSM->currentIndex();
@@ -2473,7 +2772,7 @@ void MainWindow::on_CalcRes_clicked()
 
 void MainWindow::on_actionGenWave_triggered()
 {
-//    gwdialog->show();
+    gwd->show();
 }
 
 void MainWindow::on_Resample_clicked()
@@ -2489,10 +2788,11 @@ void MainWindow::on_Resample_clicked()
 void MainWindow::on_actionBasicInfo_triggered()
 {
     QString msg;
+
     msg = tr("Name: %1\nTime Interval: %2\nNo. of Points: %3")
             .arg(eqsName).arg(eqs->getDt()).arg(eqs->getN());
 
-    QMessageBox::information(0,"EQSignal",msg);
+    QMessageBox::information(this,"EQSignal",msg);
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
@@ -2522,6 +2822,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             ui->statusBar->clearMessage();
         break;
     default:
+		FIT_SPA = false;
         ui->statusBar->clearMessage();
         break;
     }
@@ -2593,20 +2894,39 @@ void MainWindow::on_actionOpenLast_triggered()
 
     QFileInfo fi(fileName);
     eqsName = fi.baseName();
+
     this->setWindowTitle("EQSignal -- " + eqsName);
+
+    bool ok;
 
     if (isTxt)
     {
         ui->URL->setText(fileName);
-		double DT = QInputDialog::getDouble(this, eqsName + "'s " + tr("Time Interval"), "dt = ", 0.02, 0.0, 10.0, 3);
-		int NC = QInputDialog::getInt(this, tr("Number of Columns"), "NC = ", 1, 1, 2);
-		bool singleCol = (NC == 1) ? true : false;
-		this->readtxt(fileName, DT, singleCol);
+        double DT = QInputDialog::getDouble(this,
+                                            eqsName + "'s " + tr("Time Interval"),
+                                            "dt = ", 0.02, 0.0, 10.0, 3, &ok);
+        if (!ok) return;
+        int NC = QInputDialog::getInt(this,
+                                      tr("Number of Columns"),
+                                      "NC = ", 1, 1, 2, 1, &ok);
+        if (!ok) return;
+        bool singleCol = (NC == 1) ? true : false;
+        this->readtxt(fileName, DT, singleCol);
     }
     else if (isAt2)
     {
         ui->URL->setText(fileName);
-        this->readnga(fileName);
+        QStringList fmts;
+        fmts << tr("New Format") << tr("Old Format");
+        QString fmt = QInputDialog::getItem(this, tr("AT2 File Format"), tr("AT2 File Format"), fmts, 0, false);
+        if (fmt == tr("Old Format"))
+        {
+            this->readnga(fileName, true);
+        }
+        else
+        {
+            this->readnga(fileName);
+        }
     }
 }
 
@@ -2691,7 +3011,7 @@ void MainWindow::on_DSPA_clicked()
     if (XS_LOG)
     {
         qplot->xAxis->setScaleType(QCPAxis::stLogarithmic);
-		qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignLeft);
+        qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignLeft);
     }
     else
     {
@@ -2705,11 +3025,11 @@ void MainWindow::on_DSPA_clicked()
 
     int i = ui->CDR->currentIndex();
     Spectra *spi = eqs->getSP(i);
-	double zeta = spi->getZeta();
-	double *P = spi->getP();
-	double *SPT0 = spi->getSPT();
+    double zeta = spi->getZeta();
+    double *P = spi->getP();
+    double *SPT0 = spi->getSPT();
 
-	int np = spi->getNP();
+    int np = spi->getNP();
 
     int nd = ui->nD->value();
     int dnd = (int)(n/nd);
@@ -2758,7 +3078,7 @@ void MainWindow::on_DFit_clicked()
 {
     double *acc = eqs->getAcc();
     int n = eqs->getN();
-	
+
     double dt = eqs->getDt();
 
     int i = ui->CDR->currentIndex();
@@ -2779,46 +3099,52 @@ void MainWindow::on_DFit_clicked()
     int mit = ui->MIT->value();
     int kpb = ui->KeepBestFit->isChecked();
 
-	double *a = new double[n];
+    QString msg = tr("Fitting, please waiting ...");
+    ui->statusBar->showMessage(msg);
+
+    double *a = new double[n];
     adjustspectra_endur(acc,&n,&dt,&zeta,P,&np,DI,&nd,SPT0,a,&tol,&mit,&kpb);
-	eqs->setAcc(a);
-	eqs->a2vd();
-	eqs0->setAcc(a);
-	eqs0->a2vd();
+    eqs->setAcc(a);
+    eqs->a2vd();
+    eqs0->setAcc(a);
+    eqs0->a2vd();
 
-	plotTH(false);
+    plotTH(false);
 
-	on_DSPA_clicked();
+    on_DSPA_clicked();
 
-	QMessageBox::information(0, tr("EQSignal"), tr("Fitting Finished!"));
+    QMessageBox::information(this, tr("EQSignal"), tr("Fitting Finished!"));
+
+    msg = tr("Fitting Finished!");
+    ui->statusBar->showMessage(msg);
 
 }
 
 void MainWindow::genArtificialEQWave(double *a, int N, double DT)
 {
 
-	setupSP();
-	double Tg = ui->Tg->value();
-	double PAF = ui->PAF->value();
-	double SF = ui->SF->value();
-	if (SF<0.0) SF = fabs(eqs->getPeakAcc());
+    setupSP();
+    double Tg = ui->Tg->value();
+    double PAF = ui->PAF->value();
+    double SF = ui->SF->value();
+    if (SF<0.0) SF = fabs(eqs->getPeakAcc());
 
-	eqs->setSPT(Tg, PAF, SF);
+    eqs->setSPT(Tg, PAF, SF);
 
-	int i = ui->CDR->currentIndex();
-	Spectra *spi = eqs->getSP(i);
-	double zeta = spi->getZeta();
-	double *P = spi->getP();
-	double *SPT = spi->getSPT();
+    int i = ui->CDR->currentIndex();
+    Spectra *spi = eqs->getSP(i);
+    double zeta = spi->getZeta();
+    double *P = spi->getP();
+    double *SPT = spi->getSPT();
 
-	int nP = spi->getNP();
+    int nP = spi->getNP();
 
-	initartwave(a, &N, &DT, &zeta, P, &nP, SPT);
+    initartwave(a, &N, &DT, &zeta, P, &nP, SPT);
 }
 
 void MainWindow::on_GenAW_clicked()
 {
-    eqsName = QString("AW");
+    eqsName = QString("Artificial_EQSignal");
     double DT = ui->DT->value();
     int N = ui->N->value();
 
@@ -2832,28 +3158,41 @@ void MainWindow::on_GenAW_clicked()
 
     if (et == 1) {
 
-		for (int i = 0; i < N; i++) a[i] *= (double)i / (double)(N-1);
+        for (int i = 0; i < N; i++) a[i] *= (double)i / (double)(N-1);
 
-		ui->nD->setEnabled(true);
-		ui->DSPA->setEnabled(true);
-		ui->DFit->setEnabled(true);
+        ui->nD->setEnabled(true);
+        ui->DSPA->setEnabled(true);
+        ui->DFit->setEnabled(true);
     }
     else if (et == 2) {
+
+        QString EP = ui->EP_AW->text().trimmed();
+        QStringList EPL = EP.split(",",QString::SkipEmptyParts);
+        int NEP = EPL.count();
+        if (NEP < 4) {
+            QMessageBox::warning(this,"EQSignal",tr("Parameters not enough!"));
+            return;
+        }
+
         double Td = DT*N;
-        double Tb = 0.2*DT*N;
-        double Tc = 0.5*DT*N;
+        double Tb = EPL[0].toDouble()*Td;
+        double Tc = EPL[1].toDouble()*Td;
+
+        double lbd1 = EPL[2].toDouble();
+        double lbd2 = EPL[3].toDouble();
 
         for (int i = 0; i < N; i++) {
-            if ( i*DT <= Tb-DT ) a[i] *= (i*DT/Tb)*(i*DT/Tb);
-            else if ( i*DT >= Tc-DT ) a[i] *= exp(log(0.1)/(Td-Tc)*(i*DT-Tc));
+            if ( i*DT <= Tb-DT ) a[i] *= pow((i*DT/Tb),lbd1);
+            // else if ( i*DT >= Tc-DT ) a[i] *= exp(log(0.1)/(Td-Tc)*(i*DT-Tc));
+            else if ( i*DT >= Tc-DT ) a[i] *= exp(-lbd2*(i*DT-Tc));
         }
     }
 
     eqs = new EQSignal(a, N, DT);
-    eqs->a2vd();
+    eqs->norm();
 
     eqs0 = new EQSignal(a, N, DT);
-    eqs0->a2vd();
+    eqs0->norm();
 
     delete [] a;
 
@@ -2867,32 +3206,41 @@ void MainWindow::on_GenAW_clicked()
     plotTH();
 }
 
-
-
 void MainWindow::checkLicense()
 {
 #ifdef Q_OS_WIN
     QString lic("/license.lic");
     lic.prepend(QApplication::applicationDirPath());
 
-	QFile licFile(lic);
+    QFile licFile(lic);
     if (licFile.open(QIODevice::ReadOnly))
     {
         QTextStream in(&licFile);
-		DWORD inRN;
+        DWORD inRN;
         in >> inRN;
 
         DWORD  VolumeSerialNumber;
         wchar_t  VolumeName[256];
 
         GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
-		
-		DWORD RN = VolumeSerialNumber;
-		while (RN > 999999L)
-		{
+
+        DWORD RN = VolumeSerialNumber;
+        while (RN > 999999L)
+        {
             RN = RN / 10L;
-		}
-		RN = RN * 3L + 851228L;
+        }
+
+        if (IS_PRO)
+        {
+            RN = RN * 3L + 851228L;
+            REG_STATE = 2;
+        }
+        else
+        {
+            RN = RN * 2L + 851228L;
+            setLimit();
+            REG_STATE = 1;
+        }
 
         if (RN == inRN)
         {
@@ -2900,16 +3248,49 @@ void MainWindow::checkLicense()
         }
         else
         {
+            REG_STATE = 0;
             ui->centralWidget->hide();
-            QMessageBox::warning(0,"EQSignal",tr("Invalid Register Number! \n Press \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number."));
+            QMessageBox::warning(this,"EQSignal",tr("Invalid Register Number! \nPress \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number."));
         }
     }
     else
     {
-        QMessageBox::warning(0,"EQSignal",tr("License File not Found! \n Press \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number."));
+        QMessageBox::warning(this,"EQSignal",tr("License File not Found! \nPress \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number."));
+        ui->centralWidget->hide();
+    }
+
+    QDate expireDate = QDate::fromString("20180801", "yyyyMMdd");
+    QDate currentDate = QDate::currentDate();
+    if (expireDate<currentDate)
+    {
+        QMessageBox::warning(this, "EQSignal", tr("This software is expired, please update it from www.eqsignal.com."));
         ui->centralWidget->hide();
     }
 #endif
+}
+
+void MainWindow::setLimit()
+{
+    ui->NP->setMaximum(60);
+    ui->TL->setMaximum(6.0);
+    ui->SM->setEnabled(false);
+    ui->DM->setEnabled(false);
+    ui->TSPT->setEnabled(false);
+    ui->DT->setEnabled(false);
+	ui->N->setValue(1000);
+	ui->N->setMaximum(1000);
+	ui->KeepBestFit->setEnabled(false);
+	ui->MDFit->setEnabled(false);
+	ui->nD->setMaximum(3);
+
+    QString title = tr("EQSignal %1 (Trial Version)");
+    this->setWindowTitle(title.arg(version));
+
+}
+
+void MainWindow::nothing()
+{
+
 }
 
 void MainWindow::on_actionGen_Machine_Code_triggered()
@@ -2921,9 +3302,9 @@ void MainWindow::on_actionGen_Machine_Code_triggered()
 
     GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
 
-    QMessageBox::information(0, tr("EQSignal"), tr("Machine Code: EQSignal-%1.\nSend it to 2011_panchao@tongji.edu.cn to apply for a free license serial number.").arg(VolumeSerialNumber));
+    QMessageBox::information(this, tr("EQSignal"), tr("Machine Code: EQSignal-%1.\nSend it to eqsignal@eqsignal.com to apply for a free license serial number.").arg(VolumeSerialNumber));
 #else
-    QMessageBox::information(0,tr("EQSignal"),tr("Windows Only."));
+    QMessageBox::information(this,tr("EQSignal"),tr("Windows Only."));
 #endif
 }
 
@@ -2938,14 +3319,22 @@ void MainWindow::on_actionRegister_triggered()
 
     GetVolumeInformation(L"C:\\", VolumeName, 12, &VolumeSerialNumber, NULL, NULL, NULL, 10);
 
-	DWORD RN = VolumeSerialNumber;
-	while (RN > 999999L)
-	{
-		RN = RN / 10L;
-	}
-	RN = RN * 3L + 851228L;
+    DWORD RN = VolumeSerialNumber;
+    while (RN > 999999L)
+    {
+        RN = RN / 10L;
+    }
 
-	DWORD inRN = QInputDialog::getInt(0, "EQSignal", tr("Input Register Number:"));
+    if (IS_PRO)
+    {
+        RN = RN * 3L + 851228L;
+    }
+    else
+    {
+        RN = RN * 2L + 851228L;
+    }
+
+    DWORD inRN = QInputDialog::getInt(0, "EQSignal", tr("Input Register Number:"));
 
     if (RN == inRN)
     {
@@ -2955,16 +3344,139 @@ void MainWindow::on_actionRegister_triggered()
 
         out << inRN << endl;
 
-        QMessageBox::information(0, tr("EQSignal"), tr("Valid Register Number!"));
+        QMessageBox::information(this, tr("EQSignal"), tr("Valid Register Number!"));
         ui->centralWidget->show();
 
         licFile.close();
+
+		if (IS_PRO)
+		{
+			REG_STATE = 2;
+		}
+		else
+		{
+			REG_STATE = 1;
+		}
     }
     else
     {
-        QMessageBox::warning(0, tr("EQSignal"), tr("Invalid Register Number!\nPress \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number." ));
+        QMessageBox::warning(this, tr("EQSignal"), tr("Invalid Register Number!\nPress \"About\" -> \"Gen Machine Code\" to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number." ));
     }
 #else
-    QMessageBox::information(0,tr("EQSignal"),tr("Windows Only."));
+    QMessageBox::information(this,tr("EQSignal"),tr("Windows Only."));
 #endif
+}
+
+void MainWindow::on_actionEQSignal_triggered()
+{
+    QString msg;
+    msg = tr("Copyright©2016 EQSIGNAL.COM All Rights Reserved.\n");
+
+    switch (REG_STATE) {
+    case 0:
+        msg += tr("Unregistered Version.\n");
+        break;
+    case 1:
+        msg += tr("Registered Trial Version.\n");
+        break;
+    case 2:
+        msg += tr("Registered Professional Version.\n");
+        break;
+    default:
+        break;
+    }
+
+    msg += tr("Developers: Chao PAN, Ruifu ZHANG");
+    QMessageBox::information(this,"EQSignal",msg);
+}
+
+void MainWindow::on_CalcISP_clicked()
+{
+    double mu = ui->MU->value();
+    int model = ui->NLModel->currentIndex();
+	double rk = 0.05;
+	double alpha = 0.5;
+	int iDR = ui->RDR->currentText().toInt();
+
+	QString extra_para;
+	QStringList extra_para_list;
+
+	extra_para = ui->ExtraPara->text().trimmed();
+	extra_para_list = extra_para.split(",", QString::SkipEmptyParts);
+
+	if (extra_para_list.count()>0) {
+		rk = extra_para_list[0].toDouble();
+	}
+	if (extra_para_list.count()>1) {
+		alpha = extra_para_list[1].toDouble();
+	}
+
+	ui->statusBar->showMessage(tr("Caculating, please wait ..."));
+	
+	eqs->calcNLSP(iDR, mu, model, rk, alpha);
+
+	plotSP(iDR);
+	plotSPA(iDR);
+
+	ui->statusBar->showMessage(tr("Finished!"));
+
+    // QMessageBox::information(this,"EQSignal",tr("Under Development."));
+}
+
+void MainWindow::on_MDFit_clicked()
+{
+    int nD = eqs->getNsp();
+
+    if (nD < 2)
+    {
+        QMessageBox::warning(this, tr("EQSignal"), tr("You should set more than one damping value!"));
+        return;
+    }
+
+    double *acc = eqs->getAcc();
+    int n = eqs->getN();
+
+    double dt = eqs->getDt();
+
+    QString DR = ui->DR->text().trimmed();
+    QStringList DRL = DR.split(",",QString::SkipEmptyParts);
+    int NSP = DRL.count();
+    double *Zeta = new double[NSP];
+    for (int i = 0; i < NSP; i++) Zeta[i] = DRL[i].toDouble();
+
+    int i = ui->CDR->currentIndex();
+    Spectra *spi = eqs->getSP(i);
+    // double zeta = spi->getZeta();
+    double *P = spi->getP();
+
+    double *SPT = eqs->getSPTData();
+
+    int np = spi->getNP();
+
+    int nd = NSP;
+    int nt = np*nd;
+
+    double tol = ui->Tol->value();
+    int mit = ui->MIT->value();
+    int kpb = ui->KeepBestFit->isChecked();
+
+	QString msg = tr("Fitting, please waiting ...");
+	ui->statusBar->showMessage(msg);
+
+    double *a = new double[n];
+    adjustspectra_md(acc,&n,&dt,Zeta,P,&np,&nd,SPT,&nt,a,&tol,&mit,&kpb);
+    eqs->setAcc(a);
+    eqs->a2vd();
+    eqs0->setAcc(a);
+    eqs0->a2vd();
+
+    plotTH(false);
+
+    on_CalcSPA_clicked();
+    on_GenSPT_clicked();
+
+    QMessageBox::information(this, tr("EQSignal"), tr("Fitting Finished!"));
+
+	msg = tr("Fitting Finished!");
+	ui->statusBar->showMessage(msg);
 }

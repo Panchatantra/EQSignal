@@ -3,15 +3,27 @@
 
 Spectra::Spectra()
 {
-    NP = 30;
+    NP = 60;
     p1 = 0.04;
     p2 = 10.0;
-    DM = 0;
+    DM = 2;
     SM = 3;
     zeta = 0.05;
 
-    if (DM==0) P = logspace(p1, p2, NP);
-    else if (DM==1) P = linspace(p1, p2, NP);
+    if (DM == 0) P = logspace(p1, p2, NP);
+    else if (DM == 1) P = linspace(p1, p2, NP);
+	else if (DM == 2) {
+		if (p1 >= 1.0) P = linspace(p1, p2, NP);
+		else {
+			int Nshort = (int)(NP*0.5);
+			int Nlong = NP - Nshort + 1;
+			double *Pshort = logspace(p1, 1.0, Nshort);
+			double *Plong = linspace(1.0, p2, Nlong);
+			P = new double[NP];
+			for (int i = 0; i < Nshort; i++) P[i] = Pshort[i];
+			for (int i = 1; i < Nlong; i++) P[i + Nshort - 1] = Plong[i];
+		}
+	}
 
     SPA = zeros(NP);
     SPV = zeros(NP);
@@ -144,7 +156,7 @@ void Spectra::setSPT(double *p, double *spt, int np)
 {
     DM = 2;
 
-    if (NP!=np) {
+	if (NP != np) {
         NP = np;
         if (0 != SPA )    delete [] SPA;
         if (0 != SPV )    delete [] SPV;
@@ -160,8 +172,6 @@ void Spectra::setSPT(double *p, double *spt, int np)
         SPI = zeros<int>(NP);
     }
 
-    if (0 !=   P) delete [] P;
-    if (0 != SPT) delete [] SPT;
     P = p;
     SPT = spt;
 
@@ -174,16 +184,17 @@ void Spectra::setSPT(double Tg, double PAF, double scale)
     double eta1  = 0.02+(0.05-zeta)/(4.0+32.0*zeta);
     double eta2  = 1.0+(0.05-zeta)/(0.08+1.6*zeta);
 
-    PAF = PAF*eta2;
+	if (eta1 < 0.0) eta1 = 0.0;
+	if (eta2 < 0.55) eta2 = 0.55;
 
     double Pi;
     for (int i = 0; i < NP; ++i)
     {
         Pi = P[i];
-        if (Pi<0.1) SPT[i] = (1.0+(PAF-1.0)/0.1*Pi)*scale;
-        else if (Pi <= Tg) SPT[i] = PAF*scale;
-        else if (Pi <= 5.0*Tg) SPT[i] = PAF*pow((Tg/Pi),gamma)*scale;
-        else SPT[i] = PAF*(pow(0.2,gamma)-eta1/eta2*(Pi-5.0*Tg))*scale;
+		if (Pi<0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0) / 0.1*Pi)*scale;
+		else if (Pi <= Tg) SPT[i] = PAF*eta2*scale;
+		else if (Pi <= 5.0*Tg) SPT[i] = PAF*eta2*pow((Tg / Pi), gamma)*scale;
+		else SPT[i] = PAF*eta2*(pow(0.2, gamma) - eta1 / eta2*(Pi - 5.0*Tg))*scale;
     }
 }
 
@@ -200,10 +211,16 @@ void Spectra::calc(bool all)
     else spectrumavd(acc,&n,&dt,&zeta,P,&NP,SPA,SPI,SPV,SPD,SPE,&SM);
 }
 
+void Spectra::calcNL(double mu, int model, double rk, double alpha)
+{
+	double *uy = zeros(NP);
+	spmu(acc, &n, &dt, &zeta, P, &NP, SPA, SPI, SPV, SPD, SPE, &mu, &model, uy, &rk, &alpha);
+}
+
 double *Spectra::fitSP(double tol, int mit, int fm, double peak0, int kpb)
 {
     double *a = new double[n];
-	double p = 1.0;
+    double p = 1.0;
 
 	p = peak(acc, n);
     peakScale(acc, n, peak0);
@@ -223,17 +240,25 @@ void Spectra::fitError(double &Emax, double &Emean, double &CV)
     for (int i = 0; i < NP; i++) {
         re = fabs(SPA[i]-SPT[i])/SPT[i];
         if (re > Emax) Emax = re;
-        Emean += re*re;
+		Emean += re*re;
+		//Emean += re;
     }
 
-    Emean = sqrt(Emean/NP);
+	Emean = sqrt(Emean / NP);
+	//Emean = Emean / NP;
+
+	double r = 0.0;
+	for (int i = 0; i < NP; i++) {
+		r += fabs(SPA[i] - SPT[i]) / SPT[i];
+	}
+
+	r /= NP;
 
     for (int i = 0; i < NP; i++) {
-        re = fabs(SPA[i]-SPT[i])/SPT[i];
-        CV += (re-Emean)*(re-Emean);
+		re = fabs(SPA[i] - SPT[i]) / SPT[i];
+        CV += (re-r)*(re-r);
     }
 
-    CV = sqrt(CV/NP)/Emean;
-
+    CV = sqrt(CV/NP)/r;
 
 }

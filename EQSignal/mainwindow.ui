@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>EQSignal</string>
+   <string>EQSignal v1.1.1 (Professional Version)</string>
   </property>
   <property name="windowIcon">
    <iconset resource="mainwindow.qrc">
@@ -22,7 +22,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>7</number>
       </property>
       <widget class="QWidget" name="tabTH">
        <attribute name="title">
@@ -101,6 +101,26 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>WeChat QR Code</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_QRCode">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="mainwindow.qrc">:/MainWindow/EQSignal_QRCode.jpg</pixmap>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -136,6 +156,7 @@
     <property name="title">
      <string>About</string>
     </property>
+    <addaction name="actionEQSignal"/>
     <addaction name="actionBasicInfo"/>
     <addaction name="actionGen_Machine_Code"/>
     <addaction name="actionRegister"/>
@@ -152,6 +173,7 @@
     <property name="title">
      <string>Tool</string>
     </property>
+    <addaction name="actionGenWave"/>
     <addaction name="actionEndtoZero"/>
     <addaction name="actionChangSpecialPoint"/>
    </widget>
@@ -206,7 +228,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="Pre">
         <property name="geometry">
@@ -532,7 +554,7 @@
          </rect>
         </property>
         <attribute name="label">
-         <string>Baseline</string>
+         <string>Baseline Adjust</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout">
          <item row="0" column="0">
@@ -753,6 +775,9 @@
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="Threshold1">
+           <property name="decimals">
+            <number>3</number>
+           </property>
            <property name="maximum">
             <double>1.000000000000000</double>
            </property>
@@ -760,7 +785,7 @@
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.020000000000000</double>
+            <double>0.010000000000000</double>
            </property>
           </widget>
          </item>
@@ -776,6 +801,9 @@
          </item>
          <item row="3" column="1">
           <widget class="QDoubleSpinBox" name="Threshold2">
+           <property name="decimals">
+            <number>3</number>
+           </property>
            <property name="maximum">
             <double>1.000000000000000</double>
            </property>
@@ -783,7 +811,7 @@
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.980000000000000</double>
+            <double>0.990000000000000</double>
            </property>
           </widget>
          </item>
@@ -968,7 +996,7 @@
             <number>10</number>
            </property>
            <property name="value">
-            <number>30</number>
+            <number>60</number>
            </property>
           </widget>
          </item>
@@ -1020,10 +1048,10 @@
             <number>3</number>
            </property>
            <property name="maximum">
-            <double>20.000000000000000</double>
+            <double>100.000000000000000</double>
            </property>
            <property name="value">
-            <double>10.000000000000000</double>
+            <double>6.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -1123,7 +1151,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Values of Damping Ratio ( comma delimited )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string notr="true">0.05</string>
+            <string notr="true">0.05,0.1</string>
            </property>
           </widget>
          </item>
@@ -1165,15 +1193,15 @@
           <x>0</x>
           <y>0</y>
           <width>241</width>
-          <height>287</height>
+          <height>300</height>
          </rect>
         </property>
         <attribute name="label">
-         <string>Target Spectra</string>
+         <string>Target Spectra &amp;&amp; Artificial Wave</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout_7">
          <item row="0" column="0">
-          <widget class="QLabel" name="label_19">
+          <widget class="QLabel" name="label_SPT">
            <property name="text">
             <string>SPT</string>
            </property>
@@ -1186,6 +1214,11 @@
           <widget class="QComboBox" name="TSPT">
            <item>
             <property name="text">
+             <string>GB 18306-2015</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>GB 50011-2010</string>
             </property>
            </item>
@@ -1194,15 +1227,10 @@
              <string>User Defined</string>
             </property>
            </item>
-           <item>
-            <property name="text">
-             <string>User Defined (SPT Only)</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_27">
+          <widget class="QLabel" name="label_Tg">
            <property name="text">
             <string>Tg</string>
            </property>
@@ -1226,12 +1254,12 @@
             <double>0.050000000000000</double>
            </property>
            <property name="value">
-            <double>0.900000000000000</double>
+            <double>0.500000000000000</double>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="label_16">
+          <widget class="QLabel" name="label_PAF">
            <property name="text">
             <string>PAF</string>
            </property>
@@ -1252,12 +1280,12 @@
             <double>0.050000000000000</double>
            </property>
            <property name="value">
-            <double>2.250000000000000</double>
+            <double>2.500000000000000</double>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_17">
+          <widget class="QLabel" name="label_SF">
            <property name="text">
             <string>SF</string>
            </property>
@@ -1295,17 +1323,10 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QPushButton" name="GenSPT">
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_dt_AW">
            <property name="text">
-            <string>Generate Target SPA</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0" colspan="2">
-          <widget class="QPushButton" name="GenAW">
-           <property name="text">
-            <string>Generate Artificial Wave</string>
+            <string>dt</string>
            </property>
           </widget>
          </item>
@@ -1328,10 +1349,10 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_40">
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_N_AW">
            <property name="text">
-            <string>dt</string>
+            <string>N</string>
            </property>
           </widget>
          </item>
@@ -1351,15 +1372,18 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_41">
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_EVLP_AW">
            <property name="text">
-            <string>N</string>
+            <string>EVLP</string>
            </property>
           </widget>
          </item>
          <item row="8" column="1">
           <widget class="QComboBox" name="EnvelopeType">
+           <property name="currentIndex">
+            <number>2</number>
+           </property>
            <item>
             <property name="text">
              <string>None</string>
@@ -1372,15 +1396,36 @@
            </item>
            <item>
             <property name="text">
-             <string>Three Part</string>
+             <string>Earthquake</string>
             </property>
            </item>
           </widget>
          </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_42">
+         <item row="10" column="0" colspan="2">
+          <widget class="QPushButton" name="GenAW">
            <property name="text">
-            <string>EVLP</string>
+            <string>Generate Artificial Wave</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_EP_AW">
+           <property name="text">
+            <string>EP</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QLineEdit" name="EP_AW">
+           <property name="text">
+            <string>0.1,0.7,2.0,0.2</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QPushButton" name="GenSPT">
+           <property name="text">
+            <string>Generate Target SPA</string>
            </property>
           </widget>
          </item>
@@ -1390,9 +1435,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-68</y>
           <width>207</width>
-          <height>326</height>
+          <height>355</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1419,12 +1464,12 @@
            </property>
            <item>
             <property name="text">
-             <string>0.02</string>
+             <string>0.05</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.05</string>
+             <string>0.1</string>
             </property>
            </item>
           </widget>
@@ -1497,7 +1542,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectral fitting method&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <item>
             <property name="text">
@@ -1532,7 +1577,7 @@
             <string>Keep best fit</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -1550,7 +1595,7 @@
            </property>
           </widget>
          </item>
-         <item row="13" column="0" colspan="2">
+         <item row="14" column="0" colspan="2">
           <widget class="QPushButton" name="DSPA">
            <property name="enabled">
             <bool>false</bool>
@@ -1560,14 +1605,14 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="0">
+         <item row="13" column="0">
           <widget class="QLabel" name="label_39">
            <property name="text">
             <string>nD</string>
            </property>
           </widget>
          </item>
-         <item row="12" column="1">
+         <item row="13" column="1">
           <widget class="QSpinBox" name="nD">
            <property name="enabled">
             <bool>false</bool>
@@ -1583,13 +1628,20 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="0" colspan="2">
+         <item row="15" column="0" colspan="2">
           <widget class="QPushButton" name="DFit">
            <property name="enabled">
             <bool>false</bool>
            </property>
            <property name="text">
             <string>DFit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0" colspan="2">
+          <widget class="QPushButton" name="MDFit">
+           <property name="text">
+            <string>Multi-Damping Fit</string>
            </property>
           </widget>
          </item>
@@ -1740,33 +1792,14 @@
         </attribute>
         <layout class="QFormLayout" name="formLayout_8">
          <item row="0" column="0">
-          <widget class="QLabel" name="label_20">
+          <widget class="QLabel" name="label_ResponseDR">
            <property name="text">
             <string>DR</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="RDR">
-           <property name="decimals">
-            <number>3</number>
-           </property>
-           <property name="minimum">
-            <double>0.001000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.050000000000000</double>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_33">
+          <widget class="QLabel" name="label_Period">
            <property name="text">
             <string>PD</string>
            </property>
@@ -1789,7 +1822,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="label_32">
+          <widget class="QLabel" name="label_ResponseSM">
            <property name="text">
             <string>SM</string>
            </property>
@@ -1818,7 +1851,7 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_34">
+          <widget class="QLabel" name="label_NLMethod">
            <property name="text">
             <string>NLM</string>
            </property>
@@ -1827,7 +1860,7 @@
          <item row="3" column="1">
           <widget class="QComboBox" name="NLMethod">
            <property name="enabled">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="currentIndex">
             <number>0</number>
@@ -1845,7 +1878,7 @@
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QLabel" name="label_35">
+          <widget class="QLabel" name="label_MU">
            <property name="text">
             <string>MU</string>
            </property>
@@ -1854,7 +1887,7 @@
          <item row="4" column="1">
           <widget class="QDoubleSpinBox" name="MU">
            <property name="enabled">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="minimum">
             <double>1.000000000000000</double>
@@ -1868,7 +1901,7 @@
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="label_36">
+          <widget class="QLabel" name="label_NLModel">
            <property name="text">
             <string>MODEL</string>
            </property>
@@ -1877,10 +1910,10 @@
          <item row="5" column="1">
           <widget class="QComboBox" name="NLModel">
            <property name="enabled">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
            <item>
             <property name="text">
@@ -1894,13 +1927,13 @@
            </item>
            <item>
             <property name="text">
-             <string>Clough</string>
+             <string>Clough Bi-linear Degrading</string>
             </property>
            </item>
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="QLabel" name="label_37">
+          <widget class="QLabel" name="label_ExtraPara">
            <property name="text">
             <string>EP</string>
            </property>
@@ -1909,10 +1942,10 @@
          <item row="6" column="1">
           <widget class="QLineEdit" name="ExtraPara">
            <property name="enabled">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="text">
-            <string>0.01,0.5</string>
+            <string>0.05,0.5</string>
            </property>
           </widget>
          </item>
@@ -1922,7 +1955,7 @@
             <string>Inelastic</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -1950,6 +1983,20 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="RDR">
+           <item>
+            <property name="text">
+             <string>0.05</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0.1</string>
+            </property>
+           </item>
+          </widget>
+         </item>
         </layout>
        </widget>
       </widget>
@@ -1960,6 +2007,9 @@
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -1977,6 +2027,7 @@
    <addaction name="actionEndtoZero"/>
    <addaction name="actionFFT"/>
    <addaction name="actionCalcSPA"/>
+   <addaction name="actionGenWave"/>
    <addaction name="actionFitSPA"/>
    <addaction name="actionToggleXScale"/>
    <addaction name="actionQuit"/>
@@ -2138,13 +2189,30 @@
    </property>
   </action>
   <action name="actionGen_Machine_Code">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/MachineCode.png</normaloff>:/MainWindow/icons/MachineCode.png</iconset>
+   </property>
    <property name="text">
     <string>Gen Machine Code</string>
    </property>
   </action>
   <action name="actionRegister">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/Register.png</normaloff>:/MainWindow/icons/Register.png</iconset>
+   </property>
    <property name="text">
     <string>Register</string>
+   </property>
+  </action>
+  <action name="actionEQSignal">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/eqs.png</normaloff>:/MainWindow/icons/eqs.png</iconset>
+   </property>
+   <property name="text">
+    <string>EQSignal</string>
    </property>
   </action>
  </widget>

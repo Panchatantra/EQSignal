@@ -39,8 +39,8 @@ public:
 
 	void readtxt(const char *filename, double dt, bool singleCol=true);
 	void readtxt(QString filename, double dt, bool singleCol=true);
-    void readnga(const char *filename);
-    void readnga(QString filename);
+    void readnga(const char *filename, bool IsOld=false);
+    void readnga(QString filename, bool IsOld=false);
 
     static QPen autoPen(int i);
     static QColor reverseColor(QColor c);
@@ -68,8 +68,10 @@ public slots:
     void plotRES();
     void plotEnergy();
     void plotHyst();
-    void plotSPA();
-    void plotSP();
+	void plotSPA();
+	void plotSPA(int i);
+	void plotSP();
+	void plotSP(int i);
     void plotFFT();
     void plotPSD();
     void plotSPT();
@@ -177,6 +179,13 @@ private slots:
 
     void on_actionRegister_triggered();
 
+    void on_actionEQSignal_triggered();
+
+    void on_CalcISP_clicked();
+
+    void on_MDFit_clicked();
+
+
 private:
     void setupConnections();
 	void initViewTH();
@@ -189,6 +198,8 @@ private:
     void initTable();
 	
 	void checkLicense();
+    void setLimit();
+    void nothing();
 
     void clearView(QCustomPlot *qplot);
 
@@ -196,6 +207,9 @@ private:
     void writeConfig();
 
     Ui::MainWindow *ui;
+
+    bool IS_PRO;
+    int REG_STATE;
 
     GenWaveDialog *gwd;
 
@@ -205,6 +219,8 @@ private:
     QDir workDir;
     QString lastFile;
     QString eqsName;
+
+    QString version;
 
     bool saveAccWithTime;
     bool normOnRead;

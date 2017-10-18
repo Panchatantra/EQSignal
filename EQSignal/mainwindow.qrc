@@ -20,5 +20,8 @@
         <file>icons/XScale.png</file>
         <file>icons/Point.png</file>
         <file>icons/Duration.png</file>
+        <file>icons/MachineCode.png</file>
+        <file>icons/Register.png</file>
+        <file>EQSignal_QRCode.jpg</file>
     </qresource>
 </RCC>

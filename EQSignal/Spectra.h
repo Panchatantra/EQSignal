@@ -33,7 +33,9 @@ public:
     void setSPT(double Tg, double PAF=2.25, double scale=1.0);
     
     void setAcc(double *Acc, int N, double DT);
-    void calc(bool all=false);
+	void calc(bool all = false);
+
+	void calcNL(double mu, int model, double rk, double alpha);
 
     double *fitSP(double tol, int mit, int fm, double peak0, int kpb=1);
 

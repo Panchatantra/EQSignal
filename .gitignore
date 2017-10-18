@@ -208,3 +208,4 @@ build*/
 *.DS_Store
 *.cpp.*
 EQSignal/data/*.png
+wechat/

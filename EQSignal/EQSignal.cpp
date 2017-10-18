@@ -67,6 +67,12 @@ EQSignal::EQSignal()
 
 	sp = new Spectra[nsp];
     zeta = new double[nsp];
+
+	zeta[0] = 0.05;
+	zeta[1] = 0.1;
+
+	setSPT(0.5, 2.5, 1.0);
+
 }
 
 EQSignal::EQSignal(int N, double DT, double V0, double D0)
@@ -110,6 +116,11 @@ EQSignal::EQSignal(int N, double DT, double V0, double D0)
 
 	sp = new Spectra[nsp];
     zeta = new double[nsp];
+
+	zeta[0] = 0.05;
+	zeta[1] = 0.1;
+
+	setSPT(0.5, 2.5, 1.0);
 }
 
 EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
@@ -162,6 +173,11 @@ EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
 
 	sp = new Spectra[nsp];
     zeta = new double[nsp];
+
+	zeta[0] = 0.05;
+	zeta[1] = 0.1;
+
+	setSPT(0.5, 2.5, 1.0);
 }
 
 EQSignal::~EQSignal()
@@ -230,13 +246,20 @@ void EQSignal::readtxt(QString filename, double DT, bool NORM, bool singleCol)
 	readtxt(filename.toUtf8().data(), DT, NORM, singleCol);
 }
 
-void EQSignal::readnga(const char *filename, bool NORM)
+void EQSignal::readnga(const char *filename, bool NORM, bool IsOld)
 {
     ifstream in(filename, ios::in);
     string line;
     for (int i = 0; i < 3; i++) getline(in, line);
-	// in >> n >> dt >> line >> line; // Order format
-	in >> line >> n >> line >> line >> dt >> line;
+
+	if (IsOld)
+	{
+		in >> n >> dt >> line >> line; // Order format
+	}
+	else
+	{
+		in >> line >> n >> line >> line >> dt >> line;
+	}
 
     reallocateTH();
 
@@ -254,9 +277,9 @@ void EQSignal::readnga(const char *filename, bool NORM)
     a2vd();
 }
 
-void EQSignal::readnga(QString filename, bool NORM)
+void EQSignal::readnga(QString filename, bool NORM, bool IsOld)
 {
-    readnga(filename.toUtf8().data(), NORM);
+    readnga(filename.toUtf8().data(), NORM, IsOld);
 }
 
 void EQSignal::resample(int r)
@@ -610,6 +633,23 @@ void EQSignal::calcSP(int i, bool allSP)
     spi->calc(allSP);
 }
 
+void EQSignal::calcNLSP(double mu, int model, double rk, double alpha)
+{
+	for (int i = 0; i < nsp; i++)
+	{
+		Spectra *spi = sp + i;
+		spi->setAcc(acc, n, dt);
+		spi->calcNL(mu, model, rk, alpha);
+	}
+}
+
+void EQSignal::calcNLSP(int i, double mu, int model, double rk, double alpha)
+{
+	Spectra *spi = sp + i;
+	spi->setAcc(acc, n, dt);
+	spi->calcNL(mu, model, rk, alpha);
+}
+
 void EQSignal::calcFFT()
 {
 	double *a = zeros(nfft);
@@ -642,9 +682,34 @@ void EQSignal::calcPSD(double olr,bool win)
     }
 }
 
-void EQSignal::setSPT(double Tg, double amax, double scale)
+void EQSignal::setSPT(double Tg, double PAF, double scale)
 {
-    for (int i = 0; i < nsp; i++) (sp+i)->setSPT(Tg,amax,scale);
+    for (int i = 0; i < nsp; i++) (sp+i)->setSPT(Tg,PAF,scale);
+}
+
+void EQSignal::setSPT(double *p, double *spt, int np, int drr)
+{
+    double dampR = 1.0;
+	double *sptt;
+	Spectra *spi;
+
+    for (int i = 0; i < nsp; i++)
+    {
+		spi = sp + i;
+		if (zeta[i] == 0.05) {
+			spi->setSPT(p, spt, np);
+		}
+        else {
+            if (drr == 0) {
+                dampR = 1.0+(0.05-zeta[i])/(0.08+1.6*zeta[i]);
+            }
+            else if (drr == 1) {
+                dampR = (5.6-log(100.0*zeta[i]))/4.0;
+            }
+			sptt = scaled(spt, np, dampR);
+			spi->setSPT(p, sptt, np);
+        }
+    }
 }
 
 void EQSignal::fitSP(int i, double tol, int mit, int fm, double peak0, int kpb)
@@ -954,6 +1019,24 @@ double ***EQSignal::getSPData()
     for (int i = 0; i < nsp; ++i)
     {
         data[i] = (sp+i)->getSPData();
+    }
+
+    return data;
+}
+
+double *EQSignal::getSPTData()
+{
+	int nP = sp->getNP();
+	double *data = new double[nsp*nP];
+	double *spti;
+
+    for (int i = 0; i < nsp; ++i)
+    {
+		spti = (sp + i)->getSPT();
+		for (int j = 0; j < nP; ++j)
+		{
+			data[i*nP+j] = spti[j];
+		}
     }
 
     return data;
