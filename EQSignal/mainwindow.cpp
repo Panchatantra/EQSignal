@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 	// Windows系统检查许可证
 	#ifdef Q_OS_WIN
-    checkLicense();
+    //checkLicense();
     #endif
 }
 
@@ -359,6 +359,55 @@ void MainWindow::initTable()
     //    wsp->show();
 }
 
+void MainWindow::resetAxis(QCPAxisRect *rect, QCPAxis::AxisType axis, double *data, int N)
+{
+    QCPAxis *ax;
+    double yrl, yru, dy;
+
+    autoScale(data, N, yrl, yru, dy);
+    ax = rect->axis(axis);
+    ax->setRange(yrl, yru);
+    ax->setAutoTickStep(false);
+    ax->setTickStep(dy);
+}
+
+void MainWindow::resetTimeAxis(QCPAxisRect *rect, double t1)
+{
+    QCPAxis *ax;
+    double yrl, yru, dy;
+
+    autoScale(t1, yrl, yru, dy);
+	ax = rect->axis(QCPAxis::atBottom);
+    ax->setRange(yrl, yru);
+    ax->setAutoTickStep(false);
+    dy = fmin(dy,5.0);
+    ax->setTickStep(dy);
+}
+
+void MainWindow::resetYAxis(QCPAxisRect *rect, double y1)
+{
+    QCPAxis *ax;
+    double yrl, yru, dy;
+
+    autoScale(y1, yrl, yru, dy);
+    ax = rect->axis(QCPAxis::atLeft);
+    ax->setRange(yrl, yru);
+    ax->setAutoTickStep(false);
+    ax->setTickStep(dy);
+}
+
+void MainWindow::resetYAxis(QCPAxisRect *rect, double ymin, double ymax)
+{
+    QCPAxis *ax;
+    double yrl, yru, dy;
+
+    autoScale(ymin, ymax, yrl, yru, dy);
+    ax = rect->axis(QCPAxis::atLeft);
+    ax->setRange(yrl, yru);
+    ax->setAutoTickStep(false);
+    ax->setTickStep(dy);
+}
+
 void MainWindow::clearView(QCustomPlot *qplot)
 {
     qplot->clearGraphs();
@@ -439,18 +488,18 @@ void MainWindow::initViewTH()
         }
     }
 
-    plotAcc->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
-    plotVel->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
-    plotDsp->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
+    resetTimeAxis(plotAcc, 40.0);
+    resetTimeAxis(plotVel, 40.0);
+    resetTimeAxis(plotDsp, 40.0);
 
-    plotAcc->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
-    plotVel->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
-    plotDsp->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
+    resetYAxis(plotAcc, -1.0, 1.0);
+    resetYAxis(plotVel, -1.0, 1.0);
+    resetYAxis(plotDsp, -1.0, 1.0);
 
     plotAcc->axis(QCPAxis::atLeft)->setLabel(tr("Acceleration"));
     plotVel->axis(QCPAxis::atLeft)->setLabel(tr("Velocity"));
     plotDsp->axis(QCPAxis::atLeft)->setLabel(tr("Displacement"));
-    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time"));
+    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time")+QString(" [s]"));
 
 //    qplot->addGraph(plotAcc->axis(QCPAxis::atBottom), plotAcc->axis(QCPAxis::atLeft));
 //    qplot->addGraph(plotVel->axis(QCPAxis::atBottom), plotVel->axis(QCPAxis::atLeft));
@@ -503,18 +552,18 @@ void MainWindow::initViewRES()
         }
     }
 
-    plotAcc->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
-    plotVel->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
-    plotDsp->axis(QCPAxis::atBottom)->setRange(0.0, 40.0);
+    resetTimeAxis(plotAcc, 40.0);
+    resetTimeAxis(plotVel, 40.0);
+    resetTimeAxis(plotDsp, 40.0);
 
-    plotAcc->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
-    plotVel->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
-    plotDsp->axis(QCPAxis::atLeft)->setRange(-1.0, 1.0);
+    resetYAxis(plotAcc, -1.0, 1.0);
+    resetYAxis(plotVel, -1.0, 1.0);
+    resetYAxis(plotDsp, -1.0, 1.0);
 
     plotAcc->axis(QCPAxis::atLeft)->setLabel(tr("Acceleration"));
     plotVel->axis(QCPAxis::atLeft)->setLabel(tr("Velocity"));
     plotDsp->axis(QCPAxis::atLeft)->setLabel(tr("Displacement"));
-    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time"));
+    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time")+QString(" [s]"));
 }
 
 // 初始化滞回曲线绘图区
@@ -563,6 +612,12 @@ void MainWindow::initViewSPA()
     qplot->xAxis->setRange(0.01, 10.0);
     qplot->yAxis->setRange(0.0, 3.0);
 
+	qplot->xAxis->setAutoTickStep(false);
+	qplot->xAxis->setTickStep(1.0);
+
+	qplot->yAxis->setAutoTickStep(false);
+	qplot->yAxis->setTickStep(0.5);
+
     qplot->xAxis->setLabel(tr("Period"));
     qplot->yAxis->setLabel(tr("Response Acceleration"));
 
@@ -584,7 +639,7 @@ void MainWindow::initViewEnergy()
     qplot->xAxis->setRange(0.0, 60.0);
     qplot->yAxis->setRange(0.0, 1.0);
 
-    qplot->xAxis->setLabel(tr("Time"));
+    qplot->xAxis->setLabel(tr("Time")+QString(" [s]"));
     qplot->yAxis->setLabel(tr("Energy"));
 
 }
@@ -652,7 +707,7 @@ void MainWindow::plotTH(bool changeTab)
     plotAcc->axis(QCPAxis::atLeft)->setLabel(tr("Acceleration"));
     plotVel->axis(QCPAxis::atLeft)->setLabel(tr("Velocity"));
     plotDsp->axis(QCPAxis::atLeft)->setLabel(tr("Displacement"));
-    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time"));
+    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time")+QString(" [s]"));
 
     qplot->addGraph(plotAcc->axis(QCPAxis::atBottom), plotAcc->axis(QCPAxis::atLeft));
     qplot->addGraph(plotVel->axis(QCPAxis::atBottom), plotVel->axis(QCPAxis::atLeft));
@@ -706,11 +761,16 @@ void MainWindow::plotTH(bool changeTab)
     QVector<double> Dsp = eqs->qGetDisp();
 
     qplot->graph(3)->setData(Time, Acc);
-    qplot->graph(3)->rescaleAxes(e);
     qplot->graph(4)->setData(Time, Vel);
-    qplot->graph(4)->rescaleAxes(e);
     qplot->graph(5)->setData(Time, Dsp);
-    qplot->graph(5)->rescaleAxes(e);
+
+    resetAxis(plotAcc, QCPAxis::atLeft, eqs->getAcc(), eqs->getN());
+    resetAxis(plotVel, QCPAxis::atLeft, eqs->getVel(), eqs->getN());
+    resetAxis(plotDsp, QCPAxis::atLeft, eqs->getDisp(), eqs->getN());
+
+    resetTimeAxis(plotAcc, eqs->getDt()*eqs->getN());
+    resetTimeAxis(plotVel, eqs->getDt()*eqs->getN());
+    resetTimeAxis(plotDsp, eqs->getDt()*eqs->getN());
 
     if (ui->IAON->isChecked()) {
         eqs->calcAriasIntensity();
@@ -739,7 +799,50 @@ void MainWindow::plotTH(bool changeTab)
         GID->rescaleValueAxis();
     }
 
+	if (ui->DrawPeak->isChecked()) {
+		double dt;
+		int IPA, IPV, IPD, n;
+		IPA = peakLoc(eqs->getAcc(), eqs->getN());
+		IPV = peakLoc(eqs->getVel(), eqs->getN());
+		IPD = peakLoc(eqs->getDisp(), eqs->getN());
+		n = eqs->getN();
+		dt = eqs->getDt();
+
+		QVector<double> TA, TV, TD, PA, PV, PD;
+
+		TA << IPA*dt;
+		TV << IPV*dt;
+		TD << IPD*dt;
+
+		PA << peak(eqs->getAcc(), n);
+		PV << peak(eqs->getVel(), n);
+		PD << peak(eqs->getDisp(), n);
+
+		QCPGraph *GIA = qplot->addGraph(plotAcc->axis(QCPAxis::atBottom), plotAcc->axis(QCPAxis::atLeft));
+		GIA->setData(TA, PA);
+		GIA->setPen(QPen(Qt::red));
+		GIA->setBrush(QBrush(QColor(0, 0, 255, 20)));
+		GIA->setLineStyle(QCPGraph::lsNone);
+		GIA->setScatterStyle(QCPScatterStyle::ssCircle);
+
+		QCPGraph *GIV = qplot->addGraph(plotVel->axis(QCPAxis::atBottom), plotVel->axis(QCPAxis::atLeft));
+		GIV->setData(TV, PV);
+		GIV->setPen(QPen(Qt::red));
+		GIV->setBrush(QBrush(QColor(0, 0, 255, 20)));
+		GIV->setLineStyle(QCPGraph::lsNone);
+		GIV->setScatterStyle(QCPScatterStyle::ssCircle);
+
+		QCPGraph *GID = qplot->addGraph(plotDsp->axis(QCPAxis::atBottom), plotDsp->axis(QCPAxis::atLeft));
+		GID->setData(TD, PD);
+		GID->setPen(QPen(Qt::red));
+		GID->setBrush(QBrush(QColor(0, 0, 255, 20)));
+		GID->setLineStyle(QCPGraph::lsNone);
+		GID->setScatterStyle(QCPScatterStyle::ssCircle);
+
+	}
+
     qplot->replot();
+
     if (changeTab) {
         ui->tabWidget->setCurrentIndex(0);
         QString msg;
@@ -750,7 +853,7 @@ void MainWindow::plotTH(bool changeTab)
         IPD = peakLoc(eqs->getDisp(),eqs->getN());
         dt = eqs->getDt();
 
-        msg = QString("PA=%1@%4  PV=%2@%5  PD=%3@%6")
+        msg = QString("PA=%1@%4s  PV=%2@%5s  PD=%3@%6s")
                 .arg(eqs->getAcc()[IPA])
                 .arg(eqs->getVel()[IPV])
                 .arg(eqs->getDisp()[IPD])
@@ -794,7 +897,7 @@ void MainWindow::plotRES()
     plotAcc->axis(QCPAxis::atLeft)->setLabel(tr("Acceleration"));
     plotVel->axis(QCPAxis::atLeft)->setLabel(tr("Velocity"));
     plotDsp->axis(QCPAxis::atLeft)->setLabel(tr("Displacement"));
-    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time"));
+    plotDsp->axis(QCPAxis::atBottom)->setLabel(tr("Time")+QString(" [s]"));
 
     qplot->addGraph(plotAcc->axis(QCPAxis::atBottom), plotAcc->axis(QCPAxis::atLeft));
     qplot->addGraph(plotVel->axis(QCPAxis::atBottom), plotVel->axis(QCPAxis::atLeft));
@@ -1073,6 +1176,8 @@ void MainWindow::plotSPA()
         qplot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     }
 
+	double pk = 0;
+
     for (int i = 0; i < eqs->getNsp(); i++)
     {
         QCPGraph *gr = qplot->addGraph();
@@ -1083,9 +1188,15 @@ void MainWindow::plotSPA()
         gr->setData(spi->qGetP(),spi->qGetSPA());
 
         gr->setName(tr("Damping Ratio: %1%").arg((int)(spi->getZeta()*100.0)));
+
+		pk = fmax(pk, max(spi->getSPA(), spi->getNP()));
     }
 
     qplot->rescaleAxes();
+
+	double rl, ru, dx;
+	autoScale(pk, rl, ru, dx);
+	qplot->yAxis->setTickStep(dx);
     qplot->xAxis->setRangeLower(0.01);
     qplot->yAxis->setRangeLower(0.0);
     qplot->replot();
@@ -1876,9 +1987,10 @@ void MainWindow::on_Detrend_clicked()
     int method = ui->DetrendMethod->currentIndex();
 
     eqs->detrend(method, oh, ol);
-    this->showDriftMsg();
-
+    
     this->plotTH();
+
+	this->showDriftMsg();
 }
 
 // 基线对齐
@@ -1890,7 +2002,7 @@ void MainWindow::on_Align_clicked()
     int method = ui->AlignMethod->currentIndex();
     bool EWZ = ui->EndWZ->isChecked();
     eqs->align(method, ntp, oh, ol, true, EWZ);
-    this->showDriftMsg();
+    
 
     this->plotTH();
 
@@ -1911,6 +2023,8 @@ void MainWindow::on_Align_clicked()
 
         qplot->replot();
     }
+
+	this->showDriftMsg();
 }
 
 // 基线一键调整
@@ -1943,8 +2057,9 @@ void MainWindow::on_Adjust_clicked()
         bool EWZ = ui->EndWZ->isChecked();
         eqs->align(method, ntp, oh, ol, raw, EWZ);
     }
-    this->showDriftMsg();
+    
     this->plotTH();
+	this->showDriftMsg();
 }
 
 // 自动设置截断位置

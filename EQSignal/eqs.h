@@ -154,18 +154,51 @@ void static inline autoScale(double *x, int n, double &rl, double &ru, double &d
 	double xmax = max(x, n);
 
     double peak = fmax(xmax, -xmin);
-	double base = pow(10.0, floor(log10(peak)))*0.25;
+	double base = pow(10.0, floor(log10(peak)))*0.1;
 
     rl = -base;
     ru =  base;
 
-    while ( rl > xmin ) rl -= base;
-    while ( ru < xmax ) ru += base;
+    while ( rl > xmin*1.1 ) rl -= base;
+    while ( ru < xmax*1.1 ) ru += base;
 
 	dx = base;
 	if ( (int)ceil(peak / dx) < 2 ) { dx *= 0.4; base *= 0.4; }
 	while ( (int)round(peak / dx) > 3 ) dx += base;
 	 
+}
+
+void static inline autoScale(double xmin, double xmax, double &rl, double &ru, double &dx)
+{
+	double peak = fmax(xmax, -xmin);
+	double base = pow(10.0, floor(log10(peak)))*0.25;
+
+	rl = -base;
+	ru = base;
+
+	while (rl > xmin*1.1) rl -= base;
+	while (ru < xmax*1.1) ru += base;
+
+	dx = base;
+	if ((int)ceil(peak / dx) < 2) { dx *= 0.4; base *= 0.4; }
+	while ((int)round(peak / dx) > 3) dx += base;
+
+}
+
+void static inline autoScale(double xmax, double &rl, double &ru, double &dx)
+{
+	double peak = xmax;
+	double base = pow(10.0, floor(log10(peak)))*0.25;
+
+	rl = 0;
+	ru = base;
+
+	while (ru < xmax) ru += base;
+
+	dx = base;
+	if ((int)ceil(peak / dx) < 2) { dx *= 0.4; base *= 0.4; }
+	while ((int)round(peak / dx) > 5 ) dx += base;
+
 }
 
 void static inline normalize(double *a, int n)

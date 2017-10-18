@@ -91,6 +91,7 @@ public slots:
     void showSPAErrorMsg();
 
     void genArtificialEQWave(double *a, int N, double DT);
+
 private slots:
 
     void on_Norm_clicked();
@@ -196,6 +197,11 @@ private:
     void initViewFFT();
     void initViewEnergy();
     void initTable();
+
+    void resetAxis(QCPAxisRect *rect, QCPAxis::AxisType axis, double *data, int N);
+    void resetTimeAxis(QCPAxisRect *rect, double t1);
+    void resetYAxis(QCPAxisRect *rect, double y1);
+    void resetYAxis(QCPAxisRect *rect, double ymin, double ymax);
 	
 	void checkLicense();
     void setLimit();
