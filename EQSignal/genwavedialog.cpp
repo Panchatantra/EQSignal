@@ -3,7 +3,11 @@
 
 GenWaveDialog::GenWaveDialog(QWidget *parent) : QDialog(parent)
 {
-    this->resize(400, 300);
+	QIcon icon;
+	icon.addFile(QString::fromUtf8(":/MainWindow/icons/eqs.ico"), QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(icon);
+
+	this->resize(400, 300);
     gridLayout = new QGridLayout(this);
 
     label_wavetype = new QLabel(tr("Wave Type"), this);

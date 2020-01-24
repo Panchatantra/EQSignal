@@ -1299,7 +1299,7 @@ subroutine spamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
     integer :: m
 
     m = 1
-    do while ( P(m)<=MPR*dt )
+    do while ( P(m)<MPR*dt )
         m = m + 1
     end do
 
@@ -1378,7 +1378,7 @@ subroutine pspamixed(acc,n,dt,zeta,P,nP,SPA,SPI) bind(c)
 
     m = 1
 
-    do while ( P(m)<=MPR*dt )
+    do while ( P(m)<MPR*dt )
         m = m + 1
     end do
 
@@ -1397,7 +1397,7 @@ subroutine spavdmixed(acc,n,dt,zeta,P,nP,SPA,SPI,SPV,SPD,SPE) bind(c)
 
     integer :: m
     m = 1
-    do while ( P(m)<=MPR*dt )
+    do while ( P(m)<MPR*dt )
         m = m + 1
     end do
 
@@ -2123,7 +2123,7 @@ subroutine rmixed(acc,n,dt,zeta,P,ra,rv,rd) bind(c)
     real(C_DOUBLE), intent(in) :: acc(n)
     real(C_DOUBLE), intent(out) :: ra(n),rv(n),rd(n)
 
-    if (P<=MPR*dt) then
+    if (P<MPR*dt) then
         call rfreq(acc,n,dt,zeta,P,ra,rv,rd)
     else
         call rnmk(acc,n,dt,zeta,P,ra,rv,rd)
@@ -2137,7 +2137,7 @@ subroutine ramixed(acc,n,dt,zeta,P,ra) bind(c)
     real(C_DOUBLE), intent(in) :: acc(n)
     real(C_DOUBLE), intent(out) :: ra(n)
 
-    if (P<=MPR*dt) then
+    if (P<MPR*dt) then
         call rafreq(acc,n,dt,zeta,P,ra)
     else
         call ranmk(acc,n,dt,zeta,P,ra)
@@ -3604,7 +3604,7 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     real(C_DOUBLE), intent(out) :: a(n)
 
     integer :: Nfft, i, j, k, NPf, IPf1, IPf2
-    real(C_DOUBLE) :: phi, Ak, Saw
+    real(C_DOUBLE) :: phi, Ak, Saw, wk
     real(C_DOUBLE), allocatable :: f(:), Pf(:), SPTf(:)
     complex(C_DOUBLE_COMPLEX), allocatable :: a0(:), af(:)
     
@@ -3634,8 +3634,10 @@ subroutine initArtWave(a,n,dt,zeta,P,nP,SPT) bind(c)
     do k = IPf1, IPf2, 1
         call random_number(phi)
         phi = phi*TWO_PI
-        Saw = 2.0D0*zeta*SPTf(k)**2.0D0/(pi*2.0D0*pi*f(k)*&
-            (-2.0D0*log(-pi*log(0.85D0)/(2.0D0*pi*f(k)*(dt*n-dt)))))
+        wk = TWO_PI*f(k)
+        !Saw = 2.0D0*zeta*SPTf(k)**2.0D0/(pi*2.0D0*pi*f(k)*&
+            !(-2.0D0*log(-pi*log(0.85D0)/(2.0D0*pi*f(k)*(dt*n-dt)))))
+        Saw = (zeta/PI/wk)*SPTf(k)*SPTf(k)/log(1.d0/((-PI/wk/dt/n)*log(1.d0-0.85d0)))
         Ak = 2.0D0*sqrt(Saw*2.0D0*pi*(1.D0/dt)*Nfft/2)
         af(k) = Ak*(cmplx(cos(phi),sin(phi)))
         af(Nfft+2-k) = Ak*(cmplx(cos(phi),-sin(phi)))

@@ -17,11 +17,16 @@
         <file>icons/Load.png</file>
         <file>icons/SPA.png</file>
         <file>icons/End.png</file>
-        <file>icons/XScale.png</file>
         <file>icons/Point.png</file>
         <file>icons/Duration.png</file>
         <file>icons/MachineCode.png</file>
         <file>icons/Register.png</file>
         <file>EQSignal_QRCode.jpg</file>
+        <file>icons/Toggle.png</file>
+        <file>icons/China.png</file>
+        <file>icons/Japan.png</file>
+        <file>icons/Language.png</file>
+        <file>icons/UK.png</file>
+        <file>icons/Pulse.png</file>
     </qresource>
 </RCC>

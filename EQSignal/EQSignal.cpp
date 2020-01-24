@@ -23,12 +23,11 @@ static inline int countFileLines(const char *filename)
 	in.close();
 
 	return n;
-
 }
 
 EQSignal::EQSignal()
 {
-    n = 4096;
+    n = 1024;
     nsp = 2;
     dt = 0.02;
     v0 = 0.0;
@@ -71,8 +70,7 @@ EQSignal::EQSignal()
 	zeta[0] = 0.05;
 	zeta[1] = 0.1;
 
-	setSPT(0.5, 2.5, 1.0);
-
+	setSPT(0.5, 2.5, 1.0, 0);
 }
 
 EQSignal::EQSignal(int N, double DT, double V0, double D0)
@@ -120,7 +118,7 @@ EQSignal::EQSignal(int N, double DT, double V0, double D0)
 	zeta[0] = 0.05;
 	zeta[1] = 0.1;
 
-	setSPT(0.5, 2.5, 1.0);
+	setSPT(0.5, 2.5, 1.0, 0);
 }
 
 EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
@@ -177,46 +175,31 @@ EQSignal::EQSignal(double *a, int N, double DT, double V0, double D0)
 	zeta[0] = 0.05;
 	zeta[1] = 0.1;
 
-	setSPT(0.5, 2.5, 1.0);
+	setSPT(0.5, 2.5, 1.0, 0);
 }
 
 EQSignal::~EQSignal()
 {
-    //if (t != 0)    delete [] t;
-    //if (acc0 != 0) delete [] acc0;
-    //if (acc != 0)  delete [] acc;
-    //if (vel != 0)  delete [] vel;
-    //if (disp != 0) delete [] disp;
-    //if (Ia != 0)   delete [] Ia;
-    //if (Iv != 0)   delete [] Iv;
-    //if (Id != 0)   delete [] Id;
-    //if (ta != 0)   delete [] ta;
-    //if (tv != 0)   delete [] tv;
-    //if (td != 0)   delete [] td;
-    //if (ra != 0)   delete [] ra;
-    //if (rv != 0)   delete [] rv;
-    //if (rd != 0)   delete [] rd;
-    //if (sp != 0)   delete[] sp;
-    //if (zeta != 0) delete[] zeta;
-    //if (af != 0)   delete [] af;
-    //if (freqs != 0)   delete [] freqs;
-    //if (ampf != 0)   delete [] ampf;
-    //if (angf != 0)   delete [] angf;
-    //if (fpsd != 0)   delete [] fpsd;
-    //if (psd != 0)   delete [] psd;
+    
 }
 
-void EQSignal::readtxt(const char *filename, double DT, bool NORM, bool singleCol)
+void EQSignal::readtxt(const char *filename, double DT, bool NORM, bool singleCol, int skip_rows)
 {
     n = countFileLines(filename);
-    dt = DT;
 
     reallocateTH();
 
     ifstream in(filename);
 
+	string line;
+	for (int i = 0; i < skip_rows; i++)
+	{
+		getline(in, line);
+	}
+
 	if (singleCol)
 	{
+		dt = DT;
 		for (int i = 0; i < n; ++i)
 		{
 			t[i] = i*dt;
@@ -231,6 +214,7 @@ void EQSignal::readtxt(const char *filename, double DT, bool NORM, bool singleCo
 			in >> t[i] >> acc[i];
 			acc0[i] = acc[i];
 		}
+		dt = t[1] - t[0];
 	}	
 
     in.close();
@@ -280,6 +264,12 @@ void EQSignal::readnga(const char *filename, bool NORM, bool IsOld)
 void EQSignal::readnga(QString filename, bool NORM, bool IsOld)
 {
     readnga(filename.toUtf8().data(), NORM, IsOld);
+}
+
+void EQSignal::setInit(double V0, double D0)
+{
+	v0 = V0;
+	d0 = D0;
 }
 
 void EQSignal::resample(int r)
@@ -406,6 +396,13 @@ void EQSignal::norm()
 {
 	normalize(acc, n);
     a2vd();
+	confirm();
+}
+
+void EQSignal::scaling(double factor)
+{
+	scale(acc, n, factor);
+	a2vd();
 	confirm();
 }
 
@@ -682,9 +679,9 @@ void EQSignal::calcPSD(double olr,bool win)
     }
 }
 
-void EQSignal::setSPT(double Tg, double PAF, double scale)
+void EQSignal::setSPT(double Tg, double PAF, double scale, int code, double *ep)
 {
-    for (int i = 0; i < nsp; i++) (sp+i)->setSPT(Tg,PAF,scale);
+    for (int i = 0; i < nsp; i++) (sp+i)->setSPT(Tg,PAF,scale,code,ep);
 }
 
 void EQSignal::setSPT(double *p, double *spt, int np, int drr)

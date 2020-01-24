@@ -154,7 +154,7 @@ void static inline autoScale(double *x, int n, double &rl, double &ru, double &d
 	double xmax = max(x, n);
 
     double peak = fmax(xmax, -xmin);
-	double base = pow(10.0, floor(log10(peak)))*0.1;
+	double base = pow(10.0, floor(log10(peak)))*0.25;
 
     rl = -base;
     ru =  base;

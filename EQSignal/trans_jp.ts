@@ -6,7 +6,7 @@
     <message>
         <location filename="genwavedialog.cpp" line="9"/>
         <source>Wave Type</source>
-        <translation>类型</translation>
+        <translation>信号種類</translation>
     </message>
     <message>
         <location filename="genwavedialog.cpp" line="18"/>
@@ -16,7 +16,7 @@
     <message>
         <location filename="genwavedialog.cpp" line="19"/>
         <source>White Noise</source>
-        <translation>白噪声</translation>
+        <translation>ホワイトノイズ</translation>
     </message>
 </context>
 <context>
@@ -44,38 +44,38 @@
     <message>
         <location filename="mainwindow.ui" line="29"/>
         <source>Time-History</source>
-        <translation>时程曲线</translation>
+        <translation>時刻歴</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="39"/>
         <source>Fourier</source>
-        <translation>傅里叶谱</translation>
+        <translation>フーリエスペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="49"/>
         <source>Spectra (I)</source>
-        <translation>加速度反应谱</translation>
+        <translation>加速度応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="66"/>
         <source>Spectra (II)</source>
-        <translation>反应谱</translation>
+        <translation>応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="142"/>
         <source>File</source>
         <oldsource>&amp;File</oldsource>
-        <translation>文件</translation>
+        <translation>ファイル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="209"/>
         <source>Tool Box</source>
-        <translation>工具箱</translation>
+        <translation>ツール</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="243"/>
         <source>Preprocess</source>
-        <translation>预处理</translation>
+        <translation>前処理</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="257"/>
@@ -85,75 +85,75 @@
     <message>
         <location filename="mainwindow.ui" line="266"/>
         <source>Norm</source>
-        <translation>峰值归一</translation>
+        <translation>加速度ピーク値の正規化</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="273"/>
         <source>Reload</source>
-        <translation>重新载入</translation>
+        <translation>地震動再入力</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="280"/>
         <source>FOrder</source>
         <oldsource>&amp;FOrder</oldsource>
-        <translation>滤波器阶数</translation>
+        <translation>フィルター次数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="303"/>
         <source>Freq 1</source>
-        <translation>频率 1</translation>
+        <translation>周波数 1</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="329"/>
         <source>Freq 2</source>
-        <translation>频率 2</translation>
+        <translation>周波数 2</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="358"/>
         <source>FType</source>
-        <translation>滤波器类型</translation>
+        <translation>フィルター種類</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="369"/>
         <source>High Pass</source>
-        <translation>高通</translation>
+        <translation>ハイパス</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="374"/>
         <source>Low Pass</source>
-        <translation>低通</translation>
+        <translation>ローパス</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="379"/>
         <source>Band Pass</source>
-        <translation>带通</translation>
+        <translation>バンドパス</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="384"/>
         <source>Band Stop</source>
-        <translation>带阻</translation>
+        <translation>バンドストップ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="392"/>
         <location filename="mainwindow.ui" line="661"/>
         <source>Draw Raw</source>
-        <translation>显示原始数据</translation>
+        <translation>元データ表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="402"/>
         <location filename="mainwindow.ui" line="680"/>
         <source>Filt</source>
-        <translation>滤波</translation>
+        <translation>フィルタリング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="409"/>
         <source>Order 1</source>
-        <translation>最低幂次</translation>
+        <translation>最小べき乗</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="422"/>
         <source>Order 2</source>
-        <translation>最高幂次</translation>
+        <translation>最大べき乗</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="439"/>
@@ -163,24 +163,24 @@
     <message>
         <location filename="mainwindow.ui" line="453"/>
         <source>Fit Disp &amp; Vel</source>
-        <translation>位移、速度趋势的微分</translation>
+        <translation>変位・速度の傾きの微分</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="458"/>
         <source>Acc Only</source>
-        <translation>仅加速度趋势</translation>
+        <translation>加速度の傾きのみ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="466"/>
         <location filename="mainwindow.ui" line="687"/>
         <source>Detrend</source>
-        <translation>消除趋势</translation>
+        <translation>傾きを取除く</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="514"/>
         <location filename="mainwindow.ui" line="710"/>
         <source>Confirm</source>
-        <translation>确认校正</translation>
+        <translation>校正確認</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="832"/>
@@ -188,50 +188,50 @@
         <location filename="mainwindow.cpp" line="727"/>
         <location filename="mainwindow.cpp" line="735"/>
         <source>Arias Intensity</source>
-        <translation>Arias 强度</translation>
+        <translation>Arias 強度</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="557"/>
         <source>Baseline Adjust</source>
         <oldsource>Baseline</oldsource>
-        <translation>目标基线调整</translation>
+        <translation>目標基準線への調整</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="14"/>
         <source>EQSignal v1.1.1 (Professional Version)</source>
-        <translation>EQSignal v1.1.1 (专业版)</translation>
+        <translation>EQSignal v1.1.1 (プロフェショナル版)</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="76"/>
         <location filename="mainwindow.ui" line="1791"/>
         <source>Response</source>
-        <translation>响应</translation>
+        <translation>応答</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="86"/>
         <location filename="mainwindow.cpp" line="588"/>
         <source>Energy</source>
-        <translation>能量</translation>
+        <translation>エネルギー</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="96"/>
         <source>Hysteretic</source>
-        <translation>滞回</translation>
+        <translation>履歴ループ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="106"/>
         <source>WeChat QR Code</source>
-        <translation>微信二维码</translation>
+        <translation>ＷｅＣｈａｔ用ＱＲコード</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="157"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation>ヘルプ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="166"/>
         <source>Run</source>
-        <translation>运行</translation>
+        <translation>実行</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="254"/>
@@ -241,165 +241,165 @@
     <message>
         <location filename="mainwindow.ui" line="473"/>
         <source>With Arias Intensity</source>
-        <translation>显示 Arias 强度</translation>
+        <translation>Arias強度表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="507"/>
         <source>Acc Ends to Zero</source>
-        <translation>加速度端部归零</translation>
+        <translation>加速度履歴終点のゼロ戻し</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="521"/>
         <source>Recover</source>
-        <translation>恢复</translation>
+        <translation>元に戻す</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="531"/>
         <source>V0</source>
-        <translation>初始速度</translation>
+        <translation>初期速度</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="541"/>
         <source>D0</source>
-        <translation>初始位移</translation>
+        <translation>初期変位</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="563"/>
         <source>TO</source>
-        <translation>趋势阶数</translation>
+        <translation>近似多項式次数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="573"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Order of Polynomial to fit Displacement Series&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>趋势多项式阶数</translation>
+        <translation>変位履歴を近似する多項式の次数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="583"/>
         <source>NTP</source>
-        <translation>控制时刻</translation>
+        <translation>時刻歴のコントロールポイント</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="593"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of &lt;span style=&quot; font-weight:600;&quot;&gt;Controlled Times&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>控制时刻点数</translation>
+        <translation>コントロールポイントの個数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="603"/>
         <source>AM</source>
-        <translation>调整方法</translation>
+        <translation>調整方法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="613"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Method for &lt;span style=&quot; font-weight:600;&quot;&gt;Alignment&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>基线调整方法</translation>
+        <translation>基準線の調整方法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="620"/>
         <source>Disp Only</source>
-        <translation>仅调整位移</translation>
+        <translation>変位調整のみ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="625"/>
         <source>Disp and Vel</source>
-        <translation>调整位移及速度</translation>
+        <translation>変位と速度調整</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="630"/>
         <source>Disp, Vel and Acc</source>
-        <translation>全部调整</translation>
+        <translation>全て調整</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="638"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Force the end of the Series to be Zero&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>末时刻强制归零</translation>
+        <translation>履歴終点を強制的にゼロに戻す</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="641"/>
         <location filename="mainwindow.ui" line="2170"/>
         <source>End With Zeros</source>
-        <translation>末时刻归零</translation>
+        <translation>履歴終点のゼロ戻し</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="648"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Draw Alignment Target Series (in Green)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>显示调整目标曲线（绿色）</translation>
+        <translation>調整の目標曲線を表示する（緑線）</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="651"/>
         <source>Draw Target</source>
-        <translation>显示调整目标</translation>
+        <translation>調整目標の表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="671"/>
         <location filename="mainwindow.ui" line="694"/>
         <source>Align</source>
-        <translation>调整</translation>
+        <translation>調整</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="703"/>
         <source>Adjust</source>
-        <translation>一键调整</translation>
+        <translation>ワンキー調整</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="726"/>
         <location filename="mainwindow.ui" line="859"/>
         <source>Trim</source>
-        <translation>截取</translation>
+        <translation>切取り</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="732"/>
         <source>Index 1</source>
-        <translation>起始点</translation>
+        <translation>起点</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="749"/>
         <source>Index 2</source>
-        <translation>终止点</translation>
+        <translation>終点</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="769"/>
         <source>Threshold 1</source>
-        <translation>起始阈值</translation>
+        <translation>開始閾値</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="795"/>
         <source>Threshold 2</source>
-        <translation>终止阈值</translation>
+        <translation>停止閾値</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="821"/>
         <source>TEM</source>
-        <translation>阈值定义</translation>
+        <translation>閾値の定義</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="837"/>
         <source>Peak Surpass</source>
-        <translation>峰值首次超越</translation>
+        <translation>振幅が初めて閾値を超える</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="845"/>
         <source>Extend to Zero Point</source>
-        <translation>起止点延拓至最近的零交点</translation>
+        <translation>起・終点を最寄りのゼロ点まで延長</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="852"/>
         <source>Set Trim Edge</source>
-        <translation>设置起止点</translation>
+        <translation>起点設置</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="875"/>
         <source>FFT &amp;&amp; PSD</source>
-        <translation>傅里叶谱</translation>
+        <translation>フーリエスペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="886"/>
         <source>Amplitude</source>
-        <translation>幅值谱</translation>
+        <translation>振幅スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="955"/>
         <source>Execute FFT</source>
-        <translation>傅里叶变换</translation>
+        <translation>フーリエ変換</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1217"/>
@@ -414,78 +414,78 @@
     <message>
         <location filename="mainwindow.ui" line="1407"/>
         <source>Generate Artificial Wave</source>
-        <translation>生成人工波</translation>
+        <translation>模擬地震動生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1329"/>
         <source>dt</source>
-        <translation>时间间隔</translation>
+        <translation>時間刻み</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1355"/>
         <source>N</source>
-        <translation>数据点数</translation>
+        <translation>データポイント数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1389"/>
         <source>None</source>
-        <translation>无</translation>
+        <translation>無し</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1644"/>
         <source>Multi-Damping Fit</source>
-        <translation>多阻尼比拟合</translation>
+        <translation>多減衰定数によるフィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2197"/>
         <source>Gen Machine Code</source>
-        <translation>生成机器码</translation>
+        <translation>マシンＩＤ生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2206"/>
         <source>Register</source>
-        <translation>注册</translation>
+        <translation>登録</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1378"/>
         <source>EVLP</source>
-        <translation>包络形式</translation>
+        <translation>包絡形式</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="918"/>
         <source>OLR</source>
-        <translation>重叠比</translation>
+        <translation>オーバーラップ率</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="941"/>
         <source>with Window</source>
-        <translation>加窗</translation>
+        <translation>ウィンドウ生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="948"/>
         <source>Calculate PSD</source>
-        <translation>计算功率谱密度</translation>
+        <translation>パワースペクトル密度の計算</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="899"/>
         <location filename="mainwindow.cpp" line="1669"/>
         <source>Phase Angle</source>
-        <translation>相位角</translation>
+        <translation>位相角</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2179"/>
         <source>Chang Special Point</source>
-        <translation>改变特定点</translation>
+        <translation>特定点変更</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2188"/>
         <source>Toggle X-Scale</source>
-        <translation>切换X轴刻度</translation>
+        <translation>X軸座標の切替（常数/対数）</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="971"/>
         <source>Spectra</source>
-        <translation>反应谱</translation>
+        <translation>応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="977"/>
@@ -495,44 +495,44 @@
     <message>
         <location filename="mainwindow.ui" line="987"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of Periods&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期控制点个数&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期のコントロールポイントの個数&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1006"/>
         <source>TS</source>
-        <translation>最小周期</translation>
+        <translation>周期下限</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1016"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Smallest Period&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最小周期&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期の下限値&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1035"/>
         <source>TL</source>
-        <translation>最大周期</translation>
+        <translation>周期上限</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1045"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Largest Period&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最大周期&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期の上限値&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1061"/>
         <location filename="mainwindow.ui" line="1827"/>
         <source>SM</source>
-        <translation>求解方法</translation>
+        <translation>計算方法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1071"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Solution Method&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;响应求解方法&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;応答の計算方法&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1078"/>
         <location filename="mainwindow.ui" line="1838"/>
         <source>freq</source>
-        <translation>频域传递函数法</translation>
+        <translation>周波数領域伝達関数法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1083"/>
@@ -543,131 +543,131 @@
     <message>
         <location filename="mainwindow.ui" line="2143"/>
         <source>FFT</source>
-        <translation>傅里叶变换</translation>
+        <translation>フーリエ変換</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2152"/>
         <source>Fit SPA</source>
-        <translation>反应谱拟合</translation>
+        <translation>応答スペクトルのフィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2161"/>
         <source>Open Last</source>
-        <translation>上次查看的数据</translation>
+        <translation>前回チェックしたデータ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1848"/>
         <source>mixed</source>
-        <translation>自动选择</translation>
+        <translation>自動選択</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2134"/>
         <source>Calc SPA</source>
-        <translation>计算加速度反应谱</translation>
+        <translation>加速度応答スペクトル計算</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1093"/>
         <source>duhamel</source>
-        <translation>Duhamel积分法</translation>
+        <translation>Duhamel積分法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="174"/>
         <source>Tool</source>
-        <translation>工具</translation>
+        <translation>ツール</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="480"/>
         <source>RSR</source>
-        <translation>重采样倍率</translation>
+        <translation>リサンプリング倍率</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="500"/>
         <source>Resample</source>
-        <translation>重采样</translation>
+        <translation>リサンプリング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1088"/>
         <source>auto</source>
-        <translation>自动选择</translation>
+        <translation>自動選択</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1101"/>
         <source>Dist</source>
-        <translation>分布模式</translation>
+        <translation>分布型</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1111"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Distributed Mode of Periods&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期点分布模式&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;周期点の分布型&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1118"/>
         <source>log</source>
-        <translation>对数</translation>
+        <translation>対数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1123"/>
         <source>linear</source>
-        <translation>线性</translation>
+        <translation>線形</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1128"/>
         <source>combined</source>
-        <translation>组合</translation>
+        <translation>組合せ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1133"/>
         <source>user</source>
-        <translation>自定义</translation>
+        <translation>カスタマイズ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1141"/>
         <location filename="mainwindow.ui" line="1450"/>
         <location filename="mainwindow.ui" line="1797"/>
         <source>DR</source>
-        <translation>阻尼比</translation>
+        <translation>減衰定数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1151"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Values of Damping Ratio ( comma delimited )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;阻尼比（用逗号间隔）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;減衰定数を入力する（コンマで仕切る）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1164"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pseudo Spectra&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;加速度谱、速度谱由位移谱乘圆频率得到&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;加速度、速度スペクトルは変位スペクトルに円振動数を乗じることで求められた&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1167"/>
         <source>Pseudo</source>
-        <translation>伪加速度谱</translation>
+        <translation>擬似加速度スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1174"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculate &lt;span style=&quot; font-weight:600;&quot;&gt;response spectra&lt;/span&gt; using parameters above&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用上述参数计算 &lt;span style=&quot; font-weight:600;&quot;&gt;加速度反应谱&lt;/span&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;計算は上記のパラメータに基づく &lt;span style=&quot; font-weight:600;&quot;&gt;加速度応答スペクトル&lt;/span&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1177"/>
         <source>Calculate SPA</source>
-        <translation>计算加速度谱</translation>
+        <translation>加速度スペクトルの計算</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1184"/>
         <source>Calculate SP</source>
-        <translation>计算反应谱</translation>
+        <translation>応答スペクトルの計算</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1200"/>
         <source>Target Spectra &amp;&amp; Artificial Wave</source>
         <oldsource>Target Spectra</oldsource>
-        <translation>目标反应谱及人工波</translation>
+        <translation>目標応答スペクトル及び模擬地震動</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1206"/>
         <location filename="mainwindow.cpp" line="332"/>
         <source>SPT</source>
-        <translation>目标谱</translation>
+        <translation>目標応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1222"/>
@@ -677,57 +677,57 @@
     <message>
         <location filename="mainwindow.ui" line="1227"/>
         <source>User Defined</source>
-        <translation>自定义</translation>
+        <translation>カスタマイズ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1235"/>
         <source>Tg</source>
-        <translation>特征周期</translation>
+        <translation>特徴周期（コーナー周期）</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1245"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Characteristic Period (GB50011-2010)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;特征周期 (GB50011-2010)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;中国の耐震設計基準における特徴周期 (GB50011-2010)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1264"/>
         <source>PAF</source>
-        <translation>平台放大系数</translation>
+        <translation>最大加速度の増幅係数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1290"/>
         <source>SF</source>
-        <translation>整体缩放系数</translation>
+        <translation>全体の増幅係数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1319"/>
         <source>Draw SPA</source>
-        <translation>显示地震动信号的反应谱</translation>
+        <translation>地震動記録の応答スペクトル表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1428"/>
         <source>Generate Target SPA</source>
-        <translation>生成目标谱</translation>
+        <translation>目標応答スペクトル生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1394"/>
         <source>Linear (for Endurance Waves)</source>
-        <translation>线性（用于耐震时程）</translation>
+        <translation>線形（ETM解析用）</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1444"/>
         <source>Spectrum Fit</source>
-        <translation>反应谱拟合</translation>
+        <translation>応答スペクトルのフィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1567"/>
         <source>Target Spectra on</source>
-        <translation>显示目标谱</translation>
+        <translation>目標応答スペクトル表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1460"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Damping ratio of target spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;目标谱的阻尼比&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;目標応答スペクトルの減衰定数&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1467"/>
@@ -738,57 +738,57 @@
     <message>
         <location filename="mainwindow.ui" line="1480"/>
         <source>TOL</source>
-        <translation>拟合容差</translation>
+        <translation>フィッティングの許容誤差</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1490"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tolerance of spectral fitting&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;反应谱拟合容差&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;応答スペクトルへのフィッティングの許容誤差&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1506"/>
         <source>MIT</source>
-        <translation>迭代次数</translation>
+        <translation>イテレーション回数</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1516"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max iterations of spectral fitting&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;最大迭代次数&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;イテレーション回数の上限&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1532"/>
         <source>FM</source>
-        <translation>拟合方法</translation>
+        <translation>フィッティング方法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1542"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectral fitting method&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;反应谱拟合方法（频域或时域）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;応答スペクトルへのフィッティング方法（周波数/時間領域）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1549"/>
         <source>freq domain</source>
-        <translation>频域</translation>
+        <translation>周波数領域</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1554"/>
         <source>time domain</source>
-        <translation>时域</translation>
+        <translation>時間領域</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1559"/>
         <source>alternate</source>
-        <translation>时频交替</translation>
+        <translation>周波数・時間領域の交替的フィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1594"/>
         <source>Fit</source>
-        <translation>拟合</translation>
+        <translation>フィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1587"/>
         <source>Compare</source>
-        <translation>比较</translation>
+        <translation>比較</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1421"/>
@@ -804,27 +804,27 @@
     <message>
         <location filename="mainwindow.ui" line="1577"/>
         <source>Keep best fit</source>
-        <translation>保留最优迭代结果</translation>
+        <translation>最適なイテレーション結果を保存</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1604"/>
         <source>DSPA</source>
-        <translation>耐震加速度反应谱</translation>
+        <translation>ETM解析用加速度応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1611"/>
         <source>nD</source>
-        <translation>耐震时段</translation>
+        <translation>耐震時間</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1637"/>
         <source>DFit</source>
-        <translation>耐震时程拟合</translation>
+        <translation>ETM地震動履歴のフィッティング</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1660"/>
         <source>Parameters</source>
-        <translation>参数</translation>
+        <translation>パラメータ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1679"/>
@@ -865,13 +865,13 @@
     <message>
         <location filename="mainwindow.ui" line="1709"/>
         <source>Parameter</source>
-        <translation>参数</translation>
+        <translation>パラメータ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1714"/>
         <location filename="mainwindow.cpp" line="2973"/>
         <source>Value</source>
-        <translation>数值</translation>
+        <translation>値</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1724"/>
@@ -886,53 +886,53 @@
     <message>
         <location filename="mainwindow.ui" line="1883"/>
         <source>MU</source>
-        <translation>延性系数</translation>
+        <translation>塑性率</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1906"/>
         <source>MODEL</source>
-        <translation>非线性弹簧</translation>
+        <translation>非線形モデル</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1920"/>
         <source>Elasto-Plastic</source>
-        <translation>弹塑性</translation>
+        <translation>標準バイリニア型</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1925"/>
         <source>Origin-Orientated Unloading</source>
-        <translation>完全损伤</translation>
+        <translation>バイリニア原点指向型</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1414"/>
         <location filename="mainwindow.ui" line="1938"/>
         <source>EP</source>
-        <translation>额外参数</translation>
+        <translation>他のパラメータ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1965"/>
         <source>Draw Input</source>
-        <translation>显示输入</translation>
+        <translation>入力地震動表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1972"/>
         <source>Calculate Response</source>
-        <translation>计算响应</translation>
+        <translation>応答計算</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1982"/>
         <source>Inelastic Spectra</source>
-        <translation>非线性等延性反应谱</translation>
+        <translation>非線形応答スペクトル（一定応答塑性率）</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2116"/>
         <source>Gen Wave</source>
-        <translation>生成信号</translation>
+        <translation>信号生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2125"/>
         <source>Basic Info</source>
-        <translation>基本信息</translation>
+        <translation>基本情報</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1804"/>
@@ -942,23 +942,23 @@
     <message>
         <location filename="mainwindow.ui" line="1856"/>
         <source>NLM</source>
-        <translation>非线性控制方法</translation>
+        <translation>非線形の制御方法</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1870"/>
         <source>Const Ductility</source>
-        <translation>等延性</translation>
+        <translation>一定塑性率</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1875"/>
         <source>Const Surpass Ratio</source>
         <oldsource>Const Yield-Gravity Ratio</oldsource>
-        <translation>等超强比</translation>
+        <translation>一定強度超過率</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1930"/>
         <source>Clough Bi-linear Degrading</source>
-        <translation>克拉夫退化模型</translation>
+        <translation>バイリニア最大点指向型</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="1948"/>
@@ -968,17 +968,17 @@
     <message>
         <location filename="mainwindow.ui" line="1955"/>
         <source>Inelastic</source>
-        <translation>非线性</translation>
+        <translation>非線形</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2009"/>
         <source>toolBar</source>
-        <translation>工具栏</translation>
+        <translation>ツール</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2041"/>
         <source>Quit</source>
-        <translation>退出</translation>
+        <translation>終了</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2044"/>
@@ -989,7 +989,7 @@
         <location filename="mainwindow.ui" line="2053"/>
         <location filename="mainwindow.cpp" line="2054"/>
         <source>Open</source>
-        <translation>打开</translation>
+        <translation>開く</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2056"/>
@@ -999,7 +999,7 @@
     <message>
         <location filename="mainwindow.ui" line="2065"/>
         <source>Save Figure</source>
-        <translation>导出图片</translation>
+        <translation>図として保存</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2068"/>
@@ -1009,7 +1009,7 @@
     <message>
         <location filename="mainwindow.ui" line="2077"/>
         <source>Save Data</source>
-        <translation>保存数据</translation>
+        <translation>データ保存</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2080"/>
@@ -1019,7 +1019,7 @@
     <message>
         <location filename="mainwindow.ui" line="2089"/>
         <source>Save Acc</source>
-        <translation>保存加速度数据</translation>
+        <translation>加速度データ保存</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2092"/>
@@ -1030,7 +1030,7 @@
         <location filename="mainwindow.ui" line="2101"/>
         <location filename="mainwindow.ui" line="2104"/>
         <source>View Data</source>
-        <translation>查看数据</translation>
+        <translation>時刻歴データ表示</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="2107"/>
@@ -1045,7 +1045,7 @@
         <location filename="mainwindow.cpp" line="655"/>
         <location filename="mainwindow.cpp" line="797"/>
         <source>Time</source>
-        <translation>时间</translation>
+        <translation>時間</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="308"/>
@@ -1073,13 +1073,13 @@
         <location filename="mainwindow.cpp" line="654"/>
         <location filename="mainwindow.cpp" line="796"/>
         <source>Displacement</source>
-        <translation>位移</translation>
+        <translation>変位</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="312"/>
         <location filename="mainwindow.cpp" line="324"/>
         <source>Time History Data</source>
-        <translation>时程数据</translation>
+        <translation>時刻歴データ</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="265"/>
@@ -1093,7 +1093,7 @@
     <message>
         <location filename="mainwindow.cpp" line="56"/>
         <source>EQSignal %1 (Professional Version)</source>
-        <translation>EQSignal %1 (专业版)</translation>
+        <translation>EQSignal %1 (プロフェショナル版)</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="275"/>
@@ -1101,7 +1101,7 @@
         <location filename="mainwindow.cpp" line="1413"/>
         <location filename="mainwindow.cpp" line="1555"/>
         <source>SPA</source>
-        <translation>加速度谱</translation>
+        <translation>加速度スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="276"/>
@@ -1109,7 +1109,7 @@
         <location filename="mainwindow.cpp" line="1414"/>
         <location filename="mainwindow.cpp" line="1556"/>
         <source>SPV</source>
-        <translation>速度谱</translation>
+        <translation>速度スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="277"/>
@@ -1117,7 +1117,7 @@
         <location filename="mainwindow.cpp" line="1415"/>
         <location filename="mainwindow.cpp" line="1557"/>
         <source>SPD</source>
-        <translation>位移谱</translation>
+        <translation>変位スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="278"/>
@@ -1125,24 +1125,24 @@
         <location filename="mainwindow.cpp" line="1416"/>
         <location filename="mainwindow.cpp" line="1558"/>
         <source>SPE</source>
-        <translation>能量谱</translation>
+        <translation>エネルギースペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="292"/>
         <location filename="mainwindow.cpp" line="1640"/>
         <location filename="mainwindow.cpp" line="1735"/>
         <source>Frequency (Hz)</source>
-        <translation>频率 (Hz)</translation>
+        <translation>周波数 (Hz)</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="336"/>
         <source>Damping Ratio</source>
-        <translation>阻尼比</translation>
+        <translation>減衰定数</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="343"/>
         <source>Response Spectra Data</source>
-        <translation>反应谱数据</translation>
+        <translation>応答スペクトルデータ</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="537"/>
@@ -1152,7 +1152,7 @@
     <message>
         <location filename="mainwindow.cpp" line="567"/>
         <source>Response Acceleration</source>
-        <translation>加速度反应</translation>
+        <translation>加速度応答</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="603"/>
@@ -1173,13 +1173,13 @@
         <location filename="mainwindow.cpp" line="1593"/>
         <location filename="mainwindow.cpp" line="2507"/>
         <source>Damping Ratio: %1%</source>
-        <translation>阻尼比: %1%</translation>
+        <translation>減衰定数: %1%</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1162"/>
         <location filename="mainwindow.cpp" line="1227"/>
         <source>Max Error Point</source>
-        <translation>最大误差点</translation>
+        <translation>誤差の最も大きい点</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1837"/>
@@ -1193,7 +1193,7 @@
         <location filename="mainwindow.cpp" line="2088"/>
         <location filename="mainwindow.cpp" line="2920"/>
         <source>New Format</source>
-        <translation>新格式</translation>
+        <translation>新しいフォーマット</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1844"/>
@@ -1203,14 +1203,14 @@
         <location filename="mainwindow.cpp" line="2920"/>
         <location filename="mainwindow.cpp" line="2922"/>
         <source>Old Format</source>
-        <translation>旧格式</translation>
+        <translation>古いフォーマット</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1845"/>
         <location filename="mainwindow.cpp" line="2089"/>
         <location filename="mainwindow.cpp" line="2921"/>
         <source>AT2 File Format</source>
-        <translation>AT2文件格式</translation>
+        <translation>AT2ファイルフォーマット</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2326"/>
@@ -1219,19 +1219,19 @@
         <location filename="mainwindow.cpp" line="2683"/>
         <location filename="mainwindow.cpp" line="2729"/>
         <source>CV: %1%</source>
-        <translation>变异系数: %1%</translation>
+        <translation>変動係数: %1%</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2499"/>
         <location filename="mainwindow.cpp" line="3102"/>
         <location filename="mainwindow.cpp" line="3463"/>
         <source>Fitting, please waiting ...</source>
-        <translation>拟合中，请等待……</translation>
+        <translation>フィッティングは進行中です、しばらくお待ちください……</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2525"/>
         <source>Spectrum Fitting Converged not more than %1 iterations!</source>
-        <translation>反应谱拟合计算已收敛（不超过%1次迭代）！</translation>
+        <translation>応答スペクトルのフィッティング計算は収束しました（イテレーション回数は%1回以下）！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2526"/>
@@ -1243,13 +1243,13 @@
         <source>
 Total Consumed Time: %1 s</source>
         <translation>
-耗时：%1 s</translation>
+所要時間：%1 s</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2591"/>
         <location filename="mainwindow.cpp" line="2657"/>
         <source>Spectrum Fitting Converged After %1 iterations!</source>
-        <translation>反应谱拟合计算已收敛（经过%1次迭代）！</translation>
+        <translation>応答スペクトルのフィッティング計算は収束しました（イテレーションは%1回経過しました）！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2970"/>
@@ -1262,12 +1262,12 @@ Total Consumed Time: %1 s</source>
         <location filename="mainwindow.cpp" line="3478"/>
         <location filename="mainwindow.cpp" line="3480"/>
         <source>Fitting Finished!</source>
-        <translation>拟合完成！</translation>
+        <translation>フィッティング完了！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3173"/>
         <source>Parameters not enough!</source>
-        <translation>参数数量少于四个！</translation>
+        <translation>パラメータ数は４個より少ない！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3253"/>
@@ -1275,7 +1275,7 @@ Total Consumed Time: %1 s</source>
 Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number.</source>
         <oldsource>Invalid Register Number! 
  Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number.</oldsource>
-        <translation>注册码无效！点击“关于”-&gt;“生成机器码”，并将所生成机器码发送至eqsignal@eqsignal.com申请免费的注册码。</translation>
+        <translation>登録コードが有効ではありません！“ヘルプ”-&gt;“マシンＩＤ”をクリックして、生成されたマシンＩＤをeqsignal@eqsignal.comまで送って登録コードを無料申請して下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3258"/>
@@ -1283,98 +1283,98 @@ Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine
 Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number.</source>
         <oldsource>License File not Found! 
  Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number.</oldsource>
-        <translation>未发现注册文件！点击“关于”-&gt;“生成机器码”，并将所生成机器码发送至eqsignal@eqsignal.com申请免费的注册码。</translation>
+        <translation>登録ファイルは見つかりません！“ヘルプ”-&gt;“マシンＩＤ”をクリックして、生成されたマシンＩＤをeqsignal@eqsignal.comまで送って登録コードを無料申請して下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3266"/>
         <source>This software is expired, please update it from www.eqsignal.com.</source>
-        <translation>软件已过期，请到www.eqsignal.com下载新版本。</translation>
+        <translation>このプログラムの有効期限が過ぎてしまいました、www.eqsignal.comから新しいバージョンをダウンロードして下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3286"/>
         <source>EQSignal %1 (Trial Version)</source>
-        <translation>EQSignal %1 (试用版)</translation>
+        <translation>EQSignal %1 (体験版)</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3305"/>
         <source>Machine Code: EQSignal-%1.
 Send it to eqsignal@eqsignal.com to apply for a free license serial number.</source>
-        <translation>机器码：EQSignal-%1，将其发送至eqsignal@eqsignal.com申请免费的注册码。</translation>
+        <translation>マシンＩＤ：EQSignal-%1，このＩＤをeqsignal@eqsignal.comまで送って登録コードを無料申請して下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3363"/>
         <source>Invalid Register Number!
 Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to eqsignal@eqsignal.com to apply for a free license serial number.</source>
-        <translation>注册码无效！点击“关于”-&gt;“生成机器码”，并将所生成机器码发送至eqsignal@eqsignal.com申请免费的注册码。</translation>
+        <translation>登録コードが有効ではありません！“ヘルプ”-&gt;“マシンＩＤ”をクリックして、生成されたマシンＩＤをeqsignal@eqsignal.comまで送って登録コードを無料申請して下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3373"/>
         <source>Copyright©2016 EQSIGNAL.COM All Rights Reserved.
 </source>
-        <translation>版权所有©2016 EQSIGNAL.COM 保留所有权利。
+        <translation>著作権は　©2016 EQSIGNAL.COM に属します。無断転載を禁止します。
 </translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3377"/>
         <source>Unregistered Version.
 </source>
-        <translation>未注册版本。
+        <translation>登録していません。
 </translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3380"/>
         <source>Registered Trial Version.
 </source>
-        <translation>已注册，试用版。
+        <translation>プログラムは登録されました、体験版です。
 </translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3383"/>
         <source>Registered Professional Version.
 </source>
-        <translation>已注册，专业版。
+        <translation>プログラムは登録されました、プロフェショナル版です。
 </translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3389"/>
         <source>Developers: Chao PAN, Ruifu ZHANG</source>
-        <translation>开发者: 潘超, 张瑞甫</translation>
+        <translation>開発者: 潘超, 张瑞甫</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3414"/>
         <source>Caculating, please wait ...</source>
-        <translation>计算中，请等待……</translation>
+        <translation>計算中です、しばらくお待ちください……</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3421"/>
         <source>Finished!</source>
-        <translation>计算完成！</translation>
+        <translation>計算完了！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3432"/>
         <source>You should set more than one damping value!</source>
-        <translation>需要设置多个阻尼比值！</translation>
+        <translation>多数個減衰定数の設定が必必要！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3307"/>
         <location filename="mainwindow.cpp" line="3366"/>
         <source>Windows Only.</source>
-        <translation>仅用于Windows系统。</translation>
+        <translation>Windowsシステムだけに適用する。</translation>
     </message>
     <message>
         <source>Invalid Register Number!
 Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine code and send it to 2011_panchao@tongji.edu.cn to apply for a free license serial number.</source>
-        <translation type="obsolete">注册码无效！点击“关于”-&gt;“生成机器码”，并将所生成机器码发送至2011_panchao@tongji.edu.cn申请免费的注册码。</translation>
+        <translation type="obsolete">登録コードが有効ではありません！“ヘルプ”-&gt;“マシンＩＤ”をクリックして、生成されたマシンＩＤをeqsignal@eqsignal.comまで送って登録コードを無料申請して下さい。</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3337"/>
         <source>Input Register Number:</source>
-        <translation>输入注册码：</translation>
+        <translation>登録コードを入力して下さい：</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3347"/>
         <source>Valid Register Number!</source>
-        <translation>注册码有效！</translation>
+        <translation>登録コードは有効です！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="3060"/>
@@ -1386,14 +1386,14 @@ Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine
         <location filename="mainwindow.cpp" line="3066"/>
         <source>T = %1 s (Target)</source>
         <oldsource>Time = %1 s (Target)</oldsource>
-        <translation>T = %1 s （目标谱）</translation>
+        <translation>T = %1 s （目標応答スペクトル）</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2532"/>
         <location filename="mainwindow.cpp" line="2598"/>
         <location filename="mainwindow.cpp" line="2664"/>
         <source>Spectrum Fitting not Converged After %1 iterations!</source>
-        <translation>反应谱拟合计算未收敛（经过%1次迭代）！</translation>
+        <translation>応答スペクトルのフィッティング計算は収束できませんでした（イテレーションは%1回経過しました）！</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2792"/>
@@ -1401,34 +1401,34 @@ Press &quot;About&quot; -&gt; &quot;Gen Machine Code&quot; to generate a machine
 Time Interval: %2
 No. of Points: %3</source>
         <translation>名称：%1
-时间间隔：%2
-信号长度：%3</translation>
+時間刻み：%2
+信号長さ：%3</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="898"/>
         <source>Viscous Damping Energy</source>
-        <translation>粘滞阻尼耗能</translation>
+        <translation>粘性減衰による消費エネルギー</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="899"/>
         <source>Hysteretic Energy</source>
-        <translation>塑性滞回耗能</translation>
+        <translation>履歴ループによる消費エネルギー</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="900"/>
         <source>Elastic Energy</source>
-        <translation>弹性应变能</translation>
+        <translation>弾性ひずみエネルギー</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="901"/>
         <source>Kinetic Energy</source>
-        <translation>动能</translation>
+        <translation>運動エネルギー</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="293"/>
         <location filename="mainwindow.cpp" line="1641"/>
         <source>Fourier Amplitude</source>
-        <translation>傅里叶幅值</translation>
+        <translation>フーリエ振幅</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1127"/>
@@ -1438,49 +1438,49 @@ No. of Points: %3</source>
         <location filename="mainwindow.cpp" line="2675"/>
         <location filename="mainwindow.cpp" line="2726"/>
         <source>Before Fitting</source>
-        <translation>拟合前</translation>
+        <translation>フィッティング前</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1677"/>
         <location filename="mainwindow.cpp" line="1711"/>
         <source>Count</source>
-        <translation>计数</translation>
+        <translation>カウント</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="909"/>
         <location filename="mainwindow.cpp" line="1703"/>
         <source>Phase Difference</source>
-        <translation>相位差</translation>
+        <translation>位相差</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2495"/>
         <source>Error is less than Tolerance. Need no Fitting!</source>
-        <translation>误差小于容许值, 无需拟合!</translation>
+        <translation>誤差は許容値以内でフィッティングは必要ありません!</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1227"/>
         <location filename="mainwindow.cpp" line="2507"/>
         <location filename="mainwindow.cpp" line="2680"/>
         <source>After Fitting</source>
-        <translation>拟合后</translation>
+        <translation>フィッティング後</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1135"/>
         <location filename="mainwindow.cpp" line="1276"/>
         <source>Target SPA</source>
-        <translation>目标谱</translation>
+        <translation>目標応答スペクトル</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1736"/>
         <source>PSD</source>
-        <translation>功率谱密度</translation>
+        <translation>パワースペクトル密度</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="1836"/>
         <location filename="mainwindow.cpp" line="2074"/>
         <location filename="mainwindow.cpp" line="2906"/>
         <source>Time Interval</source>
-        <translation>时间间隔</translation>
+        <translation>時間刻み</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="2324"/>
@@ -1496,7 +1496,7 @@ No. of Points: %3</source>
         <location filename="mainwindow.cpp" line="2727"/>
         <source>Mean Error: %2%, Max Error: %1%</source>
         <oldsource>Max Error: %1%, Mean Error: %2%</oldsource>
-        <translation>平均误差: %2%, 最大误差: %1%</translation>
+        <translation>平均誤差: %2%, 最大誤差: %1%</translation>
     </message>
 </context>
 <context>
@@ -1509,7 +1509,7 @@ No. of Points: %3</source>
     <message>
         <location filename="spectradefinewidget.cpp" line="71"/>
         <source>From File</source>
-        <translation>从文件读取</translation>
+        <translation>ファイルから読み込む</translation>
     </message>
 </context>
 <context>
@@ -1522,12 +1522,12 @@ No. of Points: %3</source>
     <message>
         <location filename="spectradefinewidget.cpp" line="96"/>
         <source>SPT</source>
-        <translation>目标谱</translation>
+        <translation>目標応答スペクトル</translation>
     </message>
     <message>
         <location filename="spectradefinewidget.cpp" line="111"/>
         <source>From File</source>
-        <translation>从文件读取</translation>
+        <translation>ファイルから読み込む</translation>
     </message>
 </context>
 <context>
@@ -1535,12 +1535,12 @@ No. of Points: %3</source>
     <message>
         <location filename="spectradefinewidget.cpp" line="11"/>
         <source>From File</source>
-        <translation>从文件读取</translation>
+        <translation>ファイルから読み込む</translation>
     </message>
     <message>
         <location filename="spectradefinewidget.cpp" line="12"/>
         <source>Apply</source>
-        <translation>应用</translation>
+        <translation>適用</translation>
     </message>
     <message>
         <location filename="spectradefinewidget.cpp" line="14"/>
@@ -1550,12 +1550,12 @@ No. of Points: %3</source>
     <message>
         <location filename="spectradefinewidget.cpp" line="15"/>
         <source>Damping Reduction Relationship</source>
-        <translation>阻尼衰减关系</translation>
+        <translation>減衰と応答低減との関係</translation>
     </message>
     <message>
         <location filename="spectradefinewidget.cpp" line="16"/>
         <source>Define 5%-Damping Spectrum</source>
-        <translation>定义5%阻尼比反应谱</translation>
+        <translation>応答スペクトル設定（減衰定数5%）</translation>
     </message>
     <message>
         <location filename="spectradefinewidget.cpp" line="23"/>

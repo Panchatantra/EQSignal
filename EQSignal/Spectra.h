@@ -30,7 +30,7 @@ public:
 
     void setSPT(double *spt);
     void setSPT(double *p, double *spt, int np);
-    void setSPT(double Tg, double PAF=2.25, double scale=1.0);
+	void setSPT(double Tg, double PAF, double scale, int code, double *ep);
     
     void setAcc(double *Acc, int N, double DT);
 	void calc(bool all = false);

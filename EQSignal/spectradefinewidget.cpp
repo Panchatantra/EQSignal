@@ -18,6 +18,7 @@ SpectraDefineWidget::SpectraDefineWidget(QWidget *parent) : QWidget(parent)
     int NP = 60;
     spinBox_np = new QSpinBox(this);
     spinBox_np->setValue(NP);
+	spinBox_np->setMaximum(10000);
 
 	comBox_dr = new QComboBox(this);
 	comBox_dr->addItem(tr("GB 50011-2010"));
@@ -63,9 +64,11 @@ void PeriodsDefineWidget::readFromFile()
 	QStringList filters, clist;
 	QFileDialog fdialog(this);
 
-	filters << "Supported file (*.txt *.TXT *.csv *.CSV)"
-		<< "Text file (*.txt *.TXT)"
-		<< "CSV file (*.csv *.CSV)";
+	//filters << "Supported file (*.txt *.TXT *.csv *.CSV)"
+	//	<< "Text file (*.txt *.TXT)"
+	//	<< "CSV file (*.csv *.CSV)";
+
+	filters << "Text file (*.txt *.TXT)";
 
 	fdialog.setNameFilters(filters);
 	fdialog.setWindowTitle(tr("From File"));
@@ -79,7 +82,7 @@ void PeriodsDefineWidget::readFromFile()
 	QTextStream ts(&file);
 
 	c = ts.readAll();
-	clist = c.split(QRegExp("\\W+"));
+    clist = c.split(QRegExp("\\s+"));
 
 	int np = clist.count();
 	setNP(np);
@@ -103,9 +106,11 @@ void SPTDefineWidget::readFromFile()
 	QStringList filters, clist, plist, sptlist;
 	QFileDialog fdialog(this);
 
-	filters << "Supported file (*.txt *.TXT *.csv *.CSV)"
-		<< "Text file (*.txt *.TXT)"
-		<< "CSV file (*.csv *.CSV)";
+	//filters << "Supported file (*.txt *.TXT *.csv *.CSV)"
+	//	<< "Text file (*.txt *.TXT)"
+	//	<< "CSV file (*.csv *.CSV)";
+
+	filters  << "Text file (*.txt *.TXT)";
 
 	fdialog.setNameFilters(filters);
 	fdialog.setWindowTitle(tr("From File"));
@@ -119,7 +124,7 @@ void SPTDefineWidget::readFromFile()
 	QTextStream ts(&file);
 
 	c = ts.readAll();
-	clist = c.split(QRegExp("\\W+"));
+	clist = c.split(QRegExp("\\s+"));
 
 	int np = clist.count()/2;
 	setNP(np);
@@ -131,5 +136,5 @@ void SPTDefineWidget::readFromFile()
 	}
 
 	setPeriods(plist);
-	setPeriods(sptlist);
+	setSPT(sptlist);
 }

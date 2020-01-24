@@ -24,6 +24,7 @@
 #include "spectradefinewidget.h"
 #include "genwavedialog.h"
 #include "qcustomplot.h"
+#include "pulse.h"
 
 namespace Ui {
 class MainWindow;
@@ -84,7 +85,10 @@ public slots:
     void fillTHTable();
 
     void pdw_applyButton_clicked();
-    void sptw_applyButton_clicked();
+	void sptw_applyButton_clicked();
+
+	void pulse_gen_clicked();
+	void pulse_add_clicked();
 
     void fillRESTable();
 	void genWave();
@@ -187,6 +191,14 @@ private slots:
     void on_MDFit_clicked();
 
 
+    void on_actionEnglish_triggered();
+
+    void on_actionChinese_triggered();
+
+    void on_actionJapanese_triggered();
+
+    void on_Scale_clicked();
+
 private:
     void setupConnections();
 	void initViewTH();
@@ -238,6 +250,8 @@ private:
 
     PeriodsDefineWidget *pdw;
     SPTDefineWidget *sptw;
+
+	Pulse *pulse;
 
     QWidget *wth;
     QWidget *wres;

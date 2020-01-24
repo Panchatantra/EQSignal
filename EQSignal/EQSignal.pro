@@ -14,6 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
+    pulse.cpp \
     qcustomplot.cpp \
     EQSignal.cpp \
     Spectra.cpp \
@@ -22,6 +23,7 @@ SOURCES += main.cpp\
     spectradefinewidget.cpp
 
 HEADERS  += mainwindow.h \
+    pulse.h \
     qcustomplot.h \
     EQSignal.h \
     eqs.h \
@@ -32,7 +34,8 @@ HEADERS  += mainwindow.h \
 
 unix: QMAKE_CXXFLAGS += -std=c++11 -fopenmp
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    pulse.ui
 
 RESOURCES += mainwindow.qrc
 

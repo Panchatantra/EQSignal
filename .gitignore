@@ -188,6 +188,7 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 
+.vs/
 EQSignal/GeneratedFiles/
 EQSignal/x64/
 libbwf/x64/
@@ -209,3 +210,4 @@ build*/
 *.cpp.*
 EQSignal/data/*.png
 wechat/
+exe/

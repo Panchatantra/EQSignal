@@ -45,7 +45,8 @@ Spectra::Spectra(int np, double P1, double P2, int dm, int sm, bool pseudo, doub
     if (DM==0) P = logspace(p1, p2, NP);
     else if (DM==1) P = linspace(p1, p2, NP);
     else if (DM==2) {
-        if (p1>=1.0) P = linspace(p1, p2, NP);
+        if (p1 >= 1.0) P = linspace(p1, p2, NP);
+		else if (p2 <= 1.0) P = logspace(p1, p2, NP);
         else {
             int Nshort = (int)(NP*0.5);
             int Nlong = NP-Nshort+1;
@@ -178,7 +179,7 @@ void Spectra::setSPT(double *p, double *spt, int np)
     this->calc();
 }
 
-void Spectra::setSPT(double Tg, double PAF, double scale)
+void Spectra::setSPT(double Tg, double PAF, double scale, int code, double *ep)
 {
     double gamma = 0.9+(0.05-zeta)/(0.3+6.0*zeta);
     double eta1  = 0.02+(0.05-zeta)/(4.0+32.0*zeta);
@@ -187,15 +188,103 @@ void Spectra::setSPT(double Tg, double PAF, double scale)
 	if (eta1 < 0.0) eta1 = 0.0;
 	if (eta2 < 0.55) eta2 = 0.55;
 
-    double Pi;
-    for (int i = 0; i < NP; ++i)
-    {
-        Pi = P[i];
-		if (Pi<0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0) / 0.1*Pi)*scale;
-		else if (Pi <= Tg) SPT[i] = PAF*eta2*scale;
-		else if (Pi <= 5.0*Tg) SPT[i] = PAF*eta2*pow((Tg / Pi), gamma)*scale;
-		else SPT[i] = PAF*eta2*(pow(0.2, gamma) - eta1 / eta2*(Pi - 5.0*Tg))*scale;
-    }
+	double SDS = 2.5;
+	double SD1 = Tg * SDS;
+	double T0 = 0.2*Tg;
+	double TS = Tg;
+	double T = 1.0;
+	double TL = 4.0;
+
+	double eta = 1.0;
+
+	double TB, TC, TD;
+
+	switch (code)
+	{
+	case 0: // GB
+	case 1: // GB
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < 0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0)/0.1*T)*scale;
+			else if (T <= Tg) SPT[i] = PAF*eta2*scale;
+			else if (T <= 5.0*Tg) SPT[i] = PAF*eta2*pow((Tg/T), gamma)*scale;
+			else SPT[i] = PAF*eta2*(pow(0.2, gamma) - eta1/eta2*(T - 5.0*Tg))*scale;
+		}
+		break;
+	case 2: // DGJ
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < 0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0) / 0.1*T)*scale;
+			else if (T <= Tg) SPT[i] = PAF * eta2*scale;
+			else SPT[i] = PAF * eta2*pow((Tg / T), gamma)*scale;
+		}
+		break;
+	case 3: // NB 35047-2015
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < 0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0) / 0.1*T)*scale;
+			else if (T <= Tg) SPT[i] = PAF * eta2*scale;
+			else SPT[i] = PAF * eta2*pow((Tg / T), 0.6)*scale;
+		}
+		break;
+	case 4: // ASCE 7-16
+		if (zeta != 0.05) eta = (5.6 - log(100.0*zeta)) / 4.0;
+		TL = ep[0];
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < T0) SPT[i] = SDS*eta*(0.4/eta + (1.0-0.4/eta)*T/T0)*scale;
+			else if (T <= TS) SPT[i] = SDS*eta*scale;
+			else if (T <= TL) SPT[i] = SD1/T*eta*scale;
+			else SPT[i] = SD1*TL/T/T*eta*scale;
+		}
+		break;
+	case 5: // JGT/T
+		eta2 = 1.0 + (0.05 - zeta) / (0.06 + 1.7*zeta);
+		if (eta2 < 0.55) eta2 = 0.55;
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < 0.1) SPT[i] = (1.0 + (PAF*eta2 - 1.0) / 0.1*T)*scale;
+			else if (T <= Tg) SPT[i] = PAF * eta2*scale;
+			else SPT[i] = PAF*eta2*(Tg / T)*scale;
+		}
+		break;
+	case 6: // EC8
+		TB = ep[1];
+		TC = Tg;
+		TD = ep[0];
+
+		eta = sqrt(10.0 / (5 + zeta * 100.0));
+		if (eta < 0.55) eta = 0.55;
+
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < TB) SPT[i] = (1.0 + (PAF*eta - 1.0)/TB*T)*scale;
+			else if (T <= TC) SPT[i] = PAF*eta*scale;
+            else if (T <= TD) SPT[i] = PAF*eta*(TC/T)*scale;
+			else SPT[i] = PAF*eta*(TC*TD/T/T)*scale;
+		}
+		break;
+	case 7: // BSL JP
+        TC = Tg;
+		eta = 1.5/(1.0+10.0*zeta);
+		if (eta < 0.4) eta = 0.4;
+		for (int i = 0; i < NP; ++i)
+		{
+			T = P[i];
+			if (T < TC) SPT[i] = eta*PAF*1.0*scale;
+			else if (T <= TC*2.0) SPT[i] = eta*PAF*(1.0-0.2*(T/TC-1.0)*(T/TC-1.0))*scale;
+			else SPT[i] = eta*PAF*1.6*(TC/T)*scale;
+		}
+		break;
+	default:
+		break;
+	}
 }
 
 void Spectra::setAcc(double *Acc, int N, double DT)
